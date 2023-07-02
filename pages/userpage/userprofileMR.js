@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Link from 'next/link';
 import { Button, Modal, Row, Col, Form } from 'react-bootstrap';
 
-const userprofileMR = () => {
+const UserprofileMR = () => {
   const [showForm, setShowForm] = useState(false);
   const [showRecipeForm, setShowRecipeForm] = useState(false);
   const [showRecycleForm, setShowRecycleForm] = useState(false);
@@ -347,4 +347,4 @@ const userprofileMR = () => {
   );
 };
 
-export default userprofileMR;
+export default UserprofileMR;
