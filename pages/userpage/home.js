@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Link from 'next/link';
 
 const HomePage = () => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -10,26 +11,29 @@ const HomePage = () => {
 
   return (
     <>
-      <nav style={{ backgroundColor: '#47974F', padding: '10px' }} className="navbar navbar-expand-lg navbar-light">
+      <nav style={{ padding: '30px', height: '50px', width: '100%', backgroundColor: '#47974F', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <h2 style={{ color: 'white', fontFamily: 'cursive' }}>MyPantry</h2>
-        <div style={{ width: '60%', marginLeft: '25%' }} className="input-group">
+        <div>
           <input style={{ width: '300px' }} type="search" placeholder="Search" />
-          <button style={{ backgroundColor: 'red' }} className="btn btn-success" type="button">GO</button>
+          <button style={{ backgroundColor: 'red' }} type="button">GO</button>
         </div>
-        <ul style={{ width: '400px', fontFamily: 'cursive' }} className="navbar-nav ml-auto">
-          <li className="nav-item">
-            <a className="nav-link" href="#">All Menu</a>
-          </li>
-          <li className="nav-item">
-            <a className="nav-link" href="#">Meal Planner</a>
-          </li>
-          <li className="nav-item">
-            <a className="nav-link" href="#">Recycle</a>
-          </li>
-        </ul>
+        <div style={{ marginRight: '10px' }}>
+          <Link href="/all-menu" passHref>
+            <span style={{ margin: '0 10px', textDecoration: 'none', cursor: 'pointer' }}>All menu</span>
+          </Link>
+          <Link href="/planner" passHref>
+            <span style={{ margin: '0 10px', textDecoration: 'none', cursor: 'pointer' }}>Planner</span>
+          </Link>
+          <Link href="/recycle" passHref>
+            <span style={{ margin: '0 10px', textDecoration: 'none', cursor: 'pointer' }}>Recycle</span>
+          </Link>
+          <Link href="userprofileMR" >
+            <span style={{ margin: '0 10px', textDecoration: 'none', cursor: 'pointer' }}>Profile</span>
+          </Link>
+        </div>
       </nav>
 
-      <div style={{ backgroundColor: '#f2f2f2', padding: '20px', float: 'left', width: '20%' }} className="container">
+      <div style={{ backgroundColor: '#f2f2f2', padding: '20px', float: 'left', width: '20%', height: '1000px' }} className="container">
         <h3 style={{ marginLeft: '20px' }}>Recipe Generator</h3>
         <div>
           <button className="btn btn-link" onClick={toggleDropdown}>
@@ -58,7 +62,7 @@ const HomePage = () => {
             </div>
           )}
         </div>
-        <button className="btn btn-primary" type="button">Submit</button>
+        <button style={{marginLeft: '100px', marginTop: '20px'}} className="btn btn-primary" type="button">Submit</button>
       </div>
     </>
   );

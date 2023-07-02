@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+import Link from 'next/link';
 const SignUpPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -74,13 +74,14 @@ const SignUpPage = () => {
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
           </div>
-
+          <Link href="../">
           <button type="submit" className="btn my-auto" style={buttonStyle}>
             Sign Up
-          </button>
+          </button></Link>
+          <Link href="../">
           <button className="btn" style={buttonStyle}>
             Cancel
-          </button>
+          </button></Link>
         </form>
       </div>
     </div>

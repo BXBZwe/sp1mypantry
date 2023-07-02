@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+import Link from 'next/link';
 const LoginPage = () => {
   
   const [email, setEmail] = useState('');
@@ -76,14 +76,15 @@ const LoginPage = () => {
             />
           </div>
 
-          <button type="submit" className="btn my-auto" style={buttonStyle }>
+          <Link href="/userpage/home">
+          <button type="submit" className="btn my-auto" style={buttonStyle}>
             Login
-          </button>
-          
+          </button></Link>
+          <Link href="/userpage/signuppage">
           <button className="btn" style={buttonStyle2}>
             Sign up
           </button>
-          <a style={{ margin: '10px 32% auto', fontSize: '10px'}} href="#">Forgot password?</a>
+          </Link>
         </form>
       </div>
     </div>
