@@ -1,14 +1,39 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 const LoginPage = () => {
-  
+  const router = useRouter();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Add your login logic here
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+     
+      const data = await response.json();
+      if (response.ok) {
+        localStorage.setItem('token', data.token);
+        if (data.isAdmin){
+          router.push('adminpage/adminhome');
+        } else {
+          router.push('/userpage/home'); // Redirect to the home page on successful login
+        }
+      } else {
+        const data = await response.json();
+        setError(data.status);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const containerStyle = {
@@ -49,8 +74,6 @@ const LoginPage = () => {
   return (
     
     <div style={containerStyle }>
-      
-        
       <div style={loginBoxStyle}>
       <h1 style={{ textAlign: 'center', marginBottom: '25px', fontFamily: 'cursive'}}>MyPantry</h1>
         <form onSubmit={handleLogin}>
@@ -58,6 +81,7 @@ const LoginPage = () => {
             <label>Email address</label>
             <input
               type="email"
+              name = "email"
               className="form-control"
               placeholder="Enter email"
               value={email}
@@ -69,18 +93,17 @@ const LoginPage = () => {
             <label>Password</label>
             <input
               type="password"
+              name = "password"
               className="form-control"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-
-          <Link href="/userpage/home">
           <button type="submit" className="btn my-auto" style={buttonStyle}>
             Login
-          </button></Link>
-          <Link href="/userpage/signuppage">
+          </button>
+          <Link href="/signuppage">
           <button className="btn" style={buttonStyle2}>
             Sign up
           </button>

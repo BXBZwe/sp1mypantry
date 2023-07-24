@@ -1,14 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Link from 'next/link';
+import { Button, Modal, Row, Col, Form } from 'react-bootstrap';
+import { Card, Grid, Text, Pagination } from "@nextui-org/react";
+import { useRouter } from 'next/router';
+
 
 const HomePage = () => {
   const [showDropdown, setShowDropdown] = useState(false);
+  const [posts, setPosts] = useState([]);
+  const [post, setPost] = useState();
+
 
   const toggleDropdown = () => {
     setShowDropdown(!showDropdown);
   };
 
+  useEffect(() => {
+    const fetchAllPosts = async () => {
+      try {
+        const response = await fetch('/api/post/homeposts');
+        const data = await response.json();
+        setPosts(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    
+    fetchAllPosts();
+  }, []);
+  
   return (
     <>
       <nav style={{ padding: '30px', height: '50px', width: '100%', backgroundColor: '#47974F', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -27,12 +48,37 @@ const HomePage = () => {
           <Link href="/recycle" passHref>
             <span style={{ margin: '0 10px', textDecoration: 'none', cursor: 'pointer' }}>Recycle</span>
           </Link>
-          <Link href="userprofileMR" >
+          <Link href="/userpage/userprofileMR" >
             <span style={{ margin: '0 10px', textDecoration: 'none', cursor: 'pointer' }}>Profile</span>
           </Link>
         </div>
       </nav>
 
+      <div style={{marginTop: '20px',marginBottom: '20px',backgroundColor: '#f5f5f5',width: '95%',
+                  borderRadius: '10px',overflow: 'hidden',}}>
+        <Grid.Container gap={2} justify="flex-start">
+          {posts.map((post, index) => (
+            <Grid xs={6} sm={3} key={index}>
+              <Card isPressable>
+                <Card.Body css={{ p: 0 }}>
+                </Card.Body>
+                <Card.Footer css={{ justifyItems: "flex-start" }}>
+                  <Row wrap="wrap" justify="space-between" align="center">
+                    <div key={post._id}>
+                    <Link href= {`/userpage/post/${post._id}`} style={{textDecoration: 'none'}}>
+                    <Text b>{post.name}</Text>
+                    </Link>
+                    </div>                    
+                  </Row>
+                </Card.Footer>
+              </Card>
+            </Grid>
+          ))}
+        </Grid.Container>
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '20px' }}>
+          <Pagination rounded total={10} initialPage={1} />
+        </div>
+      </div>
       <div style={{ backgroundColor: '#f2f2f2', padding: '20px', float: 'left', width: '20%', height: '1000px' }} className="container">
         <h3 style={{ marginLeft: '20px' }}>Recipe Generator</h3>
         <div>
