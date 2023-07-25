@@ -15,6 +15,7 @@ const UserprofileMR = () => {
   const [phone, setPhone] = useState('');
   const router = useRouter();
   const [posts, setPosts] = useState([]);
+  const [recycles, setRecycles] = useState([]);
 
 
 
@@ -34,6 +35,7 @@ const UserprofileMR = () => {
         setName(data.name);
         setEmail(data.email);
         setPhone(data.phone);
+
         const responsepost = await fetch(`/api/post/recipe`, {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -41,6 +43,14 @@ const UserprofileMR = () => {
         });
         const postData = await responsepost.json();
         setPosts(postData);
+
+        const responserecycle = await fetch(`/api/post/recycle`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const repostData = await responserecycle.json();
+        setRecycles(repostData)
       } catch (error) {
         console.error(error);
       }
@@ -58,6 +68,14 @@ const UserprofileMR = () => {
     origin: '',
     taste: '',
     category: '',
+    instruction: '',
+  });
+
+  const [recycleData, setRecycleData] = useState({
+    name: '',
+    description: '',
+    prepTime: '',
+    recycletype: '',
     instruction: '',
   });
 
@@ -86,6 +104,11 @@ const UserprofileMR = () => {
     setShowForm(true);
   };
 
+  const handleRecycleFormClose = () => {
+    setShowRecycleForm(false);
+    setShowForm(true);
+  };
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -101,8 +124,19 @@ const UserprofileMR = () => {
       ...prevData,
       [name]: value,
     }));
+  };
 
-
+  const handleChangeRecycle = (e) => {
+    const { name, value } = e.target;
+    if (name === 'prepTime') {
+        if (value < 0) {
+          return;
+        }
+      }
+      setRecycleData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
   };
 
 
@@ -137,6 +171,41 @@ const handleSubmitRecipe = async (e) => {
     });
 
     handleRecipeFormClose();
+
+    router.reload(); // reload to show new post
+
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const handleSubmitRecycle = async (e) => {
+  e.preventDefault();
+
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch('/api/post/recycle', { // replace with your actual endpoint
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(recycleData)
+    });
+
+    if (!response.ok) {
+      throw new Error('Error in submitting recycle post');
+    }
+
+    setRecycleData({
+      name: '',
+      description: '',
+      prepTime: '',
+      recycletype: '',
+      instruction: '',
+    });
+
+    handleRecycleFormClose();
 
     router.reload(); // reload to show new post
 
@@ -196,8 +265,27 @@ const handleSubmitRecipe = async (e) => {
                 <Card.Footer css={{ justifyItems: "flex-start" }}>
                   <Row wrap="wrap" justify="space-between" align="center">
                     <div key={post._id}>
-                        <Link href= {`/userpage/post/${post._id}`} style={{textDecoration: 'none'}}>
+                        <Link href= {`/userpage/recipe/${post._id}`} style={{textDecoration: 'none'}}>
                         <Text b>{post.name}</Text>
+                        </Link>
+                    </div>                    
+                  </Row>
+                </Card.Footer>
+              </Card>
+            </Grid>
+          ))}
+        </Grid.Container>
+        <Grid.Container gap={2} justify="flex-start">
+          {recycles.map((recycle, index) => (
+            <Grid xs={6} sm={3} key={index}>
+              <Card isPressable>
+                <Card.Body css={{ p: 0 }}>
+                </Card.Body>
+                <Card.Footer css={{ justifyItems: "flex-start" }}>
+                  <Row wrap="wrap" justify="space-between" align="center">
+                    <div key={recycle._id}>
+                        <Link href= {`/userpage/recycle/${recycle._id}`} style={{textDecoration: 'none'}}>
+                        <Text b>{recycle.name}</Text>
                         </Link>
                     </div>                    
                   </Row>
@@ -211,7 +299,6 @@ const handleSubmitRecipe = async (e) => {
           <Pagination rounded total={10} initialPage={1} />
         </div>
       </div>
-
       <Modal show={showForm} onHide={handleFormClose} centered>
         <Modal.Header closeButton>
           <Modal.Title>Desired Options</Modal.Title>
@@ -302,9 +389,6 @@ const handleSubmitRecipe = async (e) => {
               <Form.Label>Instruction</Form.Label>
               <Form.Control as="textarea" name="instruction" id = "instruction" value={recipeData.instruction} onChange={handleChange} />
             </Form.Group>
-
-
-            
           </Form>
           
         </Modal.Body>
@@ -313,6 +397,55 @@ const handleSubmitRecipe = async (e) => {
             Back
           </Button>
           <Button variant="primary" onClick={handleSubmitRecipe}>Save</Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showRecycleForm} onHide={handleRecycleFormClose} centered>
+      <Modal.Header closeButton>
+          <Modal.Title>Recycle Form</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group>
+              <Form.Label>Name</Form.Label>
+              <Form.Control type="text" name="name" id ="name" value={recycleData.name} onChange={handleChangeRecycle} />
+            </Form.Group>
+
+            <Form.Group>
+              <Form.Label>Description</Form.Label>
+              <Form.Control as="textarea" name="description" id = "description" value={recycleData.description} onChange={handleChangeRecycle} />
+            </Form.Group>
+
+            <Col>
+                <Form.Group>
+                  <Form.Label>Prep Time</Form.Label>
+                  <Form.Control type="number" name="prepTime" id = "prepTime" value={recycleData.prepTime} onChange={handleChangeRecycle} />
+                </Form.Group>
+              </Col>
+
+            
+
+            <Form.Group>
+              <Form.Label>Category</Form.Label>
+              <Form.Control as="select" name="recycletype" id = "recycletype" value={recycleData.recycletype} onChange={handleChangeRecycle}>
+              <option value="">Select Category</option>
+              <option value="Lee">Plant</option>
+              <option value="Myanmar">Animal </option>
+              <option value="China">Hht </option>
+              </Form.Control>
+            </Form.Group>
+
+            <Form.Group>
+              <Form.Label>Instruction</Form.Label>
+              <Form.Control as="textarea" name="instruction" id = "instruction" value={recycleData.instruction} onChange={handleChangeRecycle} />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleRecycleFormClose}>
+            Back
+          </Button>
+          <Button variant="primary" onClick={handleSubmitRecycle}>Save</Button>
         </Modal.Footer>
       </Modal>
     </>
