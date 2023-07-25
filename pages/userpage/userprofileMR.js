@@ -16,7 +16,8 @@ const UserprofileMR = () => {
   const router = useRouter();
   const [posts, setPosts] = useState([]);
   const [recycles, setRecycles] = useState([]);
-
+  const [updaterecipe, setUpdateRecipe] = useState();
+  const [updaterecycle, setUpdateRecycle] = useState();
 
 
   useEffect(() => {
@@ -51,6 +52,7 @@ const UserprofileMR = () => {
         });
         const repostData = await responserecycle.json();
         setRecycles(repostData)
+
       } catch (error) {
         console.error(error);
       }
@@ -139,80 +141,196 @@ const UserprofileMR = () => {
       }));
   };
 
-
-const handleSubmitRecipe = async (e) => {
-  e.preventDefault();
-
-  try {
+  const handleDeleteRecipe = async (recipeId) => {
     const token = localStorage.getItem('token');
-    const response = await fetch('/api/post/recipe', { // replace with your actual endpoint
-      method: 'POST',
+    const responsedrecipe = await fetch(`/api/post/deleteRecipe/${recipeId}`, {
+        method: 'DELETE',
+        headers: {
+            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+        },
+    });
+
+    if (responsedrecipe.ok) {
+        // Filter out the deleted recipe
+        const updatedRecipes = posts.filter(post => post._id !== recipeId);
+        // Update the state
+        setPosts(updatedRecipes);
+    } else {
+        // Handle the error
+        console.error(`Failed to delete recipe with ID ${recipeId}`);
+    }
+};
+  const handleUpdateRecipe = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
+    const responseurecipe = await fetch(`/api/post/updateRecipe/${updaterecipe}`, {
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(recipeData)
     });
-
-    if (!response.ok) {
-      throw new Error('Error in submitting recipe');
+    
+    if (responseurecipe.ok) {
+      setUpdateRecipe(null);  // Clear the currently editing ID
+      router.reload();  // Reload to show updated post
+    } else {
+      console.error('Error updating recipe');
     }
+  };
 
+  const handleEditRecipe = (post) => {
     setRecipeData({
-      name: '',
-      description: '',
-      prepTime: '',
-      servings: '',
-      cookTime: '',
-      origin: '',
-      taste: '',
-      category: '',
-      instruction: '',
+      name: post.name,
+      description: post.description,
+      prepTime: post.prepTime,
+      servings: post.servings,
+      cookTime: post.cookTime,
+      origin: post.origin,
+      taste: post.taste,
+      category: post.category,
+      instruction: post.instruction,
+    });
+    setUpdateRecipe(post._id);
+    setShowRecipeForm(true);
+  };
+
+  const handleDeleteRecycle = async (recycleId) => {
+    const token = localStorage.getItem('token');
+    const responsedrecycle = await fetch(`/api/post/deleteRecycle/${recycleId}`, {
+        method: 'DELETE',
+        headers: {
+            Authorization: `Bearer ${token}`, 
+        },
     });
 
-    handleRecipeFormClose();
-
-    router.reload(); // reload to show new post
-
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-const handleSubmitRecycle = async (e) => {
-  e.preventDefault();
-
-  try {
+    if (responsedrecycle.ok) {
+        // Filter out the deleted recycle
+        const updatedRecycles = recycles.filter(recycle => recycle._id !== recycleId);
+        // Update the state
+        setRecycles(updatedRecycles);
+    } else {
+        // Handle the error
+        console.error(`Failed to delete recipe with ID ${recycleId}`);
+    }
+  };
+  const handleUpdateRecycle = async (e) => {
+    e.preventDefault();
     const token = localStorage.getItem('token');
-    const response = await fetch('/api/post/recycle', { // replace with your actual endpoint
-      method: 'POST',
+    const responseurecycle = await fetch(`/api/post/updateRecycle/${updaterecycle}`, {
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(recycleData)
     });
-
-    if (!response.ok) {
-      throw new Error('Error in submitting recycle post');
+    
+    if (responseurecycle.ok) {
+      setUpdateRecycle(null);  // Clear the currently editing ID
+      router.reload();  // Reload to show updated recycle
+    } else {
+      console.error('Error updating recycle post');
     }
+  };
 
+  const handleEditRecycle = (recycle) => {
     setRecycleData({
-      name: '',
-      description: '',
-      prepTime: '',
-      recycletype: '',
-      instruction: '',
+      name: recycle.name,
+      description: recycle.description,
+      prepTime: recycle.prepTime,
+      recycletype: recycle.recycletype,
+      instruction: recycle.instruction,
     });
+    setUpdateRecycle(recycle._id);
+    setShowRecycleForm(true);
+  };
 
-    handleRecycleFormClose();
 
-    router.reload(); // reload to show new post
 
-  } catch (error) {
-    console.error(error);
+const handleSubmitRecipe = async (e) => {
+  e.preventDefault();
+
+  if (updaterecipe){
+    handleUpdateRecipe(e);
+  } else {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/post/recipe', { // replace with your actual endpoint
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(recipeData)
+      });
+  
+      if (!response.ok) {
+        throw new Error('Error in submitting recipe');
+      }
+  
+      setRecipeData({
+        name: '',
+        description: '',
+        prepTime: '',
+        servings: '',
+        cookTime: '',
+        origin: '',
+        taste: '',
+        category: '',
+        instruction: '',
+      });
+  
+      handleRecipeFormClose();
+  
+      router.reload(); // reload to show new post
+  
+    } catch (error) {
+      console.error(error);
+    }
   }
 };
+
+const handleSubmitRecycle = async (e) => {
+  e.preventDefault();
+
+  if (updaterecycle){
+    handleUpdateRecycle(e);
+  } else {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/post/recycle', { // replace with your actual endpoint
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(recycleData)
+      });
+  
+      if (!response.ok) {
+        throw new Error('Error in submitting recycle post');
+      }
+  
+      setRecycleData({
+        name: '',
+        description: '',
+        prepTime: '',
+        recycletype: '',
+        instruction: '',
+      });
+  
+      handleRecycleFormClose();
+  
+      router.reload(); // reload to show new post
+  
+    } catch (error) {
+      console.error(error);
+    }
+  }
+};
+
 
   return (
     <>
@@ -268,7 +386,10 @@ const handleSubmitRecycle = async (e) => {
                         <Link href= {`/userpage/recipe/${post._id}`} style={{textDecoration: 'none'}}>
                         <Text b>{post.name}</Text>
                         </Link>
-                    </div>                    
+                    </div>       
+                    <button onClick={() => {if (window.confirm('Are you sure you want to delete this recipe?')) 
+                    {handleDeleteRecipe(post._id)}}}>Delete</button>      
+                    <button onClick={() => handleEditRecipe(post)}>Edit</button>
                   </Row>
                 </Card.Footer>
               </Card>
@@ -287,7 +408,10 @@ const handleSubmitRecycle = async (e) => {
                         <Link href= {`/userpage/recycle/${recycle._id}`} style={{textDecoration: 'none'}}>
                         <Text b>{recycle.name}</Text>
                         </Link>
-                    </div>                    
+                    </div>  
+                    <button onClick={() => {if (window.confirm('Are you sure you want to delete this recipe?')) 
+                    {handleDeleteRecycle(recycle._id)}}}>Delete</button>    
+                    <button onClick={() => handleEditRecycle(recycle)}>Edit</button>
                   </Row>
                 </Card.Footer>
               </Card>

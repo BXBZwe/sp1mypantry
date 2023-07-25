@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Link from 'next/link';
 
 const Signup = () => {
   const [name, setName] = useState('');
@@ -18,7 +20,7 @@ const Signup = () => {
 
       if (response.ok) {
         // Registration successful, redirect to home page
-        window.location.href = '/userpage/index';
+        window.location.href = '/';
       } else {
         // Handle registration error
         const { error } = await response.json();
@@ -29,16 +31,61 @@ const Signup = () => {
     }
   };
 
+  const containerStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100vh',
+    backgroundImage: "url(https://picsum.photos/id/42/600/400)",
+    backgroundSize: 'cover',
+  };
+
+  const loginBoxStyle = {
+    
+    backgroundColor: '#f0f0f0',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: '45px',
+    borderRadius: '16px',
+  };
+
+  const buttonStyle = {
+    backgroundColor: '#BBE4BA',
+    marginBottom: '0.5rem',
+    width: '55%',
+    margin: '5px 22% auto',
+  };
+
   return (
-    <div>
-      <h2>Sign Up</h2>
-      <form onSubmit={handleSignup}>
-        <input type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} required />
-        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <input type="tel" placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} required />
-        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        <button type="submit">Sign Up</button>
-      </form>
+    <div style={containerStyle}>
+      <div style={loginBoxStyle}>
+        <h1 style={{textAlign: 'center', marginBottom: '25px', fontFamily: 'cursive'}}>MyPantry</h1>
+        <form onSubmit={handleSignup}>
+        <div className="form-group">
+            <label>Name</label>
+            <input type="text" className="form-control" placeholder="Enter text"value={name} onChange={(e) => setName(e.target.value)} required/>
+          </div>
+          <div className="form-group">
+            <label>Email address</label>
+            <input type="email" className="form-control" placeholder="Enter email"value={email} onChange={(e) => setEmail(e.target.value)} required/>
+          </div>
+          <div className="form-group">
+            <label>Phone Number</label>
+            <input type="tel" className="form-control" placeholder="Enter Phone Number"value={phone} onChange={(e) => setPhone(e.target.value)} required/>
+          </div>
+          <div  className="form-group">
+            <label>Password</label>
+            <input type="password" className="form-control" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required/>
+          </div>
+
+          <button type="submit" className="btn my-auto" style={buttonStyle}>Sign Up</button>
+          <Link href="../">
+          <button className="btn" style={buttonStyle}>
+            Cancel
+          </button></Link>
+        </form>
+      </div>
     </div>
   );
 };
