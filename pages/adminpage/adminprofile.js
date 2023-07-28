@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Link from 'next/link';
 
-const adminUserprofile = () => {
+const AdminUserprofile = () => {
     const [name, setName]= useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
@@ -55,4 +55,4 @@ const adminUserprofile = () => {
         </>
     );
 };
-export default adminUserprofile;
+export default AdminUserprofile;

@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
-const itemprofile = () => {
+const Itemprofile = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const router = useRouter();
     const {id} = router.query;
@@ -120,4 +120,4 @@ const itemprofile = () => {
   );
 };
 
-export default itemprofile;
+export default Itemprofile;
