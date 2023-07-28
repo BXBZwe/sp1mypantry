@@ -26,6 +26,14 @@ const UsersSchema = new Schema({
     type: Boolean,
     default: false,
   },
+  recipewishlist: [{
+    type: Schema.Types.ObjectId,
+    ref:'posts'
+  }],
+  recyclewishlist: [{
+    type: Schema.Types.ObjectId,
+    ref:'recycles'
+  }],
 });
 
 const User = models?.Usercollection || model('Usercollection', UsersSchema);

@@ -375,27 +375,28 @@ const handleSubmitRecycle = async (e) => {
       <div style={{marginTop: '20px',marginBottom: '20px',backgroundColor: '#f5f5f5',width: '95%',
                   borderRadius: '10px',overflow: 'hidden',}}>
         <Grid.Container gap={2} justify="flex-start">
-          {posts.map((post, index) => (
+          {recycles.map((recycle, index) => (
             <Grid xs={6} sm={3} key={index}>
               <Card isPressable>
                 <Card.Body css={{ p: 0 }}>
                 </Card.Body>
                 <Card.Footer css={{ justifyItems: "flex-start" }}>
                   <Row wrap="wrap" justify="space-between" align="center">
-                    <div key={post._id}>
-                        <Link href= {`/userpage/recipe/${post._id}`} style={{textDecoration: 'none'}}>
-                        <Text b>{post.name}</Text>
+                    <div key={recycle._id}>
+                        <Link href= {`/userpage/recycle/${recycle._id}`} style={{textDecoration: 'none'}}>
+                        <Text b>{recycle.name}</Text>
                         </Link>
-                    </div>       
+                    </div>  
                     <button onClick={() => {if (window.confirm('Are you sure you want to delete this recipe?')) 
-                    {handleDeleteRecipe(post._id)}}}>Delete</button>      
-                    <button onClick={() => handleEditRecipe(post)}>Edit</button>
+                    {handleDeleteRecycle(recycle._id)}}}>Delete</button>    
+                    <button onClick={() => handleEditRecycle(recycle)}>Edit</button>
                   </Row>
                 </Card.Footer>
               </Card>
             </Grid>
           ))}
         </Grid.Container>
+
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '20px' }}>
           <Pagination rounded total={10} initialPage={1} />
         </div>

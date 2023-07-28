@@ -18,7 +18,7 @@ export default async function handler(req, res) {
       }
 
       const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY);
-      return res.status(200).json({ message: 'Login successful', token, isAdmin: user.isAdmin });
+      return res.status(200).json({ message: 'Login successful', token, userId: user._id, isAdmin: user.isAdmin });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ error: 'Internal server error' });

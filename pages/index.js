@@ -22,6 +22,8 @@ const LoginPage = () => {
       const data = await response.json();
       if (response.ok) {
         localStorage.setItem('token', data.token);
+        localStorage.setItem('userId', data.userId); 
+        console.log("UserID: ", data.userId);
         if (data.isAdmin){
           router.push('adminpage/adminhome');
         } else {

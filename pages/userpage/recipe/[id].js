@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 const itemprofile = () => {
+    const [errorMessage, setErrorMessage] = useState('');
     const router = useRouter();
     const {id} = router.query;
     const [post, setPost] = useState();
@@ -28,6 +29,33 @@ const itemprofile = () => {
       return <div>Loading...</div>;
     }
 
+    const addrecipewishlist = async () => {
+      try {
+        const token = localStorage.getItem('token'); 
+        const userId = localStorage.getItem('userId'); 
+        console.log("userID: ", userId);
+        const response = await fetch('/api/wishlist/addrecipewishlist', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+          },
+          body: JSON.stringify({ userId: userId, postId: id }), // replace user.id and post.id with actual values
+        });
+        if(!response.ok){
+          const errorMessage = await response.text();
+          setErrorMessage(errorMessage);
+        }
+        else{
+          setErrorMessage('');
+        }
+
+        console.log('Recipe Response: ', response);
+      } catch (error) {
+        console.error('Error:', error);
+        console.log('An error occurred while adding the post to the wishlist.');
+      }
+    };
+  
   return (
     <>
       <nav style={{ padding: '30px', height: '50px', width: '100%', backgroundColor: '#47974F', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -67,6 +95,8 @@ const itemprofile = () => {
         </div>
         <div style={{ width: '80%',  height: '100%', backgroundColor: 'white', padding: '10px' }}>
           <h2 style={{fontFamily: 'Inter, sans-serif', font: 'bold' }}>{post.name}</h2>
+          <button onClick={addrecipewishlist}>Add to Wishlist</button>
+          <p>{errorMessage}</p>
           <h5 style={{fontFamily: 'Inter, sans-serif'}}>{post.description}</h5>
 
           <table style={{ width: '100%', marginTop: '20px', borderCollapse: 'collapse' }}>
