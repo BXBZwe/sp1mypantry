@@ -1,6 +1,8 @@
 import React from 'react';
 import { Tab, Tabs, Table, Button, Modal } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Link from 'next/link';
+
 
 function admin() {
   const handleTabSelect = (key) => {
@@ -9,10 +11,17 @@ function admin() {
 
   return (
       <div>
-        <div style={{padding: '20px', backgroundColor: '#f2f2f2'}} className='navbar ' >
-            <h2 style={{ textAlign: 'left', fontFamily: 'cursive'}}>MyPantry </h2>
-            <button style={{ float: 'right', fontFamily: 'cursive'}}>Profile</button>
-        </div>
+              <nav style={{ padding: '30px', height: '50px', width: '100%', backgroundColor: '#47974F', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <h2 style={{ color: 'white', fontFamily: 'cursive' }}>MyPantry</h2>
+                <div style={{ marginRight: '10px' }}>
+                    <Link href="/adminpage/adminhome" style={{ margin: '0 10px', textDecoration: 'none', color: 'black', cursor: 'pointer' }} passHref>
+                        Home
+                    </Link>
+                    <Link href="/adminpage/adminprofile" style={{ margin: '0 10px', textDecoration: 'none', color: 'black', cursor: 'pointer' }}>
+                     Profile
+                    </Link>
+                </div>
+            </nav>
       
 
       <div className="content">
