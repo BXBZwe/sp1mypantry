@@ -8,6 +8,34 @@ const Itemprofile = () => {
     const router = useRouter();
     const {id} = router.query;
     const [post, setPost] = useState();
+    const [scaledServings, setScaledServings] = useState(1);
+    const [scaleingredients, setScaledIngredients] = useState([]);
+    const [showScaleModal, setShowScaleModal] = useState(false);
+    const scalingfactors = {
+      MEAT: 1,
+      VEGETABLES: 1,
+      SPICES_HERBS: 0.5,
+      LIQUIDS: 0.75,
+      GRAINS_STARCHES: 1,
+      DAIRY: 0.75,
+      OILS: 0.5,
+      SUGARS_SWEETENERS: 0.5,
+      FRUITS: 1,
+      NUTS: 1,
+      SAUCES: 0.75,
+      BAKING_INGREDIENTS: 0.5,
+      ALCOHOL: 0.5,
+      OTHERS: 1,
+    };
+
+    const scaledIngredients = (ingredients, servings, originalServings) => {
+      return ingredients.map((ingredient) => ({
+        ...ingredient,
+        quantity: (
+          ingredient.quantity * servings * (scalingfactors[ingredient.category] || 1) / originalServings
+        ).toFixed(2),
+      }));
+    };
 
     useEffect(() => {
       const fetchPost = async () => {
@@ -24,7 +52,19 @@ const Itemprofile = () => {
         fetchPost();
       }
     }, [id]);
-  
+
+    useEffect(() => {
+      if (post) {
+        setScaledIngredients(scaledIngredients(post.ingredients, scaledServings, post.servings));
+      }
+    }, [post, scaledServings]);
+
+    const handleScaleIngredients = () => {
+      scaledIngredients(post.ingredients, scaledServings, post.servings);
+      setShowScaleModal(true);
+    };
+    
+
     if (!post) {
       return <div>Loading...</div>;
     }
@@ -80,18 +120,8 @@ const Itemprofile = () => {
         </div>
       </nav>
 
-      <div style={{
-          height: '653px',
-          width: '100%',
-          overflow: 'hidden',
-          display: 'flex', 
-          justifyContent: 'space-between'
-        }}>
+      <div style={{height: '653px', width: '100%', overflow: 'hidden', display: 'flex', justifyContent: 'space-between'}}>
         <div style={{ width: '20%', height: '100%', backgroundColor: '#d9d9d9', padding: '10px' }}>
-
-       
-
-
         </div>
         <div style={{ width: '80%',  height: '100%', backgroundColor: 'white', padding: '10px' }}>
           <h2 style={{fontFamily: 'Inter, sans-serif', font: 'bold' }}>{post.name}</h2>
@@ -129,10 +159,56 @@ const Itemprofile = () => {
               </tr>
             </tbody>
           </table>
+          <h5 style={{fontFamily: 'Inter, sans-serif'}}>Ingredients:</h5>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Quantity</th>
+                <th>Unit</th>
+              </tr>
+            </thead>
+            <tbody>
+              {post.ingredients && post.ingredients.map((ingredient, index) => (
+                <tr key={index}>
+                  <td>{ingredient.name}</td>
+                  <td>{ingredient.quantity}</td>
+                  <td>{ingredient.unit}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <input type="number" value={scaledServings} onChange={(e) => setScaledServings(e.target.value)}
+          placeholder="Number of servings"/>
+          <button onClick={handleScaleIngredients}>Scale Ingredients</button>
+          <h5 style={{fontFamily: 'Inter, sans-serif'}}>Instruction:</h5>
           <h5 style={{fontFamily: 'Inter, sans-serif'}}>{post.instruction}</h5>
         </div>
       </div>
-      
+      {showScaleModal && (
+        <div style={{position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white', padding: '20px', zIndex: 1000,}}>
+          <button onClick={() => setShowScaleModal(false)}>Close</button>
+          <h5>Scaled Ingredients:</h5>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Quantity</th>
+                <th>Unit</th>
+              </tr>
+            </thead>
+            <tbody>
+              {scaleingredients.map((ingredient, index) => (
+                <tr key={index}>
+                  <td>{ingredient.name}</td>
+                  <td>{ingredient.quantity}</td>
+                  <td>{ingredient.unit}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </>
   );
 };

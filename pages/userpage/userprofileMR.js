@@ -18,6 +18,7 @@ const UserprofileMR = () => {
   const [recycles, setRecycles] = useState([]);
   const [updaterecipe, setUpdateRecipe] = useState();
   const [updaterecycle, setUpdateRecycle] = useState();
+  const [ingredients, setIngredients] = useState([]);
 
 
   useEffect(() => {
@@ -70,6 +71,7 @@ const UserprofileMR = () => {
     origin: '',
     taste: '',
     category: '',
+    ingredients: [],
     instruction: '',
   });
 
@@ -190,6 +192,7 @@ const UserprofileMR = () => {
       origin: post.origin,
       taste: post.taste,
       category: post.category,
+      ingredients: post.ingredients,
       instruction: post.instruction,
     });
     setUpdateRecipe(post._id);
@@ -251,7 +254,8 @@ const UserprofileMR = () => {
 
 const handleSubmitRecipe = async (e) => {
   e.preventDefault();
-
+  recipeData.ingredients = ingredients;
+  console.log("Submitting recipe data:", recipeData);
   if (updaterecipe){
     handleUpdateRecipe(e);
   } else {
@@ -279,6 +283,7 @@ const handleSubmitRecipe = async (e) => {
         origin: '',
         taste: '',
         category: '',
+        ingredients: [],
         instruction: '',
       });
   
@@ -329,6 +334,16 @@ const handleSubmitRecycle = async (e) => {
       console.error(error);
     }
   }
+};
+
+const handleAddIngredient = () => {
+  setIngredients([...ingredients, {name: '', quantity: 0, unit: '', category: ''}]);
+};
+
+const handleIngredientChange = (index, field, value) => {
+  const newIngredients = [...ingredients];
+  newIngredients[index][field] = value;
+  setIngredients(newIngredients);
 };
 
 
@@ -485,6 +500,44 @@ const handleSubmitRecycle = async (e) => {
                 <option value="Salad">Salad </option>
               </Form.Control>
             </Form.Group>
+            <Form.Group>
+              <Form.Label>Ingredients</Form.Label>
+              {ingredients.map((ingredient, index) => (
+              <Row key={index}>
+                <Col>
+                  <Form.Control type="text" placeholder="Name" value={ingredient.name} onChange={(e) => handleIngredientChange(index, 'name', e.target.value)} />
+                </Col>
+                <Col>
+                  <Form.Control type="number" placeholder="Quantity" value={ingredient.quantity} onChange={(e) => handleIngredientChange(index, 'quantity', e.target.value)} />
+                </Col>
+                <Col>
+                  <Form.Control type="text" placeholder="Unit" value={ingredient.unit} onChange={(e) => handleIngredientChange(index, 'unit', e.target.value)} />
+                </Col>
+                <Col>
+                  <Form.Control as="select" value={ingredient.category} onChange={(e) => handleIngredientChange(index, 'category', e.target.value)}>
+                    <option value=" ">Select Catagory</option>
+                    <option value="MEAT">Meat</option>
+                    <option value="VEGETABLES">Vegetables</option>
+                    <option value="SPICES_HERBS">SPICES HERBS</option>
+                    <option value="LIQUIDS">LIQUIDS</option>
+                    <option value="GRAINS_STARCHES">GRAINS STARCHES</option>
+                    <option value="DAIRY">DAIRY</option>
+                    <option value="OILS">OILS</option>
+                    <option value="SUGARS_SWEETENERS">SUGARS SWEETENERS</option>
+                    <option value="FRUITS">FRUITS</option>
+                    <option value="NUTS">NUTS</option>
+                    <option value="SAUCES">SAUCES</option>
+                    <option value="BAKING_INGREDIENTS">BAKING INGREDIENTS</option>
+                    <option value="ALCOHOL">ALCOHOL</option>
+                    <option value="OTHERS">OTHERS</option>
+
+                  </Form.Control>
+                </Col>
+              </Row>
+              ))}
+              <Button onClick={handleAddIngredient}>Add Ingredient</Button>
+            </Form.Group>
+
 
             <Form.Group >
               <Form.Label>Instruction</Form.Label>
