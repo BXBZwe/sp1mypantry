@@ -1,14 +1,51 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tab, Tabs, Table, Button, Modal } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Link from 'next/link';
 
 
-function admin() {
-  const handleTabSelect = (key) => {
-    
-  };
+const admin = () => {
+  const [users, setUsers] = useState([]);
+  const [posts, setPosts] = useState([]);
+  const [recycles, setRecycles] = useState([]);
 
+  useEffect(() => {
+    const fetchAllusers = async () => {
+      try {
+        const response = await fetch('/api/user/getuser');
+        const data = await response.json();
+        setUsers(data);
+      } catch(error) {
+        console.error(error);
+      }
+    };
+    const fetchAllPosts = async () => {
+      try {
+        const response = await fetch('/api/post/homeposts');
+        const data = await response.json();
+        setPosts(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    const fetchAllRecycles = async () => {
+      try {
+        const response = await fetch('/api/post/recycleposts');
+        const data = await response.json();
+        setRecycles(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchAllusers();
+    fetchAllPosts();
+    fetchAllRecycles();
+  }, []);
+
+  const handleTabSelect = (key) => {
+
+  };
   return (
       <div>
               <nav style={{ padding: '30px', height: '50px', width: '100%', backgroundColor: '#47974F', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -34,34 +71,40 @@ function admin() {
                     <input style={{width: '50%'}} type="search" placeholder="Search" />
                     <button style={{padding: '3px', marginBottom: '5px', backgroundColor: 'green', color: 'white'}} className="btn btn-outline-success " type="submit">GO</button>
               </div>
-              <Table striped bordered>
-                <thead>
-                  <tr>
-                    <th className="text-center">User ID</th>
-                    <th className="text-center">Username</th>
-                    <th></th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className="text-center">1</td>
-                    <td className="text-center">Ahmad Yasi Faizi</td>
-                    <td className="text-center">
-                      <Button variant="danger">Ban</Button>
-                    </td>
-                    <td className="text-center">
-                      <Button variant="secondary">Unban</Button>
-                    </td>
-                  </tr>
-                </tbody>
-              </Table>
+                <Table striped bordered>
+                  <thead>
+                    <tr>
+                      <th className="text-center">Username</th>
+                      <th className="text-center">Email</th>
+                      <th className="text-center">Phone Number</th>
+                      <th></th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  {users.map((user, index) => (
+                    <tbody>
+                      <tr>
+                        <td className="text-center">{user.name}</td>
+                        <td className="text-center">{user.email}</td>
+                        <td className="text-center">{user.phone}</td>
+                        <td className="text-center">
+                          <Button variant="danger">Ban</Button>
+                        </td>
+                        <td className="text-center">
+                          <Button variant="secondary">Unban</Button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  ))}
+                  
+                </Table>
+
             </div>
           </Tab>
 
-          <Tab eventKey="item-list" title="Posted Item List">
+          <Tab eventKey="item-list" title="Recipe Item List">
             <div className="container">
-              <h3 className="page-title">Posted Item List</h3>
+              <h3 className="page-title">Recipe Item List</h3>
               <div style={{ textAlign: 'center' }}>
                     <input style={{width: '50%'}} type="search" placeholder="Search" />
                     <button style={{padding: '3px', marginBottom: '5px', backgroundColor: 'green', color: 'white'}} className="btn btn-outline-success " type="submit">GO</button>
@@ -69,27 +112,58 @@ function admin() {
               <Table striped bordered>
                 <thead>
                   <tr>
-                    <th className="text-center">Item ID</th>
                     <th className="text-center">Item Name</th>
-                    <th className="text-center">Type</th>
+                    <th className="text-center">Meal Type</th>
+                    <th className="text-center">Origin</th>
+                    <th className="text-center">Uploader ID</th>
                     <th></th>
                   </tr>
                 </thead>
-                <tbody>
+                {posts.map((post, index) => (
+                  <tbody>
                   <tr>
-                    <td className="text-center">1</td>
-                    <td className="text-center">Egg Fried Rice</td>
-                    <td className="text-center">
-                      <select className="form-select">
-                        <option value="1">Recipe</option>
-                        <option value="2">Recycle</option>
-                      </select>
-                    </td>
+                    <td className="text-center">{post.name}</td>
+                    <td className="text-center">{post.mealtype}</td>
+                    <td className="text-center">{post.origin}</td>
+                    <td className="text-center">{post.userId}</td>
                     <td className="text-center">
                       <Button variant="primary">Delete</Button>
                     </td>
                   </tr>
                 </tbody>
+                ))}
+              </Table>
+            </div>
+          </Tab>
+
+          <Tab eventKey="Recycleitem-list" title="Recycle Item List">
+            <div className="container">
+              <h3 className="page-title">Recycle Item List</h3>
+              <div style={{ textAlign: 'center' }}>
+                    <input style={{width: '50%'}} type="search" placeholder="Search" />
+                    <button style={{padding: '3px', marginBottom: '5px', backgroundColor: 'green', color: 'white'}} className="btn btn-outline-success " type="submit">GO</button>
+              </div>
+              <Table striped bordered>
+                <thead>
+                  <tr>
+                    <th className="text-center">Item Name</th>
+                    <th className="text-center">Recycle Type</th>
+                    <th className="text-center">Uploader ID</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                {recycles.map((recycle, index) => (
+                  <tbody>
+                  <tr>
+                    <td className="text-center">{recycle.name}</td>
+                    <td className="text-center">{recycle.recycletype}</td>
+                    <td className="text-center">{recycle.userId}</td>
+                    <td className="text-center">
+                      <Button variant="primary">Delete</Button>
+                    </td>
+                  </tr>
+                </tbody>
+                ))}
               </Table>
             </div>
           </Tab>

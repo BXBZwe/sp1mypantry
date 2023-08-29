@@ -9,7 +9,6 @@ import { useRouter } from 'next/router';
 const HomePage = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [posts, setPosts] = useState([]);
-  const [post, setPost] = useState();
 
 
   const toggleDropdown = () => {

@@ -19,6 +19,11 @@ const UserprofileMR = () => {
   const [updaterecipe, setUpdateRecipe] = useState();
   const [updaterecycle, setUpdateRecycle] = useState();
   const [ingredients, setIngredients] = useState([]);
+  const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [url, setUrl] = useState(null);
+  const [imageSrc, setImageSrc] = useState('');
+
 
 
   useEffect(() => {
@@ -58,6 +63,10 @@ const UserprofileMR = () => {
         console.error(error);
       }
     };
+    const storedImageUrl = localStorage.getItem('uploadedImageUrl');
+    if (storedImageUrl) {
+      setUrl(storedImageUrl);
+    }
 
     fetchUserProfile();
   }, []);
@@ -346,6 +355,32 @@ const handleIngredientChange = (index, field, value) => {
   setIngredients(newIngredients);
 };
 
+const handleFileChange = (e) => {
+  setFile(e.target.files[0]);
+};
+
+const handleUpload = async () => {
+  if (!file) return;
+
+  setUploading(true);
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await fetch('/api/picupload', {
+    method: 'POST',
+    body: formData,
+  });
+
+  const data = await response.json();
+
+  if (data.url){
+    localStorage.setItem('uploadedImageUrl', data.url);
+    setUrl(data.url);
+  }
+  setUploading(false);
+};
+
 
   return (
     <>
@@ -370,6 +405,8 @@ const handleIngredientChange = (index, field, value) => {
       </nav>
 
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '50px' }}>
+        <input type="file" onChange={handleFileChange} />
+        <button onClick={handleUpload} disabled={uploading}>Upload</button>{url && <img src={url}/>}
         <h3 style={{ marginTop: '20px' }}>{name}</h3>
         <p>{email}</p>
         <p>{phone}</p>
