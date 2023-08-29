@@ -5,6 +5,9 @@ import Link from 'next/link';
 
 
 const Admin = () => {
+  const handleTabSelect = (key) => {
+
+  };
   const [users, setUsers] = useState([]);
   const [posts, setPosts] = useState([]);
   const [recycles, setRecycles] = useState([]);
@@ -43,9 +46,6 @@ const Admin = () => {
     FetchAllRecycles();
   }, []);
 
-  const handleTabSelect = (key) => {
-
-  };
   return (
       <div>
               <nav style={{ padding: '30px', height: '50px', width: '100%', backgroundColor: '#47974F', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -82,7 +82,7 @@ const Admin = () => {
                     </tr>
                   </thead>
                   {users.map((user, index) => (
-                    <tbody>
+                    <tbody key={user._id}>
                       <tr>
                         <td className="text-center">{user.name}</td>
                         <td className="text-center">{user.email}</td>
@@ -120,7 +120,7 @@ const Admin = () => {
                   </tr>
                 </thead>
                 {posts.map((post, index) => (
-                  <tbody>
+                  <tbody key={post._id}>
                   <tr>
                     <td className="text-center">{post.name}</td>
                     <td className="text-center">{post.mealtype}</td>
@@ -153,7 +153,7 @@ const Admin = () => {
                   </tr>
                 </thead>
                 {recycles.map((recycle, index) => (
-                  <tbody>
+                  <tbody key={recycle._id}>
                   <tr>
                     <td className="text-center">{recycle.name}</td>
                     <td className="text-center">{recycle.recycletype}</td>
