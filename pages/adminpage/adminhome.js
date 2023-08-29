@@ -4,13 +4,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Link from 'next/link';
 
 
-const admin = () => {
+const Admin = () => {
   const [users, setUsers] = useState([]);
   const [posts, setPosts] = useState([]);
   const [recycles, setRecycles] = useState([]);
 
   useEffect(() => {
-    const fetchAllusers = async () => {
+    const FetchAllusers = async () => {
       try {
         const response = await fetch('/api/user/getuser');
         const data = await response.json();
@@ -19,7 +19,7 @@ const admin = () => {
         console.error(error);
       }
     };
-    const fetchAllPosts = async () => {
+    const FetchAllPosts = async () => {
       try {
         const response = await fetch('/api/post/homeposts');
         const data = await response.json();
@@ -28,7 +28,7 @@ const admin = () => {
         console.error(error);
       }
     };
-    const fetchAllRecycles = async () => {
+    const FetchAllRecycles = async () => {
       try {
         const response = await fetch('/api/post/recycleposts');
         const data = await response.json();
@@ -38,9 +38,9 @@ const admin = () => {
       }
     };
 
-    fetchAllusers();
-    fetchAllPosts();
-    fetchAllRecycles();
+    FetchAllusers();
+    FetchAllPosts();
+    FetchAllRecycles();
   }, []);
 
   const handleTabSelect = (key) => {
@@ -231,4 +231,4 @@ const admin = () => {
   );
 }
 
-export default admin;
+export default Admin;
