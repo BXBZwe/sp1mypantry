@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+/*import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
 
@@ -66,4 +66,4 @@ const MealPlanDetail = () => {
     );
 }
 
-export default MealPlanDetail;
+export default MealPlanDetail; */

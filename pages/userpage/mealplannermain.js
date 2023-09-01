@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 const MealPlanner = () => {
   const [wishlist, setWishlist] = useState([]);
-  const [mealPlans, setMealPlans] = useState();
+  const [mealPlans, setMealPlans] = useState({});
   const [savedMealPlans, setSavedMealPlans] = useState([]);
   const [isCreating, setIsCreating] = useState(false);
   const [startDate, setStartDate] = useState(null);
@@ -37,7 +37,7 @@ const MealPlanner = () => {
     })
     .then(response => response.json())
     .then(data => {
-        setMealPlans(data);
+        setSavedMealPlans(data);
     });
 }
 
@@ -89,6 +89,7 @@ const saveMealPlans = async () => {
     .then(response => {
       if (response.ok) {
         console.log("Meal plans saved successfully");
+        setIsCreating(false);  // Close the creation form
         return fetchmealplans();
       } else {
         console.error("Error saving meal plans:", response.statusText);
@@ -145,12 +146,62 @@ const displaySavedPlans = () => (
     <div>
         {savedMealPlans.map(plan => (
             <div key={plan.weekIdentifier}>
-                <Link href={`/mealplan/${plan.weekIdentifier}`}>{plan.weekIdentifier}</Link>
+                <h3>{plan.weekIdentifier}</h3>
+                <table style={{ width: '100%', borderCollapse: 'collapse', margin: '20px 0' }}>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Breakfast</th>
+                            <th>Lunch</th>
+                            <th>Dinner</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {Object.keys(plan.plans).map(dateString => {
+                            const dayPlan = plan.plans[dateString];
+                            return (
+                                <tr key={dateString}>
+                                    <td>{dateString}</td>
+                                    <td>{dayPlan.breakfast ? wishlist.find(recipe => recipe._id === dayPlan.breakfast)?.name : '-'}</td>
+                                    <td>{dayPlan.lunch ? wishlist.find(recipe => recipe._id === dayPlan.lunch)?.name : '-'}</td>
+                                    <td>{dayPlan.dinner ? wishlist.find(recipe => recipe._id === dayPlan.dinner)?.name : '-'}</td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+                <button onClick={() => deleteMealPlan(plan._id)}>Delete</button>
             </div>
         ))}
         <button onClick={() => setIsCreating(true)}>Create New Meal Plan</button>
     </div>
 );
+
+
+const deleteMealPlan = async (planId) => {
+    const token = localStorage.getItem('token');
+
+    fetch(`/api/deletemealplan/${planId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log("Meal plan deleted successfully");
+            fetchmealplans(); // refresh the list after deletion
+        } else {
+            console.error("Error deleting meal plan:", response.statusText);
+        }
+    })
+    .catch(error => {
+        console.error("Error deleting meal plan:", error);
+    });
+}
+
+
 
   return (
     <>
@@ -175,11 +226,6 @@ const displaySavedPlans = () => (
     {isCreating ? displayCreationForm() : displaySavedPlans()}
     <div>
         <h2>Saved Meal Plans</h2>
-        {Object.keys(mealPlans).map(date => (
-            <Link key={date} href={`/mealplandetail/${date}`}>
-                <strong>{date}</strong>  {/* This will be the link to the detailed view */}
-            </Link>
-        ))}
     </div>
 
 
