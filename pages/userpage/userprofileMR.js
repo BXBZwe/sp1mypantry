@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { Button, Modal, Row, Col, Form } from 'react-bootstrap';
 import { Card, Grid, Text, Pagination } from "@nextui-org/react";
 import { useRouter } from 'next/router';
+import Uppy from '@uppy/core';
+import XHRUpload from '@uppy/xhr-upload';
 
 
 const UserprofileMR = () => {
@@ -19,11 +21,9 @@ const UserprofileMR = () => {
   const [updaterecipe, setUpdateRecipe] = useState();
   const [updaterecycle, setUpdateRecycle] = useState();
   const [ingredients, setIngredients] = useState([]);
-  const [file, setFile] = useState(null);
-  const [uploading, setUploading] = useState(false);
-  const [url, setUrl] = useState(null);
-  const [imageSrc, setImageSrc] = useState('');
-
+  const [uppy, setUppy] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [imageUrl, setImageUrl] = useState(null); 
 
 
   useEffect(() => {
@@ -42,6 +42,7 @@ const UserprofileMR = () => {
         setName(data.name);
         setEmail(data.email);
         setPhone(data.phone);
+        setImageUrl(data.imageUrl);
 
         const responsepost = await fetch(`/api/post/recipe`, {
           headers: {
@@ -63,13 +64,84 @@ const UserprofileMR = () => {
         console.error(error);
       }
     };
-    const storedImageUrl = localStorage.getItem('uploadedImageUrl');
-    if (storedImageUrl) {
-      setUrl(storedImageUrl);
-    }
-
+    
     fetchUserProfile();
+
+    const instance = new Uppy({
+      autoProceed: false,
+      restrictions: {
+          maxNumberOfFiles: 1,
+          allowedFileTypes: ['image/*'],
+      },
+    });
+    
+    instance.use(XHRUpload, {
+      endpoint: '/api/picupload',
+      formData: true,
+      fieldName: 'image',
+    });
+    
+    instance.on('complete', (result) => {
+      console.log('Upload complete:', result);
+      if (result.successful && result.successful.length > 0) {
+        //console.log("Response body from upload:", result.successful[0].response.body);
+        const uploadedImageUrl = result.successful[0].response.body.uploadURL;
+        //console.log("Extracted URL:", uploadedImageUrl);
+        
+        setImageUrl(uploadedImageUrl);
+        saveImageUrlToDB(uploadedImageUrl);
+        
+
+      }
+  });
+  
+    setUppy(instance);
+
+    return () => {
+      instance.close();
+    };
+    
   }, []);
+
+  const saveImageUrlToDB = async (uploadedImageUrl) => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch(`/api/user/profile`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ imageUrl: uploadedImageUrl })
+      });
+      if (!response.ok) {
+        throw new Error('Failed to save image URL');
+      }
+    } catch (error) {
+      console.error('Error saving image URL:', error);
+    }
+  };
+  
+
+  const handleFileChange = (e) => {
+    if (uppy) {
+        uppy.addFile({
+            name: e.target.files[0].name,
+            type: e.target.files[0].type,
+            data: e.target.files[0],
+        });
+
+        setSelectedFile(e.target.files[0]);
+    }
+  }
+
+  
+  const handleUpload = async (e) => {
+    e.preventDefault();
+    if (uppy) {
+        uppy.upload();
+    }
+  }
 
   const [recipeData, setRecipeData] = useState({
     name: '',
@@ -208,25 +280,6 @@ const UserprofileMR = () => {
     setShowRecipeForm(true);
   };
 
-  const handleDeleteRecycle = async (recycleId) => {
-    const token = localStorage.getItem('token');
-    const responsedrecycle = await fetch(`/api/post/deleteRecycle/${recycleId}`, {
-        method: 'DELETE',
-        headers: {
-            Authorization: `Bearer ${token}`, 
-        },
-    });
-
-    if (responsedrecycle.ok) {
-        // Filter out the deleted recycle
-        const updatedRecycles = recycles.filter(recycle => recycle._id !== recycleId);
-        // Update the state
-        setRecycles(updatedRecycles);
-    } else {
-        // Handle the error
-        console.error(`Failed to delete recipe with ID ${recycleId}`);
-    }
-  };
   const handleUpdateRecycle = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
@@ -247,20 +300,6 @@ const UserprofileMR = () => {
     }
   };
 
-  const handleEditRecycle = (recycle) => {
-    setRecycleData({
-      name: recycle.name,
-      description: recycle.description,
-      prepTime: recycle.prepTime,
-      recycletype: recycle.recycletype,
-      instruction: recycle.instruction,
-    });
-    setUpdateRecycle(recycle._id);
-    setShowRecycleForm(true);
-  };
-
-
-
 const handleSubmitRecipe = async (e) => {
   e.preventDefault();
   recipeData.ingredients = ingredients;
@@ -270,6 +309,7 @@ const handleSubmitRecipe = async (e) => {
   } else {
     try {
       const token = localStorage.getItem('token');
+      
       const response = await fetch('/api/post/recipe', { // replace with your actual endpoint
         method: 'POST',
         headers: {
@@ -355,32 +395,6 @@ const handleIngredientChange = (index, field, value) => {
   setIngredients(newIngredients);
 };
 
-const handleFileChange = (e) => {
-  setFile(e.target.files[0]);
-};
-
-const handleUpload = async () => {
-  if (!file) return;
-
-  setUploading(true);
-
-  const formData = new FormData();
-  formData.append('file', file);
-
-  const response = await fetch('/api/picupload', {
-    method: 'POST',
-    body: formData,
-  });
-
-  const data = await response.json();
-
-  if (data.url){
-    localStorage.setItem('uploadedImageUrl', data.url);
-    setUrl(data.url);
-  }
-  setUploading(false);
-};
-
 
   return (
     <>
@@ -406,7 +420,9 @@ const handleUpload = async () => {
 
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '50px' }}>
         <input type="file" onChange={handleFileChange} />
-        <button onClick={handleUpload} disabled={uploading}>Upload</button>{url && <img src={url}/>}
+        <button onClick={handleUpload}>Upload</button>{selectedFile && <p>{selectedFile.name}</p>}
+        {imageUrl && <img className="profile-picture" style ={{ width: '100px', height: '100px',borderRadius: '50%',objectFit: 'cover',overflow: 'hidden'}}
+        src={imageUrl} alt="Uploaded Image" />}
         <h3 style={{ marginTop: '20px' }}>{name}</h3>
         <p>{email}</p>
         <p>{phone}</p>

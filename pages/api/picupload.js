@@ -1,5 +1,5 @@
 import { Storage } from '@google-cloud/storage';
-const Busboy = require('busboy');
+import multer from 'multer';
 
 export const config = {
   api: {
@@ -15,42 +15,40 @@ const storage = new Storage({
 
 const bucket = storage.bucket('bigdatacourzwe');
 
-export default async (req, res) => {
-  try {
-    if (req.method !== 'POST') {
-      return res.status(405).json({ error: 'Method not allowed' });
-    }
+const multerUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+      fileSize: 10 * 1024 * 1024, // Limit to 10MB
+  },
+});
 
-    const busboy = new Busboy({ headers: req.headers });
+export default async function handler(req, res) {
+  multerUpload.single('image')(req, res, (err) => {
+      if (err) {
+          return res.status(500).json({ error: 'Upload failed.' });
+      }
 
-    busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
-      console.log('File [' + fieldname + ']: filename: ' + filename + ', encoding: ' + encoding + ', mimetype: ' + mimetype);
-      const blob = bucket.file(`mypantry/images/${Date.now()}-${filename}`);
-      const blobStream = blob.createWriteStream({
-        resumable: false,
-        metadata: {
-          contentType: mimetype
-        },
-      });
+      if (!req.file) {
+          return res.status(400).json({ error: 'No file uploaded.' });
+      }
 
-      file.pipe(blobStream);
+      const desiredPath = 'mypantry/images/';
+      const blobName = desiredPath + req.file.originalname;
+
+      const blob = bucket.file(blobName);
+      const blobStream = blob.createWriteStream();
 
       blobStream.on('error', (err) => {
-        console.error(err);
-        res.status(500).send({ error: 'Failed to upload to Google Cloud Storage', details: err.message });
+          return res.status(500).json({ error: 'Something is wrong! Unable to upload at the moment.' });
       });
 
-      blobStream.on('finish', async () => {
-        await blob.makePublic();
+      blobStream.on('finish', () => {
         const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
-        res.status(200).json({ url: publicUrl });
+        //console.log("Generated Public URL:", publicUrl);
+        return res.status(200).json({ uploadURL: publicUrl });
       });
-    });
-
-    req.pipe(busboy);
-
-  } catch (error) {
-    console.error("Unhandled error:", error);
-    res.status(500).json({ error: 'Internal Server Error', details: error.message });
-  }
-};
+    
+    
+      blobStream.end(req.file.buffer);
+  });
+}
