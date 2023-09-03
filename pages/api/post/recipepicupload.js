@@ -34,7 +34,7 @@ export default async function handler(req, res) {
     
 
       const desiredPath = 'mypantry/images/';
-      const blobName = desiredPath + req.file.originalname;
+      const blobName = desiredPath + 'recipe_' + req.file.originalname;
 
       const blob = bucket.file(blobName);
       const blobStream = blob.createWriteStream();
@@ -46,7 +46,7 @@ export default async function handler(req, res) {
       blobStream.on('finish', () => {
         const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
         //console.log("Generated Public URL:", publicUrl);
-        return res.status(200).json({ uploadURL: publicUrl });
+        return res.status(200).json({ recipeuploadURL: publicUrl });
       });
     
     

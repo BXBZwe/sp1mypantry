@@ -35,6 +35,10 @@ const RecycleSchema = new Schema({
         enum: ['Lee', 'Myanmar', 'China']
     },
     instruction: String,
+    recycleimageUrl: {
+        type: String,
+        default: ''
+    },
     userId: { type: Schema.Types.ObjectId, ref: 'Usercollection' },
 });
 

@@ -24,6 +24,12 @@ const UserprofileMR = () => {
   const [uppy, setUppy] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [imageUrl, setImageUrl] = useState(null); 
+  const[recipeselectedFile, setRecipeselectedFile] = useState(null);
+  const [recipeUppy, setRecipeUppy] = useState(null);
+  const [recipeImageUrl, setRecipeImageUrl] = useState(null);
+  const[recycleselectedFile, setRecycleselectedFile] = useState(null);
+  const [recycleUppy, setRecycleUppy] = useState(null);
+  const [recycleImageUrl, setRecycleImageUrl] = useState(null);
 
 
   useEffect(() => {
@@ -82,7 +88,7 @@ const UserprofileMR = () => {
     });
     
     instance.on('complete', (result) => {
-      console.log('Upload complete:', result);
+      console.log('profile Picture Upload complete:', result);
       if (result.successful && result.successful.length > 0) {
         //console.log("Response body from upload:", result.successful[0].response.body);
         const uploadedImageUrl = result.successful[0].response.body.uploadURL;
@@ -90,15 +96,64 @@ const UserprofileMR = () => {
         
         setImageUrl(uploadedImageUrl);
         saveImageUrlToDB(uploadedImageUrl);
-        
-
       }
-  });
-  
+    });
+
+    const recipeinstnace = new Uppy({
+      autoProceed: false,
+      restrictions: {
+        maxNumberOfFiles: 1,
+        allowedFileTypes: ['image/*'],
+      },
+    });
+
+    recipeinstnace.use(XHRUpload, {
+      endpoint: '/api/post/recipepicupload',
+      formData: true,
+      fieldName: 'image',
+    });
+
+    recipeinstnace.on('complete', (result) => {
+      console.log("Recipe Picture upload Complete:", result);
+      if (result.successful && result.successful.length > 0) {
+        const recipeuploadImageUrl = result.successful[0].response.body.recipeuploadURL;
+
+        setRecipeImageUrl(recipeuploadImageUrl);
+      }
+    });
+
+    const recycleinstance = new Uppy({
+      autoProceed: false,
+      restrictions: {
+        maxNumberOfFiles: 1,
+        allowedFileTypes: ['image/*'],
+      },
+    });
+
+    recycleinstance.use(XHRUpload, {
+      endpoint: '/api/post/recyclepicupload',
+      formData: true,
+      fieldName: 'image',
+    });
+
+    recycleinstance.on('complete', (result) => {
+      console.log("Recycle Picture upload Complete:", result);
+      if (result.successful && result.successful.length > 0) {
+        const recycleuploadImageUrl = result.successful[0].response.body.recycleuploadURL;
+
+        setRecycleImageUrl(recycleuploadImageUrl);
+      }
+    });
+
+
     setUppy(instance);
+    setRecipeUppy(recipeinstnace);
+    setRecycleUppy(recycleinstance);
 
     return () => {
       instance.close();
+      recipeinstnace.close();
+      recycleinstance.close();
     };
     
   }, []);
@@ -143,6 +198,42 @@ const UserprofileMR = () => {
     }
   }
 
+  const recipehandleFileChange = (e) => {
+    if (recipeUppy) {
+      recipeUppy.addFile({
+        name: e.target.files[0].name,
+        type: e.target.files[0].type,
+        data: e.target.files[0],
+      });
+      setRecipeselectedFile(e.target.files[0]);
+    }
+  }
+
+  const recipehandleupload = async (e) => {
+    e.preventDefault();
+    if (recipeUppy) {
+      recipeUppy.upload();
+    }
+  }
+
+  const recyclehandleFileChange = (e) => {
+    if (recycleUppy) {
+      recycleUppy.addFile({
+        name: e.target.files[0].name,
+        type: e.target.files[0].type,
+        data: e.target.files[0],
+      });
+      setRecycleselectedFile(e.target.files[0]);
+    }
+  }
+
+  const recyclehandleupload = async (e) => {
+    e.preventDefault();
+    if (recycleUppy) {
+      recycleUppy.upload();
+    }
+  }
+
   const [recipeData, setRecipeData] = useState({
     name: '',
     description: '',
@@ -153,6 +244,7 @@ const UserprofileMR = () => {
     taste: '',
     category: '',
     ingredients: [],
+    recipeimageUrl: '',
     instruction: '',
   });
 
@@ -162,6 +254,7 @@ const UserprofileMR = () => {
     prepTime: '',
     recycletype: '',
     instruction: '',
+    recycleimageUrl: '',
   });
 
 
@@ -300,90 +393,105 @@ const UserprofileMR = () => {
     }
   };
 
-const handleSubmitRecipe = async (e) => {
-  e.preventDefault();
-  recipeData.ingredients = ingredients;
-  console.log("Submitting recipe data:", recipeData);
-  if (updaterecipe){
-    handleUpdateRecipe(e);
-  } else {
-    try {
-      const token = localStorage.getItem('token');
+  const handleSubmitRecipe = async (e) => {
+    e.preventDefault();
+    recipeData.ingredients = ingredients;
+    console.log("Submitting recipe data:", recipeData);
+    if (updaterecipe){
+      handleUpdateRecipe(e);
+    } else {
+      try {
+        if (recipeUppy) {
+            await recipeUppy.upload();
+        }
+        const finalRecipeData  = {
+            ...recipeData,
+            recipeimageUrl: recipeImageUrl
+
+        };
+        const token = localStorage.getItem('token');
+        const response = await fetch('/api/post/recipe', {
+            method: 'POST',
+            headers: {
+                 'Content-Type': 'application/json',
+                 'Authorization': `Bearer ${token}`
+                },
+            body: JSON.stringify(finalRecipeData)
+        });
+
+        if (!response.ok) {
+            throw new Error('Error in submitting recipe');
+        }
+
+        setRecipeData({
+            name: '',
+            description: '',
+            prepTime: '',
+            servings: '',
+            cookTime: '',
+            origin: '',
+            taste: '',
+            category: '',
+            ingredients: [],
+            recipeimageUrl: '',
+            instruction: '',
+          });
       
-      const response = await fetch('/api/post/recipe', { // replace with your actual endpoint
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(recipeData)
-      });
-  
-      if (!response.ok) {
-        throw new Error('Error in submitting recipe');
+          handleRecipeFormClose();
+      
+          router.reload(); // reload to show new post    
+      } catch (error) {
+        console.error(error);
       }
-  
-      setRecipeData({
-        name: '',
-        description: '',
-        prepTime: '',
-        servings: '',
-        cookTime: '',
-        origin: '',
-        taste: '',
-        category: '',
-        ingredients: [],
-        instruction: '',
-      });
-  
-      handleRecipeFormClose();
-  
-      router.reload(); // reload to show new post
-  
-    } catch (error) {
-      console.error(error);
     }
-  }
-};
+  };  
 
-const handleSubmitRecycle = async (e) => {
-  e.preventDefault();
-
-  if (updaterecycle){
-    handleUpdateRecycle(e);
-  } else {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/post/recycle', { // replace with your actual endpoint
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(recycleData)
-      });
+  const handleSubmitRecycle = async (e) => {
+    e.preventDefault();
   
-      if (!response.ok) {
-        throw new Error('Error in submitting recycle post');
+    if (updaterecycle){
+      handleUpdateRecycle(e);
+    } else {
+      try {
+        if (recycleUppy) {
+            await recycleUppy.upload();
+        }
+
+        const finalRecycleData = {
+            ...recycleData,
+            recycleimageUrl: recycleImageUrl
+        };
+        const token = localStorage.getItem('token');
+        const response = await fetch('/api/post/recycle', { // replace with your actual endpoint
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(finalRecycleData)
+        });
+    
+        if (!response.ok) {
+          throw new Error('Error in submitting recycle post');
+        }
+    
+        setRecycleData({
+          name: '',
+          description: '',
+          prepTime: '',
+          recycletype: '',
+          instruction: '',
+          recycleimageUrl: ','
+        });
+    
+        handleRecycleFormClose();
+    
+        router.reload(); // reload to show new post
+      } catch (error) {
+        console.error(error);
       }
-  
-      setRecycleData({
-        name: '',
-        description: '',
-        prepTime: '',
-        recycletype: '',
-        instruction: '',
-      });
-  
-      handleRecycleFormClose();
-  
-      router.reload(); // reload to show new post
-  
-    } catch (error) {
-      console.error(error);
     }
-  }
-};
+  };
 
 const handleAddIngredient = () => {
   setIngredients([...ingredients, {name: '', quantity: 0, unit: '', category: ''}]);
@@ -421,7 +529,7 @@ const handleIngredientChange = (index, field, value) => {
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '50px' }}>
         <input type="file" onChange={handleFileChange} />
         <button onClick={handleUpload}>Upload</button>{selectedFile && <p>{selectedFile.name}</p>}
-        {imageUrl && <img className="profile-picture" style ={{ width: '100px', height: '100px',borderRadius: '50%',objectFit: 'cover',overflow: 'hidden'}}
+        {imageUrl && <img className="recipe-picture" style ={{ width: '100px', height: '100px',borderRadius: '50%',objectFit: 'cover',overflow: 'hidden'}}
         src={imageUrl} alt="Uploaded Image" />}
         <h3 style={{ marginTop: '20px' }}>{name}</h3>
         <p>{email}</p>
@@ -596,6 +704,14 @@ const handleIngredientChange = (index, field, value) => {
               <Form.Label>Instruction</Form.Label>
               <Form.Control as="textarea" name="instruction" id = "instruction" value={recipeData.instruction} onChange={handleChange} />
             </Form.Group>
+
+            <Form.Group>
+              <Form.Label>Recipe Image</Form.Label>
+              <input type="file" onChange={recipehandleFileChange} />
+              <button onClick={recipehandleupload}>Upload</button>{recipeselectedFile && <p>{recipeselectedFile.name}</p>}
+              {recipeImageUrl && <img className="recycle-picture" style ={{ width: '100px', height: '100px',borderRadius: '50%',objectFit: 'cover',overflow: 'hidden'}}
+              src={recipeImageUrl} alt="Uploaded Image" />}
+            </Form.Group>
           </Form>
           
         </Modal.Body>
@@ -645,6 +761,14 @@ const handleIngredientChange = (index, field, value) => {
             <Form.Group>
               <Form.Label>Instruction</Form.Label>
               <Form.Control as="textarea" name="instruction" id = "instruction" value={recycleData.instruction} onChange={handleChangeRecycle} />
+            </Form.Group>
+
+            <Form.Group>
+              <Form.Label>Recycle Image</Form.Label>
+              <input type="file" onChange={recyclehandleFileChange} />
+              <button onClick={recyclehandleupload}>Upload</button>{recycleselectedFile && <p>{recycleselectedFile.name}</p>}
+              {recycleImageUrl && <img className="recycle-picture" style ={{ width: '100px', height: '100px',borderRadius: '50%',objectFit: 'cover',overflow: 'hidden'}}
+              src={recycleImageUrl} alt="Uploaded Image" />}
             </Form.Group>
           </Form>
         </Modal.Body>

@@ -56,6 +56,10 @@ const PostSchema = new Schema({
     },
     instruction: String,
     ingredients: [ingredientSchema],
+    recipeimageUrl: {
+        type: String,
+        default: ''
+    },
     userId: { type: Schema.Types.ObjectId, ref: 'Usercollection' },
 });
 

@@ -93,6 +93,8 @@ const Itemprofile = () => {
 
         </div>
         <div style={{ width: '80%',  height: '100%', backgroundColor: 'white', padding: '10px' }}>
+          {recycle.recycleimageUrl && <img className="recycle-picture" style ={{ width: '100px', height: '100px',borderRadius: '50%',objectFit: 'cover',overflow: 'hidden'}}
+          src={recycle.recycleimageUrl} alt="Uploaded Image" />}
           <h2 style={{fontFamily: 'Inter, sans-serif', font: 'bold' }}>{recycle.name}</h2>
           <button onClick={addrecyclewishlist}>Add to Wishlist</button>
           <p>{errorMessage}</p>
