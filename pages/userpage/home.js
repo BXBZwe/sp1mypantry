@@ -9,7 +9,6 @@ import { useRouter } from 'next/router';
 const HomePage = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [posts, setPosts] = useState([]);
-  const [post, setPost] = useState();
 
 
   const toggleDropdown = () => {
@@ -42,7 +41,7 @@ const HomePage = () => {
           <Link href="/all-menu" passHref>
             <span style={{ margin: '0 10px', textDecoration: 'none', cursor: 'pointer' }}>All menu</span>
           </Link>
-          <Link href="/planner" passHref>
+          <Link href="/userpage/mealplannermain" passHref>
             <span style={{ margin: '0 10px', textDecoration: 'none', cursor: 'pointer' }}>Planner</span>
           </Link>
           <Link href="/userpage/recyclehome">

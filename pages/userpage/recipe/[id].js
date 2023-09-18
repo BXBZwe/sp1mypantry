@@ -124,6 +124,8 @@ const Itemprofile = () => {
         <div style={{ width: '20%', height: '100%', backgroundColor: '#d9d9d9', padding: '10px' }}>
         </div>
         <div style={{ width: '80%',  height: '100%', backgroundColor: 'white', padding: '10px' }}>
+        {post.recipeimageUrl && <img className="recipe-picture" style ={{ width: '100px', height: '100px',borderRadius: '50%',objectFit: 'cover',overflow: 'hidden'}}
+        src={post.recipeimageUrl} alt="Uploaded Image" />}
           <h2 style={{fontFamily: 'Inter, sans-serif', font: 'bold' }}>{post.name}</h2>
           <button onClick={addrecipewishlist}>Add to Wishlist</button>
           <p>{errorMessage}</p>

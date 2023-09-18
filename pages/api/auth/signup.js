@@ -34,6 +34,10 @@ const UsersSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref:'recycles'
   }],
+  imageUrl: {
+    type: String,
+    default: ''
+  },
 });
 
 const User = models?.Usercollection || model('Usercollection', UsersSchema);

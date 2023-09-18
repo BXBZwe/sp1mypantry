@@ -22,9 +22,35 @@ export default async function handler(req, res) {
       if (!user){
         return res.status(404).json({ error: 'User not found' });
       }
-      const { name, email, phone } = user;
-      return res.status(200).json({ name, email, phone });
+      const { name, email, phone, imageUrl } = user;
+      return res.status(200).json({ name, email, phone, imageUrl });
     } catch (error){
+      console.error(error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+  else if (req.method === 'POST') {
+    const { imageUrl } = req.body;
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({ error: 'Missing authorization header' });
+    }
+  
+    const token = authHeader.split(' ')[1];
+    try {
+      const payload = verify(token, process.env.JWT_SECRET_KEY);
+      const user = await User.findById(payload.userId);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+  
+        // Save the image URL to the user's record
+      user.imageUrl = imageUrl;
+      await user.save();
+  
+        // Respond to the frontend
+      return res.status(200).json({ success: true, message: 'Image URL saved successfully' });
+    } catch (error) {
       console.error(error);
       return res.status(500).json({ error: 'Internal server error' });
     }

@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "bigdataanalytics-390212",
+  "private_key_id": "ebad728b7bfee258c4d7d268359ee22eb0340d48",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCFdmE4E6KTeZa8\nISuXJN/++ertKyM22a4EpJsHfYQp8UmNpNFrLlPkpYlz2Z8MZFmOB2PgPCcSgwtN\nftIezImKrfX0UZGpN7FAIkc+ln2pD77G6b4pqsEQluy+/LZUXQ2XZkdKC2NbBdlm\nVHNUrkbrGTOlzmmZnAZsm6ubJ9WMvPsg6t0Sb08RzDpLkISBxGxm0vG0fwr/InW3\n5X9VTGXNp/GFltuZDE5PIgdCqljf6rOdQ0oewBFp3Ts7joNz27Sbx3Awjxdx4Tgm\ndGhUKsymFvLRvC+SdBxIzdYghqN6aiJwbgH8jezZDLme8cJDTCQ6mg7MwrwqXGuB\nvAAMaZohAgMBAAECggEAIoUO+kkh2NEvKrPNqYdRJIsRt4xbzFkbSHom2xYc9BhD\ntQ43WGigLFigp8VW/QaLn0/MBniohoI8jyvJP0waGzOJlUrvyPvtra/wC4EzOWIo\nLxzQIcjXrOnMjE2i/0keNdWvhLhTV3y40V3wgqudDjvzfuRXrfKMOtU82qG/+2ma\nUEW9KEsOVph6t/naBrNafDehGECOiHvtDXfFefoWIErqUWxiwbOcIeiQUFeAf5x2\n1xCicjSoSMFwrr0/18JrRlnw9sYHgKPbj2z0OreBJCawvofm8280pHVMYD1HKbpr\nGFEoNaw557NbEoPJ9pBLBC//GBmB0XoniYT2p2eXnQKBgQC5QrYAQlW5Mut42V5s\ngYxFmW5WzDrU6mCvfsaFwAHLTtEthDVCCvwDa8MuF2s1vzpnSVHSlXPrP2Q1CvYm\njhESDiFJqnsXuDWRfUwYkpdAXr59XC2EeSeGtaCn4E09jpIKT5EeDXrh10bZDXNI\nrOXfISKSH6CX1UFXUpYynl7iDwKBgQC4bGEXQi4OAAALALU+GINnXxGNc/AzOeL9\nyzlMlun6IgjKX5v7mRzvipLAcqNjmRHxcvTP23fB3Wy5aCCnICShHz9fy9ImA8W2\n87HmMhfJTCKyLrPQGDG/CTPIbDUeOvThy0oDE9ePqseKun/AXe2MTMEPufn0r0wl\na77wDdIwzwKBgQCr91K+FtU/3hZZzVwq2G3+xRd5Foad0RoCjWl2Ce8ga38cAxb0\nwQGBo2w/wplQALwT2ClNklFR0zwPSKeIzmLmIZugp9EvCV0gOfCC9r/Tjp6/+up9\nh4C7OKlya3EHbOn/DDCmdtjT/mLTY/rZQTT30+glP5pwlhHbHtwxDHUC3QKBgEaE\nUl+VU4zQ3TNX0vVqZBxLkqeWtDqyIKRQZ5lsfwzApMHU6wy6EAFb6B8j9mun5N+A\nyDEORu1e4CrIsOuWc8sT6qSTh8g3WwtIhTZy4vt6XC3rg5/HEIZuW1mAXpMvkeEg\nXS1uEdeCQog+JYkFoUYrNwrvXq77tE7+suSRNFSrAoGBAIBX0NrVgyxJWw/6xJ58\nG0SGDarOLqFWBlELXIvAuFuYbzsZUcg2LkYS2E+q9s4fVCNaZDIcNbfibKsh7gNA\n2dk4MdUzzVgaeoxYm7D0JsJAaGrVt+7lOB26yxgJO/IQT1N+ZnFRzfEi/8Vmnumv\nDTZ1kKrZl5J0CP+QG+J5J3B7\n-----END PRIVATE KEY-----\n",
+  "client_email": "mypantrystorage@bigdataanalytics-390212.iam.gserviceaccount.com",
+  "client_id": "107055371713598648271",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/mypantrystorage%40bigdataanalytics-390212.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
