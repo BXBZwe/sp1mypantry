@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Tab, Tabs, Table, Button, Modal } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Link from 'next/link';
-
+import { Dropdown } from 'react-bootstrap';
 
 const Admin = () => {
   const handleTabSelect = (key) => {
@@ -11,7 +10,17 @@ const Admin = () => {
   const [users, setUsers] = useState([]);
   const [posts, setPosts] = useState([]);
   const [recycles, setRecycles] = useState([]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const closeDropdown = () => {
+    setIsDropdownOpen(false);
+  };
+
+  
   useEffect(() => {
     const FetchAllusers = async () => {
       try {
@@ -47,30 +56,46 @@ const Admin = () => {
   }, []);
 
   return (
-      <div>
-              <nav style={{ padding: '30px', height: '50px', width: '100%', backgroundColor: '#47974F', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <h2 style={{ color: 'white', fontFamily: 'cursive' }}>MyPantry</h2>
-                <div style={{ marginRight: '10px' }}>
-                    <Link href="/adminpage/adminhome" style={{ margin: '0 10px', textDecoration: 'none', color: 'black', cursor: 'pointer' }} passHref>
-                        Home
-                    </Link>
-                    <Link href="/adminpage/adminprofile" style={{ margin: '0 10px', textDecoration: 'none', color: 'black', cursor: 'pointer' }}>
-                     Profile
-                    </Link>
-                </div>
-            </nav>
+      <div className='container-fluid'>
+        <div className="row vh-100">
+        <nav style={{backgroundColor: '#d8456b', height: '10%'}} className="navbar navbar-expand-lg " >
+        <div className="container-fluid" >
+          <a className="navbar-brand custom-cursive-font" href="adminhome" ><h3 style={{color: 'white'}}>MyPantry - Admin</h3></a>
+          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent">
+            <span className="navbar-toggler-icon"></span>
+          </button>
+          <div className="collapse navbar-collapse"  id="navbarSupportedContent">
+          <span className="navbar-nav  mx-auto"></span>
+            <ul className="navbar-nav ml-auto" >
+            
+        
+            <li className="nav-item" >
+              <a className="nav-link active" style={{fontWeight: 'bold', color: 'white'}} aria-current="page" href="adminhome">Home</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link "  aria-current="page" href="adminprofile" style={{ color: 'white'}}>Profile</a>
+            </li>
+            <Dropdown>
+              <Dropdown.Toggle><i className="fas fa-bell"></i></Dropdown.Toggle>
+                <Dropdown.Menu >
+                  <Dropdown.Item>Notification 2</Dropdown.Item>
+                    <Dropdown.Item >Notification 1</Dropdown.Item>
+                  </Dropdown.Menu>
+          </Dropdown>
       
-
+            </ul>
+          </div>
+        </div>
+      </nav>
+      <div className="col sm " style={{  backgroundColor: '#ffffff', overflow: 'hidden', textAlign: 'center',  height: '90%' }}>
       <div className="content">
        
         <Tabs defaultActiveKey="user-list" onSelect={handleTabSelect} >
-          <Tab eventKey="user-list" title="User List">
-            <div className="container">
-              <h3 className="page-title">User List</h3>
-              <div style={{ textAlign: 'center' }}>
-                    <input style={{width: '50%'}} type="search" placeholder="Search" />
-                    <button style={{padding: '3px', marginBottom: '5px', backgroundColor: 'green', color: 'white'}} className="btn btn-outline-success " type="submit">GO</button>
-              </div>
+          <Tab eventKey="user-list" title="User List" >
+          <br></br>  
+          <input style={{width: '30%'}} type="search" placeholder="Search" />
+           
+            <div className="container" >
                 <Table striped bordered>
                   <thead>
                     <tr>
@@ -81,7 +106,7 @@ const Admin = () => {
                       <th></th>
                     </tr>
                   </thead>
-                  {users.map((user, index) => (
+                  {users.map((user) => (
                     <tbody key={user._id}>
                       <tr>
                         <td className="text-center">{user.name}</td>
@@ -96,19 +121,17 @@ const Admin = () => {
                       </tr>
                     </tbody>
                   ))}
-                  
                 </Table>
-
             </div>
           </Tab>
 
           <Tab eventKey="item-list" title="Recipe Item List">
+          <br></br>  
+          <input style={{width: '30%'}} type="search" placeholder="Search" />
+           
+            
             <div className="container">
-              <h3 className="page-title">Recipe Item List</h3>
-              <div style={{ textAlign: 'center' }}>
-                    <input style={{width: '50%'}} type="search" placeholder="Search" />
-                    <button style={{padding: '3px', marginBottom: '5px', backgroundColor: 'green', color: 'white'}} className="btn btn-outline-success " type="submit">GO</button>
-              </div>
+              
               <Table striped bordered>
                 <thead>
                   <tr>
@@ -137,12 +160,11 @@ const Admin = () => {
           </Tab>
 
           <Tab eventKey="Recycleitem-list" title="Recycle Item List">
+          <br></br>  
+          <input style={{width: '30%'}} type="search" placeholder="Search" />
+           
             <div className="container">
-              <h3 className="page-title">Recycle Item List</h3>
-              <div style={{ textAlign: 'center' }}>
-                    <input style={{width: '50%'}} type="search" placeholder="Search" />
-                    <button style={{padding: '3px', marginBottom: '5px', backgroundColor: 'green', color: 'white'}} className="btn btn-outline-success " type="submit">GO</button>
-              </div>
+              
               <Table striped bordered>
                 <thead>
                   <tr>
@@ -169,12 +191,11 @@ const Admin = () => {
           </Tab>
 
           <Tab eventKey="report-notice" title="Report">
+          <br></br>  
+          <input style={{width: '30%'}} type="search" placeholder="Search" />
+           
             <div className="container">
-              <h3 className="page-title">Report Notice</h3>
-              <div style={{ textAlign: 'center' }}>
-                    <input style={{width: '50%'}} type="search" placeholder="Search" />
-                    <button style={{padding: '3px', marginBottom: '5px', backgroundColor: 'green', color: 'white'}} className="btn btn-outline-success " type="submit">GO</button>
-              </div>
+             
               <Table striped bordered>
                 <thead>
                   <tr>
@@ -227,6 +248,17 @@ const Admin = () => {
           </Button>
         </Modal.Footer>
       </Modal>
+      </div>   
+      
+      
+      </div>
+              
+      
+            
+
+
+
+
     </div>
   );
 }
