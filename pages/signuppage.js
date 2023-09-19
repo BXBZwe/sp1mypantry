@@ -2,11 +2,15 @@ import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Link from 'next/link';
 
+// Import an eye icon (you can use Font Awesome or any other icon library)
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+
 const Signup = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // State for password visibility
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -41,7 +45,6 @@ const Signup = () => {
   };
 
   const loginBoxStyle = {
-    
     backgroundColor: '#f0f0f0',
     display: 'flex',
     flexDirection: 'column',
@@ -60,30 +63,50 @@ const Signup = () => {
   return (
     <div style={containerStyle}>
       <div style={loginBoxStyle}>
-        <h1 style={{textAlign: 'center', marginBottom: '25px', fontFamily: 'cursive'}}>MyPantry</h1>
+        <h1 style={{ textAlign: 'center', marginBottom: '25px', fontFamily: 'cursive' }}>MyPantry</h1>
         <form onSubmit={handleSignup}>
-        <div className="form-group">
+          <div className="form-group">
             <label>Name</label>
-            <input type="text" className="form-control" placeholder="Enter text"value={name} onChange={(e) => setName(e.target.value)} required/>
+            <input type="text" className="form-control" placeholder="Enter text" value={name} onChange={(e) => setName(e.target.value)} required />
           </div>
           <div className="form-group">
             <label>Email address</label>
-            <input type="email" className="form-control" placeholder="Enter email"value={email} onChange={(e) => setEmail(e.target.value)} required/>
+            <input type="email" className="form-control" placeholder="Enter email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </div>
           <div className="form-group">
             <label>Phone Number</label>
-            <input type="tel" className="form-control" placeholder="Enter Phone Number"value={phone} onChange={(e) => setPhone(e.target.value)} required/>
+            <input type="tel" className="form-control" placeholder="Enter Phone Number" value={phone} onChange={(e) => setPhone(e.target.value)} required />
           </div>
-          <div  className="form-group">
+          <div className="form-group">
             <label>Password</label>
-            <input type="password" className="form-control" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required/>
+            <div className="input-group">
+              <input
+                type={showPassword ? 'text' : 'password'} // Toggle between text and password
+                className="form-control"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <div className="input-group-append">
+                <button
+                  type="button"
+                  className="btn "
+                  onClick={() => setShowPassword(!showPassword)} // Toggle password visibility
+                  style={{backgroundColor: 'white', border: 'none'}}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
+            </div>
           </div>
-
+          <br></br>
           <button type="submit" className="btn my-auto" style={buttonStyle}>Sign Up</button>
           <Link href="../">
-          <button className="btn" style={buttonStyle}>
-            Cancel
-          </button></Link>
+            <button className="btn" style={buttonStyle}>
+              Cancel
+            </button>
+          </Link>
         </form>
       </div>
     </div>

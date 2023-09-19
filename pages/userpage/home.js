@@ -1,20 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Link from 'next/link';
-import { Button, Modal, Row, Col, Form } from 'react-bootstrap';
-import { Card, Grid, Text, Pagination } from "@nextui-org/react";
-import { useRouter } from 'next/router';
-
+import { Row } from 'react-bootstrap';
+import { Card, Grid, Text} from "@nextui-org/react";
+import { Dropdown } from 'react-bootstrap';
+import 'font-awesome/css/font-awesome.min.css';
 
 const HomePage = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [posts, setPosts] = useState([]);
-
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const toggleDropdown = () => {
-    setShowDropdown(!showDropdown);
+    setIsDropdownOpen(!isDropdownOpen);
   };
 
+  const closeDropdown = () => {
+    setIsDropdownOpen(false);
+  };
+ 
   useEffect(() => {
     const fetchAllPosts = async () => {
       try {
@@ -25,89 +31,137 @@ const HomePage = () => {
         console.error(error);
       }
     };
-    
+
     fetchAllPosts();
   }, []);
-  
+
+  // Filter posts based on searchQuery
+  const filteredPosts = posts.filter((post) =>
+    post.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleSignOut = () => {
+    // You can implement your signout logic here.
+    // For this example, we'll simply set isAuthenticated to false.
+    setIsAuthenticated(false);
+  };
+
   return (
     <>
-      <nav style={{ padding: '30px', height: '50px', width: '100%', backgroundColor: '#47974F', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <h2 style={{ color: 'white', fontFamily: 'cursive' }}>MyPantry</h2>
-        <div>
-          <input style={{ width: '300px' }} type="search" placeholder="Search" />
-          <button style={{ backgroundColor: 'red' }} type="button">GO</button>
-        </div>
-        <div style={{ marginRight: '10px' }}>
-          <Link href="/all-menu" passHref>
-            <span style={{ margin: '0 10px', textDecoration: 'none', cursor: 'pointer' }}>All menu</span>
-          </Link>
-          <Link href="/userpage/mealplannermain" passHref>
-            <span style={{ margin: '0 10px', textDecoration: 'none', cursor: 'pointer' }}>Planner</span>
-          </Link>
-          <Link href="/userpage/recyclehome">
-            <span style={{ margin: '0 10px', textDecoration: 'none', cursor: 'pointer' }}>Recycle</span>
-          </Link>
-          <Link href="/userpage/userprofileMR" >
-            <span style={{ margin: '0 10px', textDecoration: 'none', cursor: 'pointer' }}>Profile</span>
-          </Link>
+     
+
+      <div className='container-fluid'>
+        <div className="row vh-100">
+        <nav style={{backgroundColor: '#d8456b', height: '10%'}} className="navbar navbar-expand-lg " >
+        <div className="container-fluid" >
+          <a className="navbar-brand custom-cursive-font" href="home" ><h3 style={{color: 'white', fontFamily: 'cursive'}}>MyPantry</h3></a>
+          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent">
+            <span className="navbar-toggler-icon"></span>
+          </button>
+          <div className="collapse navbar-collapse"  id="navbarSupportedContent">
+            <form className="d-flex mx-auto text-center">
+              <input
+                className="form-control me-1"
+                type="search"
+                placeholder="Search"
+                aria-label="Search"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                style={{width:'500px'}}
+              />
+              
+            </form>
+            <ul className="navbar-nav ml-auto" >
+
+            
+            <li className="nav-item" >
+              <a className="nav-link " style={{fontWeight: 'bold', color: 'white', fontFamily: 'cursive'}} aria-current="page" href="home">Recipe</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link active"  aria-current="page" href="../userpage/mealplannermain" style={{ color: 'white', fontFamily: 'cursive'}}>Planner</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link" aria-current="page" href="../userpage/recyclehome" style={{ color: 'white', fontFamily: 'cursive'}}>Recycle</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link" aria-current="page" href="../userpage/userprofileMR" style={{ color: 'white'}}><i className="fa fa-user"></i>
+</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link" aria-current="page" href='#' style={{ color: 'white'}}><i className="fa fa-sign-out"></i></a>
+            </li>
+            
+  
+              <Dropdown >
+                <Dropdown.Toggle style={{ border: 'none', color: 'inherit', fontSize: 'inherit',  color: 'white', backgroundColor: '#d8456b', paddingRight:'0px', paddingLeft:'0px', marginTop: '0px'}}><i className="fa fa-bell text-white"></i></Dropdown.Toggle>
+                <Dropdown.Menu >
+                  <Dropdown.Item >Notification 1</Dropdown.Item>
+                  <Dropdown.Item >Notification 2</Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            </ul>
+          </div>
         </div>
       </nav>
+          <div className="col-3 " style={{ paddingTop: '20px', backgroundColor: '#ffffff', overflow: 'hidden',  height: '90%' }}>
+            <h3 className="custom-cursive-font" style={{textAlign: 'center', fontWeight: 'bold'}}>Recipe Generator</h3>
+          <div class="card promoting-card">
+              <div class="card-body d-flex flex-row">
+                <div>
+                  <h4 class="card-title font-weight-bold mb-2">New spicy meals</h4>
+                  <p class="card-text"><i class="far fa-clock pr-2"></i>07/24/2018</p>
+                </div>
+              </div>
+              <div class="view overlay">
+                
+                <a href="#!">
+                  <div class="mask rgba-white-slight"></div>
+                </a>
+              </div>
 
-      <div style={{marginTop: '20px',marginBottom: '20px',backgroundColor: '#f5f5f5',width: '95%',
-                  borderRadius: '10px',overflow: 'hidden',}}>
-        <Grid.Container gap={2} justify="flex-start">
-          {posts.map((post, index) => (
-            <Grid xs={6} sm={3} key={index}>
-              <Card isPressable>
-                <Card.Body css={{ p: 0 }}>
-                </Card.Body>
-                <Card.Footer css={{ justifyItems: "flex-start" }}>
-                  <Row wrap="wrap" justify="space-between" align="center">
-                    <div key={post._id}>
-                    <Link href= {`/userpage/recipe/${post._id}`} style={{textDecoration: 'none'}}>
-                    <Text b>{post.name}</Text>
-                    </Link>
-                    </div>                    
-                  </Row>
-                </Card.Footer>
-              </Card>
-            </Grid>
-          ))}
-        </Grid.Container>
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '20px' }}>
-          <Pagination rounded total={10} initialPage={1} />
-        </div>
-      </div>
-      <div style={{ backgroundColor: '#f2f2f2', padding: '20px', float: 'left', width: '20%', height: '1000px' }} className="container">
-        <h3 style={{ marginLeft: '20px' }}>Recipe Generator</h3>
-        <div>
-          <button className="btn btn-link" onClick={toggleDropdown}>
-            Categories
-          </button>
-          {showDropdown && (
-            <div style={{ marginLeft: '20px' }}>
-              <div className="form-check">
-                <input className="form-check-input" type="checkbox" value="" id="category1" />
-                <label className="form-check-label" htmlFor="category1">
-                  Category 1
-                </label>
-              </div>
-              <div className="form-check">
-                <input className="form-check-input" type="checkbox" value="" id="category2" />
-                <label className="form-check-label" htmlFor="category2">
-                  Category 2
-                </label>
-              </div>
-              <div className="form-check">
-                <input className="form-check-input" type="checkbox" value="" id="category3" />
-                <label className="form-check-label" htmlFor="category3">
-                  Category 3
-                </label>
+
+              <div class="card-body">
+
+                <div class="collapse-content">
+                  <p class="card-text collapse" id="collapseContent">Recently, we added several exotic new dishes to our restaurant menu. They come from countries such as Mexico, Argentina, and Spain. Come to us, have some delicious wine and enjoy our juicy meals from around the world.</p>
+                  <a class="btn btn-flat red-text p-1 my-1 mr-0 mml-1 collapsed" data-toggle="collapse" href="#collapseContent" aria-expanded="false" aria-controls="collapseContent"></a>
+                  <i class="fas fa-share-alt text-muted float-right p-1 my-1" data-toggle="tooltip" data-placement="top" title="Share this post"></i>
+                  <i class="fas fa-heart text-muted float-right p-1 my-1 mr-3" data-toggle="tooltip" data-placement="top" title="I like it"></i>
+                </div>
               </div>
             </div>
-          )}
+          </div>
+
+<div className="col-sm" style={{ padding: '20px', backgroundColor: '#eceeee', height: '90%', overflowY: 'auto' }}>
+  <div className="scrollable-content">
+    <Grid.Container gap={2} justify="flex-start">
+      {filteredPosts.map((post, index) => (
+        <Grid xs={6} sm={2} key={index}>
+          <Link href={`/userpage/recipe/${post._id}`} style={{ textDecoration: 'none' }}>
+            <Card isPressable>
+              <Card.Body css={{ alignItems: 'center', width: '100%' }}>
+                {post.recipeimageUrl && <img className="recipe-picture" style={{ width: '150px', height: '150px', objectFit: 'cover', overflow: 'hidden' }} src={post.recipeimageUrl} alt="Uploaded Image" />}
+              </Card.Body>
+              <Card.Footer css={{ justifyItems: "flex-start" }}>
+                <Row wrap="wrap" justify="space-between" align="center">
+                  <div key={post._id}>
+                    <Text b>{post.name}</Text>
+                  </div>
+                </Row>
+              </Card.Footer>
+            </Card>
+          </Link>
+        </Grid>
+      ))}
+    </Grid.Container>
+  </div>
+</div>
+
         </div>
-        <button style={{marginLeft: '100px', marginTop: '20px'}} className="btn btn-primary" type="button">Submit</button>
       </div>
     </>
   );

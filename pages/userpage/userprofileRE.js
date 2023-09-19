@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { Button, Modal, Row, Col, Form } from 'react-bootstrap';
 import { Card, Grid, Text, Pagination } from "@nextui-org/react";
 import { useRouter } from 'next/router';
-
+import { Dropdown } from 'react-bootstrap';
+import 'font-awesome/css/font-awesome.min.css';
 
 const UserprofileMR = () => {
   const [showForm, setShowForm] = useState(false);
@@ -334,47 +335,70 @@ const handleSubmitRecycle = async (e) => {
 
   return (
     <>
-      
-      <nav style={{ padding: '30px', height: '50px', width: '100%', backgroundColor: '#47974F', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <h2 style={{ color: 'white', fontFamily: 'cursive' }}>MyPantry</h2>
+     <div className='container-fluid'>
+        <div className="row vh-100">
+        <nav style={{ backgroundColor: '#d8456b', height: '10%' }} className="navbar navbar-expand-lg" >
+  <div className="container-fluid" >
+    <a className="navbar-brand custom-cursive-font" href="home" ><h3 style={{ color: 'white', fontFamily: 'cursive' }}>MyPantry</h3></a>
+    <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent">
+      <span className="navbar-toggler-icon"></span>
+    </button>
+    <div className="collapse navbar-collapse" id="navbarSupportedContent">
+    <span style={{width:'1070px'}}></span>
+      <ul className="navbar-nav ml-auto" >
 
-        <div style={{ marginRight: '10px' }}>
-          <Link href="/home" style={{ margin: '0 10px', textDecoration: 'none', color: 'black', cursor: 'pointer' }} passHref>
-            All menu
-          </Link>
-          <Link href="/planner" style={{ margin: '0 10px', textDecoration: 'none', color: 'black', cursor: 'pointer' }} passHref>
-            Planner
-          </Link>
-          <Link href="/userpage/userProfileWL" style={{ margin: '0 10px', textDecoration: 'none', color: 'black', cursor: 'pointer' }}>
-            Recycle
-          </Link>
-          <Link href="/userpage/userprofileMR" style={{ margin: '0 10px', textDecoration: 'none', color: 'black', cursor: 'pointer' }}>
-            Profile
-          </Link>
-        </div>
-      </nav>
+        <li className="nav-item" >
+          <a className="nav-link " style={{ fontWeight: 'bold', color: 'white', fontFamily: 'cursive' }} aria-current="page" href="home">Recipe</a>
+        </li>
+        <li className="nav-item">
+          <a className="nav-link active" aria-current="page" href="../userpage/mealplannermain" style={{ color: 'white', fontFamily: 'cursive' }}>Planner</a>
+        </li>
+        <li className="nav-item">
+          <a className="nav-link" aria-current="page" href="../userpage/recyclehome" style={{ color: 'white', fontFamily: 'cursive' }}>Recycle</a>
+        </li>
+        <li className="nav-item">
+          <a className="nav-link" aria-current="page" href="../userpage/userprofileMR" style={{ color: 'white' }}><i className="fa fa-user"></i>
+          </a>
+        </li>
+        <li className="nav-item">
+          <a className="nav-link" aria-current="page" href='#' style={{ color: 'white' }}><i className="fa fa-sign-out"></i></a>
+        </li>
 
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '50px' }}>
-        <h3 style={{ marginTop: '20px' }}>{name}</h3>
-        <p>{email}</p>
-        <p>{phone}</p>
+        <Dropdown >
+          <Dropdown.Toggle style={{ border: 'none', color: 'inherit', fontSize: 'inherit', color: 'white', backgroundColor: '#d8456b', paddingRight: '0px', paddingLeft: '0px', marginTop: '0px' }}><i className="fa fa-bell text-white"></i></Dropdown.Toggle>
+          <Dropdown.Menu >
+            <Dropdown.Item >Notification 1</Dropdown.Item>
+            <Dropdown.Item >Notification 2</Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+      </ul>
+    </div>
+  </div>
+</nav>
+<div className="col-3 " style={{ paddingTop: '20px', backgroundColor: '#ffffff', overflowY: 'Auto', textAlign: 'center',  height: '90%' }}>  
+<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '50px' }}>
+<h3 style={{ marginTop: '20px' }}>{name}</h3>
+        <p style={{fontFamily: 'cursive'}}>{email} <br></br> {phone}</p>
+        
         <div style={{ marginTop: '50px' }}>
           <Link href="/userpage/userprofileMR" passHref>
             <button className="btn btn-primary" style={{ marginRight: '10px' }}>My Recipe</button>
           </Link>
-          <Link href="/userpage/userProfileWL" >
-            <button className="btn btn-primary" style={{ marginRight: '10px' }}>Wishlist</button>
+          <Link href="/userpage/userprofileWL" passHref>
+            <button className="btn btn-primary" style={{ marginRight: '10px'}}>Wishlist</button>
           </Link>
-          <Link href="/userpage/userprofileRE" >
-            <button className="btn btn-primary" style={{ marginRight: '10px' }}>My Recycle</button>
+          <Link href="/userpage/userprofileRE" passHref>
+            <button className="btn btn-primary" style={{ marginRight: '10px', fontWeight: 'bold'  }}>My Recycle</button>
           </Link>
-          <Button className="btn btn-primary" onClick={handleFormOpen}><i className="fas fa-plus">+</i></Button>
+          <Button className="btn btn-primary" onClick={handleFormOpen}><i className="fa fa-plus"></i></Button>
         </div>
-        <div style={{ marginTop: '50px', marginBottom: '100%', backgroundColor: 'white' }}></div>
+       
+          
       </div>
-      <div style={{marginTop: '20px',marginBottom: '20px',backgroundColor: '#f5f5f5',width: '95%',
-                  borderRadius: '10px',overflow: 'hidden',}}>
-        <Grid.Container gap={2} justify="flex-start">
+      
+</div>
+<div className="col-sm " style={{ paddingTop: '20px', backgroundColor: '#eceeee', overflow: 'hidden',  height: '90%', overflowY: 'auto'}}>  
+<Grid.Container gap={2} justify="flex-start">
           {recycles.map((recycle, index) => (
             <Grid xs={6} sm={3} key={index}>
               <Card isPressable>
@@ -397,10 +421,11 @@ const handleSubmitRecycle = async (e) => {
           ))}
         </Grid.Container>
 
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '20px' }}>
-          <Pagination rounded total={10} initialPage={1} />
-        </div>
       </div>
+</div></div>
+
+      
+      
       <Modal show={showForm} onHide={handleFormClose} centered>
         <Modal.Header closeButton>
           <Modal.Title>Desired Options</Modal.Title>
