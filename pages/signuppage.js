@@ -93,7 +93,7 @@ const Signup = () => {
                   type="button"
                   className="btn "
                   onClick={() => setShowPassword(!showPassword)} // Toggle password visibility
-                  style={{backgroundColor: 'white', border: 'none'}}
+                  style={{backgroundColor: 'white', border:}}
                 >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>

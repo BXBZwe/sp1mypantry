@@ -81,44 +81,44 @@ const Itemprofile = () => {
                 <span style={{ width: '1070px' }}></span>
                 <ul className='navbar-nav ml-auto'>
                   <li className='nav-item'>
-                    <a
+                    <Link
                       className='nav-link '
                       style={{  color: 'white', fontFamily: 'cursive' }}
                       aria-current='page'
                       href='../home'
                     >
                       Recipe
-                    </a>
+                    </Link>
                   </li>
                   <li className='nav-item'>
-                    <a
+                    <Link
                       className='nav-link active'
                       aria-current='page'
                       href='/userpage/mealplannermain'
                       style={{ color: 'white', fontFamily: 'cursive' }}
                     >
                       Planner
-                    </a>
+                    </Link>
                   </li>
                   <li className='nav-item'>
-                    <a
+                    <Link
                       className='nav-link'
                       aria-current='page'
-                      href='../userpage/recyclehome'
+                      href='/userpage/recyclehome'
                       style={{ color: 'white', fontFamily: 'cursive' }}
                     >
                       Recycle
-                    </a>
+                    </Link>
                   </li>
                   <li className='nav-item'>
-                    <a
+                    <Link
                       className='nav-link'
                       aria-current='page'
                       href='/userpage/userprofileMR'
                       style={{ color: 'white' }}
                     >
                       <i className='fa fa-user'></i>
-                    </a>
+                    </Link>
                   </li>
                   <li className='nav-item'>
                     <a className='nav-link' aria-current='page' href='#' style={{ color: 'white' }}>

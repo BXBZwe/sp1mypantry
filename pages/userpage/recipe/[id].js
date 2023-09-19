@@ -147,7 +147,7 @@ const Itemprofile = () => {
                     <a
                       className='nav-link'
                       aria-current='page'
-                      href='../userpage/recyclehome'
+                      href='/userpage/recyclehome'
                       style={{ color: 'white', fontFamily: 'cursive' }}
                     >
                       Recycle
