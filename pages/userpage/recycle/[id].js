@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-
+import { Dropdown } from 'react-bootstrap';
+import 'font-awesome/css/font-awesome.min.css';
 const Itemprofile = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const router = useRouter();
@@ -57,66 +58,168 @@ const Itemprofile = () => {
     };
   return (
     <>
-      <nav style={{ padding: '30px', height: '50px', width: '100%', backgroundColor: '#47974F', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <h2 style={{ color: 'white', fontFamily: 'cursive' }}>MyPantry</h2>
-        <div>
-          <input style={{ width: '300px' }} type="search" placeholder="Search" />
-          <button style={{ backgroundColor: 'red' }} type="button">GO</button>
-        </div>
-        <div style={{ marginRight: '10px' }}>
-          <Link href="home" passHref>
-            <span style={{ margin: '0 10px', textDecoration: 'none', cursor: 'pointer' }}>All menu</span>
-          </Link>
-          <Link href="/planner" passHref>
-            <span style={{ margin: '0 10px', textDecoration: 'none', cursor: 'pointer' }}>Planner</span>
-          </Link>
-          <Link href="/recycle" passHref>
-            <span style={{ margin: '0 10px', textDecoration: 'none', cursor: 'pointer' }}>Recycle</span>
-          </Link>
-          <Link href="userprofileMR" >
-            <span style={{ margin: '0 10px', textDecoration: 'none', cursor: 'pointer' }}>Profile</span>
-          </Link>
-        </div>
-      </nav>
+      <div className='container-fluid'>
+        <div className='row vh-100'>
+          <nav
+            style={{ backgroundColor: '#d8456b', height: '10%' }}
+            className='navbar navbar-expand-lg'
+          >
+            <div className='container-fluid'>
+              <a className='navbar-brand custom-cursive-font' href='home'>
+                <h3 style={{ color: 'white', fontFamily: 'cursive' }}>MyPantry</h3>
+              </a>
+              <button
+                className='navbar-toggler'
+                type='button'
+                data-bs-toggle='collapse'
+                data-bs-target='#navbarSupportedContent'
+                aria-controls='navbarSupportedContent'
+              >
+                <span className='navbar-toggler-icon'></span>
+              </button>
+              <div className='collapse navbar-collapse' id='navbarSupportedContent'>
+                <span style={{ width: '1070px' }}></span>
+                <ul className='navbar-nav ml-auto'>
+                  <li className='nav-item'>
+                    <a
+                      className='nav-link '
+                      style={{  color: 'white', fontFamily: 'cursive' }}
+                      aria-current='page'
+                      href='../home'
+                    >
+                      Recipe
+                    </a>
+                  </li>
+                  <li className='nav-item'>
+                    <a
+                      className='nav-link active'
+                      aria-current='page'
+                      href='/userpage/mealplannermain'
+                      style={{ color: 'white', fontFamily: 'cursive' }}
+                    >
+                      Planner
+                    </a>
+                  </li>
+                  <li className='nav-item'>
+                    <a
+                      className='nav-link'
+                      aria-current='page'
+                      href='../userpage/recyclehome'
+                      style={{ color: 'white', fontFamily: 'cursive' }}
+                    >
+                      Recycle
+                    </a>
+                  </li>
+                  <li className='nav-item'>
+                    <a
+                      className='nav-link'
+                      aria-current='page'
+                      href='/userpage/userprofileMR'
+                      style={{ color: 'white' }}
+                    >
+                      <i className='fa fa-user'></i>
+                    </a>
+                  </li>
+                  <li className='nav-item'>
+                    <a className='nav-link' aria-current='page' href='#' style={{ color: 'white' }}>
+                      <i className='fa fa-sign-out'></i>
+                    </a>
+                  </li>
 
-      <div style={{
-          height: '653px',
-          width: '100%',
-          overflow: 'hidden',
-          display: 'flex', 
-          justifyContent: 'space-between'
-        }}>
-        <div style={{ width: '20%', height: '100%', backgroundColor: '#d9d9d9', padding: '10px' }}>
-
-       
-
-
-        </div>
-        <div style={{ width: '80%',  height: '100%', backgroundColor: 'white', padding: '10px' }}>
-          {recycle.recycleimageUrl && <img className="recycle-picture" style ={{ width: '100px', height: '100px',borderRadius: '50%',objectFit: 'cover',overflow: 'hidden'}}
+                  <Dropdown>
+                    <Dropdown.Toggle
+                      style={{
+                        border: 'none',
+                        color: 'inherit',
+                        fontSize: 'inherit',
+                        color: 'white',
+                        backgroundColor: '#d8456b',
+                        paddingRight: '0px',
+                        paddingLeft: '0px',
+                        marginTop: '0px',
+                      }}
+                    >
+                      <i className='fa fa-bell text-white'></i>
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      <Dropdown.Item>Notification 1</Dropdown.Item>
+                      <Dropdown.Item>Notification 2</Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </ul>
+              </div>
+            </div>
+          </nav>
+          <div
+            className='col-3 '
+            style={{
+              paddingTop: '20px',
+              backgroundColor: '#ffffff',
+              overflowY: 'Auto',
+              textAlign: 'center',
+              height: '90%',
+            }}
+          >
+            {recycle.recycleimageUrl && <img className="recycle-picture" style={{
+                  width: '360px',
+                  height: '300px',
+                  objectFit: 'cover',
+                  overflow: 'hidden',
+                }}
           src={recycle.recycleimageUrl} alt="Uploaded Image" />}
-          <h2 style={{fontFamily: 'Inter, sans-serif', font: 'bold' }}>{recycle.name}</h2>
-          <button onClick={addrecyclewishlist}>Add to Wishlist</button>
+          
+          <h2 style={{fontFamily: 'cursive', font: 'bold', marginTop: '10px' }}>{recycle.name}</h2>
+          <button onClick={addrecyclewishlist} style={{
+                backgroundColor: '#0b5ed7',
+                padding: '5px',
+                borderRadius: '10%',
+              }}>Add to Wishlist</button>
           <p>{errorMessage}</p>
-          <h5 style={{fontFamily: 'Inter, sans-serif'}}>{recycle.description}</h5>
+          </div>
+          <div
+            className='col-sm'
+            style={{
+              padding: '20px',
+              backgroundColor: '#eceeee',
+              height: '90%',
+              overflowY: 'auto',
+            }}
+              
+          >
+              
 
-          <table style={{ width: '100%', marginTop: '20px', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr>
-                <th style={{ padding: '8px', borderBottom: '1px solid black', textAlign: 'center'}}>Preparation Time</th>
-                <th style={{ padding: '8px', borderBottom: '1px solid black', textAlign: 'center' }}>Category</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style={{ padding: '8px', borderBottom: '1px solid black', textAlign: 'center' }}>{recycle.prepTime}</td>
-                <td style={{ padding: '8px', borderBottom: '1px solid black', textAlign: 'center' }}>{recycle.recycletype}</td>
-              </tr>
-            </tbody>
-          </table>
-          <h5 style={{fontFamily: 'Inter, sans-serif'}}>{recycle.instruction}</h5>
-        </div>
-      </div>
+              <table  class='table table-bordered border-primary' style={{ width: '100%', marginTop: '20px', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr>
+                    <th style={{ padding: '8px', borderBottom: '1px solid black', textAlign: 'center'}}>Preparation Time</th>
+                    <th style={{ padding: '8px', borderBottom: '1px solid black', textAlign: 'center' }}>Category</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style={{ padding: '8px', borderBottom: '1px solid black', textAlign: 'center' }}>{recycle.prepTime}</td>
+                    <td style={{ padding: '8px', borderBottom: '1px solid black', textAlign: 'center' }}>{recycle.recycletype}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 style={{ fontFamily: 'Cursive' }}>
+              <i className='fa fa-star' style={{ paddingRight: '10px' }}></i>
+              Description:
+            </h3>
+              <h5 style={{fontFamily: 'Inter, sans-serif'}}>{recycle.description}</h5>
+              <br></br>
+              <h3 style={{ fontFamily: 'Cursive' }}>
+              <i className='fa fa-star' style={{ paddingRight: '10px' }}></i>
+              Instructions:
+            </h3>
+              <h5 style={{fontFamily: 'Inter, sans-serif'}}>{recycle.instruction}</h5>
+
+
+
+          </div>
+          </div></div>
+
+     
       
     </>
   );

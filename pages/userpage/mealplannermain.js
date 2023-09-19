@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Link from 'next/link';
-
+import { Dropdown } from 'react-bootstrap';
+import 'font-awesome/css/font-awesome.min.css';
 const MealPlanner = () => {
   const [wishlist, setWishlist] = useState([]);
   const [mealPlans, setMealPlans] = useState({});
@@ -205,28 +206,55 @@ const deleteMealPlan = async (planId) => {
 
   return (
     <>
-    <nav style={{ padding: '30px', height: '50px', width: '100%', backgroundColor: '#47974F', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <h2 style={{ color: 'white', fontFamily: 'cursive' }}>MyPantry</h2>
+    <div className='container-fluid'>
+        <div className="row vh-100">
+        <nav style={{ backgroundColor: '#d8456b', height: '10%' }} className="navbar navbar-expand-lg" >
+  <div className="container-fluid" >
+    <a className="navbar-brand custom-cursive-font" href="home" ><h3 style={{ color: 'white', fontFamily: 'cursive' }}>MyPantry</h3></a>
+    <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent">
+      <span className="navbar-toggler-icon"></span>
+    </button>
+    <div className="collapse navbar-collapse" id="navbarSupportedContent">
+    <span style={{width:'1070px'}}></span>
+      <ul className="navbar-nav ml-auto" >
 
-        <div style={{ marginRight: '10px' }}>
-            <Link href="/home" style={{ margin: '0 10px', textDecoration: 'none', color: 'black', cursor: 'pointer' }} passHref>
-                All menu
-            </Link>
-            <Link href="/planner" style={{ margin: '0 10px', textDecoration: 'none', color: 'black', cursor: 'pointer' }} passHref>
-                Planner
-            </Link>
-            <Link href="/userpage/userProfileWL" style={{ margin: '0 10px', textDecoration: 'none', color: 'black', cursor: 'pointer' }}>
-                Recycle
-            </Link>
-            <Link href="/userpage/userprofileMR" style={{ margin: '0 10px', textDecoration: 'none', color: 'black', cursor: 'pointer' }}>
-                Profile
-            </Link>
-        </div>
-    </nav>
-    {isCreating ? displayCreationForm() : displaySavedPlans()}
+        <li className="nav-item" >
+          <a className="nav-link " style={{ color: 'white', fontFamily: 'cursive' }} aria-current="page" href="home">Recipe</a>
+        </li>
+        <li className="nav-item">
+          <a className="nav-link active" aria-current="page" href="../userpage/mealplannermain" style={{fontWeight: 'bold', color: 'white', fontFamily: 'cursive' }}>Planner</a>
+        </li>
+        <li className="nav-item">
+          <a className="nav-link" aria-current="page" href="../userpage/recyclehome" style={{ color: 'white', fontFamily: 'cursive' }}>Recycle</a>
+        </li>
+        <li className="nav-item">
+          <a className="nav-link" aria-current="page" href="../userpage/userprofileMR" style={{ color: 'white' }}><i className="fa fa-user"></i>
+          </a>
+        </li>
+        <li className="nav-item">
+          <a className="nav-link" aria-current="page" href='#' style={{ color: 'white' }}><i className="fa fa-sign-out"></i></a>
+        </li>
+
+        <Dropdown >
+          <Dropdown.Toggle style={{ border: 'none', color: 'inherit', fontSize: 'inherit', color: 'white', backgroundColor: '#d8456b', paddingRight: '0px', paddingLeft: '0px', marginTop: '0px' }}><i className="fa fa-bell text-white"></i></Dropdown.Toggle>
+          <Dropdown.Menu >
+            <Dropdown.Item >Notification 1</Dropdown.Item>
+            <Dropdown.Item >Notification 2</Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+      </ul>
+    </div>
+  </div>
+</nav>
+<div className="col " style={{ padding: '20px', backgroundColor: '#ffffff', overflowY: 'Auto',   height: '90%' }}>
+{isCreating ? displayCreationForm() : displaySavedPlans()}
     <div>
         <h2>Saved Meal Plans</h2>
     </div>
+</div>
+
+</div></div>
+    
 
 
     </>
