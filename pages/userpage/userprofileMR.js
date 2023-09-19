@@ -6,7 +6,8 @@ import { Card, Grid, Text, Pagination } from "@nextui-org/react";
 import { useRouter } from 'next/router';
 import Uppy from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
-
+import { Dropdown } from 'react-bootstrap';
+import 'font-awesome/css/font-awesome.min.css';
 
 const UserprofileMR = () => {
   const [showForm, setShowForm] = useState(false);
@@ -506,37 +507,59 @@ const handleIngredientChange = (index, field, value) => {
 
   return (
     <>
-      
-      <nav style={{ padding: '30px', height: '50px', width: '100%', backgroundColor: '#47974F', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <h2 style={{ color: 'white', fontFamily: 'cursive' }}>MyPantry</h2>
+      <div className='container-fluid'>
+        <div className="row vh-100">
+        <nav style={{ backgroundColor: '#d8456b', height: '10%' }} className="navbar navbar-expand-lg" >
+  <div className="container-fluid" >
+    <a className="navbar-brand custom-cursive-font" href="home" ><h3 style={{ color: 'white', fontFamily: 'cursive' }}>MyPantry</h3></a>
+    <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent">
+      <span className="navbar-toggler-icon"></span>
+    </button>
+    <div className="collapse navbar-collapse" id="navbarSupportedContent">
+    <span style={{width:'1070px'}}></span>
+      <ul className="navbar-nav ml-auto" >
 
-        <div style={{ marginRight: '10px' }}>
-          <Link href="/home" style={{ margin: '0 10px', textDecoration: 'none', color: 'black', cursor: 'pointer' }} passHref>
-            All menu
-          </Link>
-          <Link href="/planner" style={{ margin: '0 10px', textDecoration: 'none', color: 'black', cursor: 'pointer' }} passHref>
-            Planner
-          </Link>
-          <Link href="/userpage/userProfileWL" style={{ margin: '0 10px', textDecoration: 'none', color: 'black', cursor: 'pointer' }}>
-            Recycle
-          </Link>
-          <Link href="/userpage/userprofileMR" style={{ margin: '0 10px', textDecoration: 'none', color: 'black', cursor: 'pointer' }}>
-            Profile
-          </Link>
-        </div>
-      </nav>
+        <li className="nav-item" >
+          <a className="nav-link " style={{ fontWeight: 'bold', color: 'white', fontFamily: 'cursive' }} aria-current="page" href="home">Recipe</a>
+        </li>
+        <li className="nav-item">
+          <a className="nav-link active" aria-current="page" href="../userpage/mealplannermain" style={{ color: 'white', fontFamily: 'cursive' }}>Planner</a>
+        </li>
+        <li className="nav-item">
+          <a className="nav-link" aria-current="page" href="../userpage/recyclehome" style={{ color: 'white', fontFamily: 'cursive' }}>Recycle</a>
+        </li>
+        <li className="nav-item">
+          <a className="nav-link" aria-current="page" href="../userpage/userprofileMR" style={{ color: 'white' }}><i className="fa fa-user"></i>
+          </a>
+        </li>
+        <li className="nav-item">
+          <a className="nav-link" aria-current="page" href='#' style={{ color: 'white' }}><i className="fa fa-sign-out"></i></a>
+        </li>
 
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '50px' }}>
-        <input type="file" onChange={handleFileChange} />
-        <button onClick={handleUpload}>Upload</button>{selectedFile && <p>{selectedFile.name}</p>}
-        {imageUrl && <img className="recipe-picture" style ={{ width: '100px', height: '100px',borderRadius: '50%',objectFit: 'cover',overflow: 'hidden'}}
+        <Dropdown >
+          <Dropdown.Toggle style={{ border: 'none', color: 'inherit', fontSize: 'inherit', color: 'white', backgroundColor: '#d8456b', paddingRight: '0px', paddingLeft: '0px', marginTop: '0px' }}><i className="fa fa-bell text-white"></i></Dropdown.Toggle>
+          <Dropdown.Menu >
+            <Dropdown.Item >Notification 1</Dropdown.Item>
+            <Dropdown.Item >Notification 2</Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+        <div className="col-3 " style={{ paddingTop: '20px', backgroundColor: '#ffffff', overflowY: 'Auto', textAlign: 'center',  height: '90%' }}>  
+        {selectedFile && <p>{selectedFile.name}</p>}
+        {imageUrl && <img className="recipe-picture" style ={{ width: '300px', height: '300px',borderRadius: '50%',objectFit: 'cover',overflow: 'hidden'}}
         src={imageUrl} alt="Uploaded Image" />}
-        <h3 style={{ marginTop: '20px' }}>{name}</h3>
-        <p>{email}</p>
-        <p>{phone}</p>
+        <input type="file" onChange={handleFileChange} />
+        <button onClick={handleUpload}>Upload</button>
+        <span style={{fontFamily: 'cursive'}}><h3 style={{ marginTop: '20px', fontStyle: 'cursive', fontWeight: 'bold'}}>{name}</h3>
+        <p>{email} <br></br> {phone}</p>
+        </span>
         <div style={{ marginTop: '50px' }}>
           <Link href="/userpage/userprofileMR" passHref>
-            <button className="btn btn-primary" style={{ marginRight: '10px' }}>My Recipe</button>
+            <button className="btn btn-primary" style={{ marginRight: '10px', fontWeight: 'bold' }}>My Recipe</button>
           </Link>
           <Link href="/userpage/userProfileWL" >
             <button className="btn btn-primary" style={{ marginRight: '10px' }}>Wishlist</button>
@@ -544,39 +567,64 @@ const handleIngredientChange = (index, field, value) => {
           <Link href="/userpage/userprofileRE" >
             <button className="btn btn-primary" style={{ marginRight: '10px' }}>My Recycle</button>
           </Link>
-          <Button className="btn btn-primary" onClick={handleFormOpen}><i className="fas fa-plus">+</i></Button>
+          <Button className="btn btn-primary" onClick={handleFormOpen}><i className="fa fa-plus"></i></Button>
         </div>
-        <div style={{ marginTop: '50px', marginBottom: '100%', backgroundColor: 'white' }}></div>
-      </div>
-      <div style={{marginTop: '20px',marginBottom: '20px',backgroundColor: '#f5f5f5',width: '95%',
-                  borderRadius: '10px',overflow: 'hidden',}}>
-        <Grid.Container gap={2} justify="flex-start">
+        
+          </div>
+
+          <div className="col-sm " style={{ paddingTop: '20px', backgroundColor: '#eceeee', overflow: 'hidden',  height: '90%', overflowY: 'auto'}}>
+          <Grid.Container gap={2} justify="flex-start">
           {posts.map((post, index) => (
             <Grid xs={6} sm={3} key={index}>
-              <Card isPressable>
-                <Card.Body css={{ p: 0 }}>
+               
+               
+              
+              <Card isPressable >
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <button
+                  style={{ width: '40px', backgroundColor: '#0b5ed7' }}
+                  onClick={() => {
+                    if (window.confirm('Are you sure you want to delete this recipe?')) {
+                      handleDeleteRecipe(post._id);
+                    }
+                  }}
+                >
+                  <i className="fa fa-trash"></i>
+                </button>
+                <button
+                  style={{ width: '40px', backgroundColor: '#0b5ed7' }}
+                  onClick={() => handleEditRecipe(post)}
+                >
+                  <i className="fa fa-edit"></i>
+                </button>
+              </div>
+              <Link href= {`/userpage/recipe/${post._id}`} style={{textDecoration: 'none'}}>
+  <Card.Body css={{ alignItems: 'center', width: '100%'}}>
+                {post.recipeimageUrl && <img className="recipe-picture" style ={{ width: '150px', height: '150px', objectFit: 'cover', overflow: 'hidden'}}
+                src={post.recipeimageUrl} alt="Uploaded Image" />}
+                
                 </Card.Body>
+                </Link>
+                <Link href= {`/userpage/recipe/${post._id}`} style={{textDecoration: 'none'}}>
                 <Card.Footer css={{ justifyItems: "flex-start" }}>
                   <Row wrap="wrap" justify="space-between" align="center">
                     <div key={post._id}>
-                        <Link href= {`/userpage/recipe/${post._id}`} style={{textDecoration: 'none'}}>
+                       
                         <Text b>{post.name}</Text>
-                        </Link>
-                    </div>       
-                    <button onClick={() => {if (window.confirm('Are you sure you want to delete this recipe?')) 
-                    {handleDeleteRecipe(post._id)}}}>Delete</button>      
-                    <button onClick={() => handleEditRecipe(post)}>Edit</button>
+                        
+                    </div>     
                   </Row>
                 </Card.Footer>
+                </Link>
               </Card>
+              
             </Grid>
           ))}
         </Grid.Container>
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '20px' }}>
-          <Pagination rounded total={10} initialPage={1} />
-        </div>
-      </div>
-      <Modal show={showForm} onHide={handleFormClose} centered>
+        
+          
+          </div>
+          <Modal show={showForm} onHide={handleFormClose} centered>
         <Modal.Header closeButton>
           <Modal.Title>Desired Options</Modal.Title>
         </Modal.Header>
@@ -586,9 +634,7 @@ const handleIngredientChange = (index, field, value) => {
               <Button variant="primary" style={{ width: '100%' }} onClick={handleRecipeFormOpen}>Recipe</Button>
             </Col>
             <Col className="text-center">
-              
                 <Button variant="primary" style={{ width: '100%' }} onClick={handleReycleFormOpen}>Recycle</Button>
-             
             </Col>
           </Row>
         </Modal.Body>
@@ -696,7 +742,7 @@ const handleIngredientChange = (index, field, value) => {
                 </Col>
               </Row>
               ))}
-              <Button onClick={handleAddIngredient}>Add Ingredient</Button>
+              <Button style={{margin: '10px', padding: '5px'}} onClick={handleAddIngredient}>Add Ingredient</Button>
             </Form.Group>
 
 
@@ -708,7 +754,7 @@ const handleIngredientChange = (index, field, value) => {
             <Form.Group>
               <Form.Label>Recipe Image</Form.Label>
               <input type="file" onChange={recipehandleFileChange} />
-              <button onClick={recipehandleupload}>Upload</button>{recipeselectedFile && <p>{recipeselectedFile.name}</p>}
+              <button style={{margin: '10px'}} onClick={recipehandleupload}>Upload</button>{recipeselectedFile && <p>{recipeselectedFile.name}</p>}
               {recipeImageUrl && <img className="recycle-picture" style ={{ width: '100px', height: '100px',borderRadius: '50%',objectFit: 'cover',overflow: 'hidden'}}
               src={recipeImageUrl} alt="Uploaded Image" />}
             </Form.Group>
@@ -745,7 +791,7 @@ const handleIngredientChange = (index, field, value) => {
                   <Form.Control type="number" name="prepTime" id = "prepTime" value={recycleData.prepTime} onChange={handleChangeRecycle} />
                 </Form.Group>
               </Col>
-
+              
             
 
             <Form.Group>
@@ -766,7 +812,7 @@ const handleIngredientChange = (index, field, value) => {
             <Form.Group>
               <Form.Label>Recycle Image</Form.Label>
               <input type="file" onChange={recyclehandleFileChange} />
-              <button onClick={recyclehandleupload}>Upload</button>{recycleselectedFile && <p>{recycleselectedFile.name}</p>}
+              <button style={{margin: '5px'}} onClick={recyclehandleupload}>Upload</button>{recycleselectedFile && <p>{recycleselectedFile.name}</p>}
               {recycleImageUrl && <img className="recycle-picture" style ={{ width: '100px', height: '100px',borderRadius: '50%',objectFit: 'cover',overflow: 'hidden'}}
               src={recycleImageUrl} alt="Uploaded Image" />}
             </Form.Group>
@@ -779,10 +825,18 @@ const handleIngredientChange = (index, field, value) => {
           <Button variant="primary" onClick={handleSubmitRecycle}>Save</Button>
         </Modal.Footer>
       </Modal>
+        </div>
+      </div>
+      
+      
+
+
+
+
+      
     </>
   );
 };
 
 export default UserprofileMR;
-
 
