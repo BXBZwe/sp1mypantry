@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Dropdown } from 'react-bootstrap';
+import { Dropdown, Modal, Button  } from 'react-bootstrap';
 import 'font-awesome/css/font-awesome.min.css';
 
-const Itemprofile = () => {
+const Itemprofile = ({isOpen, closeModal, postId}) => {
   const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
   const { id } = router.query;
@@ -13,7 +13,13 @@ const Itemprofile = () => {
   const [scaledServings, setScaledServings] = useState(1);
   const [scaleingredients, setScaledIngredients] = useState([]);
   const [showScaleModal, setShowScaleModal] = useState(false);
-  const [scaledIngredientsVisible, setScaledIngredientsVisible] = useState(false); // New state
+  const [scaledIngredientsVisible, setScaledIngredientsVisible] = useState(false);
+  const [reason, setReason] = useState('');
+  const [details, setDetails] = useState('');
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+
+
 
   const scalingfactors = {
     MEAT: 1,
@@ -98,6 +104,44 @@ const Itemprofile = () => {
       console.log('An error occurred while adding the post to the wishlist.');
     }
   };
+
+  const handleReportSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const reportedBy = localStorage.getItem('userId');
+      const response = await fetch('/api/report/report', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id,
+          reportedBy,
+          postType: 'recipe',
+          reason,
+          additionalDetails: details
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      setShowReportModal(false);
+      setReason('');
+      setDetails('');
+      alert('Report submitted successfully!');
+      // Optionally, show a message to the user that the report has been submitted successfully
+    } catch (error) {
+      console.error('Error reporting:', error);
+    }
+  };
+  
+
+
+
 
   return (
     <>
@@ -227,6 +271,38 @@ const Itemprofile = () => {
             >
               Add to Wishlist
             </button>
+            <button onClick={() => setShowReportModal(true)} style={{marginTop: '20px'}}>
+              Report Post
+            </button>
+
+            <Modal show={showReportModal} onHide={() => setShowReportModal(false)}>
+              <Modal.Header closeButton>
+                <Modal.Title>Report Post</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <div>
+                  <label>Reason:</label>
+                  <select value={reason} onChange={(e) => setReason(e.target.value)}>
+                    <option value="Inappropriate Content">Inappropriate Content</option>
+                    <option value="Misinformation">Misinformation</option>
+                    <option value="Spam">Spam</option>
+                    {/* Add other options if needed */}
+                  </select>
+                </div>
+                <div>
+                  <label>Details:</label>
+                  <textarea value={details} onChange={(e) => setDetails(e.target.value)} rows="4"></textarea>
+                </div>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={() => setShowReportModal(false)}>
+                  Close
+                </Button>
+                <Button variant="primary" onClick={handleReportSubmit}>
+                  Submit Report
+                </Button>
+              </Modal.Footer>
+            </Modal>
             <p>{errorMessage}</p>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>

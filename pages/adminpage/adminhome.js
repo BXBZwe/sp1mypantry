@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Tab, Tabs, Table, Button, Modal } from 'react-bootstrap';
+import { Tab, Tabs, Table, Button, Modal, Form } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Dropdown } from 'react-bootstrap';
 
@@ -11,6 +11,17 @@ const Admin = () => {
   const [posts, setPosts] = useState([]);
   const [recycles, setRecycles] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [reports, setReports] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [modalData, setModalData] = useState(null);
+  const [selectedReportId, setSelectedReportId] = useState(null);
+  const [showAdminCommentModal, setShowAdminCommentModal] = useState(false);
+  const [adminComment, setAdminComment] = useState("");
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+
+
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -49,12 +60,150 @@ const Admin = () => {
         console.error(error);
       }
     };
+    const FetchAllReports = async () => {
+      try {
+        const response = await fetch('/api/report/report');  // Assuming your API endpoint to fetch reports is '/api/reports'
+        const data = await response.json();
+        setReports(data);
+        console.log("Fetched reports: ", data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    const fetchNotifications = async () => {
+      const currentUserId = localStorage.getItem('userId');
+      try {
+        const response = await fetch(`/api/notification/notification?userId=${currentUserId}`); 
+        const data = await response.json();
+        setNotifications(data);
+        console.log("notifications data :", data)
+        setUnreadCount(data.length);
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
     FetchAllusers();
     FetchAllPosts();
     FetchAllRecycles();
+    FetchAllReports();
+    fetchNotifications();
   }, []);
 
+  const handleShowDetails = (report) => {
+    setSelectedReportId(report._id);
+    setModalData(report);
+    setShowModal(true);
+  };
+
+  const handleAcceptReportWithComment = async () => {
+    const currentUserId = localStorage.getItem('userId');
+    try {
+      const response = await fetch('/api/report/adminaction', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          reportId: selectedReportId,
+          action: 'accepted',
+          adminComment,
+          currentUserId: currentUserId
+        }),
+      });
+  
+      const data = await response.json();
+      if (data.error) {
+        throw new Error(data.error);
+      }
+  
+      alert('Report accepted successfully!');
+      setShowAdminCommentModal(true);
+      // TODO: update the UI, e.g., remove the report from the list, or update its status
+    } catch (error) {
+      console.error('Error accepting report:', error);
+    }
+  };
+  
+  const handleNotificationClick = async (notificationId) => {
+    try {
+      const response = await fetch('/api/notification/notification', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          notificationId,
+          status: 'read',
+        }),
+      });
+  
+      const data = await response.json();
+      if (data.error) {
+        throw new Error(data.error);
+      }
+  
+    } catch (error) {
+      console.error('Error updating notification status:', error);
+    }
+  };
+  
+  const handleDeclineReport = async () => {
+    try {
+      const response = await fetch('/api/report/adminaction', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          reportId: selectedReportId,
+          action: 'declined'
+        }),
+      });
+  
+      const data = await response.json();
+      if (data.error) {
+        throw new Error(data.error);
+      }
+  
+      alert('Report declined successfully!');
+      // TODO: update the UI, e.g., remove the report from the list, or update its status
+    } catch (error) {
+      console.error('Error declining report:', error);
+    }
+  };
+
+  const handleAdminCommentSubmit = async (e) => {
+    e.preventDefault();
+    const currentUserId = localStorage.getItem('userId');
+    try {
+      const response = await fetch('/api/report/adminaction', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          reportId: selectedReportId,
+          action: 'accepted',
+          adminComment,
+          currentUserId: currentUserId 
+        }),
+      });
+  
+      const data = await response.json();
+  
+      if (data.error) {
+        throw new Error(data.error);
+      }
+  
+      alert('Admin comment submitted and report accepted successfully.');
+      setShowAdminCommentModal(false); // close the modal
+    } catch (error) {
+      console.error('Error submitting admin comment:', error);
+    }
+  };
+  
+  
   return (
       <div className='container-fluid'>
         <div className="row vh-100">
@@ -75,13 +224,20 @@ const Admin = () => {
             <li className="nav-item">
               <a className="nav-link "  aria-current="page" href="adminprofile" style={{ color: 'white'}}>Profile</a>
             </li>
-            <Dropdown>
-              <Dropdown.Toggle><i className="fas fa-bell"></i></Dropdown.Toggle>
+            <Dropdown >
+                <Dropdown.Toggle style={{ border: 'none', color: 'inherit', fontSize: 'inherit',  color: 'white', backgroundColor: '#d8456b', paddingRight:'0px', paddingLeft:'0px', marginTop: '0px'}}><i className="fa fa-bell text-white"></i> {unreadCount > 0 && <span className="badge">{unreadCount}</span>}</Dropdown.Toggle>
                 <Dropdown.Menu >
-                  <Dropdown.Item>Notification 2</Dropdown.Item>
-                    <Dropdown.Item >Notification 1</Dropdown.Item>
-                  </Dropdown.Menu>
-          </Dropdown>
+                  {notifications && notifications.length > 0 ? (notifications.map((notification, index) => (
+                    <Dropdown.Item key={index} onClick={() => handleNotificationClick(notification._id)} 
+                    href={`/userpage/report/${notification.reportId}`}>
+                      {notification.message}
+                    </Dropdown.Item>
+                  ))
+                  ) : (
+                    <Dropdown.Item>No new notifications</Dropdown.Item>
+                  )}
+                </Dropdown.Menu>
+            </Dropdown>
       
             </ul>
           </div>
@@ -99,6 +255,7 @@ const Admin = () => {
                 <Table striped bordered>
                   <thead>
                     <tr>
+                      <th className="text-center">UserID</th>
                       <th className="text-center">Username</th>
                       <th className="text-center">Email</th>
                       <th className="text-center">Phone Number</th>
@@ -109,6 +266,7 @@ const Admin = () => {
                   {users.map((user) => (
                     <tbody key={user._id}>
                       <tr>
+                        <td className="text-center">{user._id}</td>
                         <td className="text-center">{user.name}</td>
                         <td className="text-center">{user.email}</td>
                         <td className="text-center">{user.phone}</td>
@@ -193,32 +351,97 @@ const Admin = () => {
           <Tab eventKey="report-notice" title="Report">
           <br></br>  
           <input style={{width: '30%'}} type="search" placeholder="Search" />
-           
+         
             <div className="container">
-             
+           
               <Table striped bordered>
                 <thead>
                   <tr>
-                    <th className="text-center">ID</th>
-                    <th className="text-center">Product/User Name</th>
-                    <th></th>
+                    <th className="text-center">Reported By</th>
+                    <th className="text-center">Reason</th>
+                    <th className="text-center">Post Type</th>  
+                    <th className="text-center">Details</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td className="text-center">1</td>
-                    <td className="text-center">Zwe Min Maw</td>
-                    <td className="text-center">
-                      <Button
-                        variant="dark"
-                        data-bs-toggle="modal"
-                        data-bs-target="#exampleModal"
-                      >
+                {reports.map((report) => (
+                  <tbody key={report._id}>
+                    <tr>
+                      <td className="text-center">{report.reportedName}</td>
+                      <td className="text-center">{report.reason}</td>
+                      <td className="text-center">{report.postType}</td>  
+                      <td className="text-center">
+                      <Button variant="dark" onClick={() => handleShowDetails(report)}>
                         Details
                       </Button>
-                    </td>
-                  </tr>
-                </tbody>
+                      <Modal show={showModal} onHide={() => setShowModal(false)}>
+                        <Modal.Header closeButton>
+                          <Modal.Title>Detail</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                          {modalData && (
+                            <div>
+                              <h4>Report Details</h4>
+                              <p><strong>Reported By:</strong> {modalData.reportedName}</p>
+                              <p><strong>Detail Reason:</strong> {modalData.additionalDetails}</p>
+                              <p><strong>Post Type:</strong> {modalData.postType}</p>
+
+                              <h4>Reported Post Details</h4>
+                              <p><strong>Recipe Name:</strong> {modalData.receipeDetails.name}</p>
+                              <p><strong>Description:</strong> {modalData.receipeDetails.description}</p>
+                              <p><strong>prepTime:</strong> {modalData.receipeDetails.prepTime}</p>
+                              <p><strong>servings:</strong> {modalData.receipeDetails.servings}</p>
+                              <p><strong>cookTime:</strong> {modalData.receipeDetails.cookTime}</p>
+                              <p><strong>origin:</strong> {modalData.receipeDetails.origin}</p>
+                              <p><strong>taste:</strong> {modalData.receipeDetails.taste}</p>
+                              <p><strong>mealtype:</strong> {modalData.receipeDetails.mealtype}</p>
+                              <p><strong>instruction:</strong> {modalData.receipeDetails.instruction}</p>
+                              <p><strong>Ingredients:</strong></p>
+                              <ul>
+                                {modalData.receipeDetails.ingredients.map((ingredient, index) => (
+                                  <li key={index}>
+                                    {`${ingredient.name} - ${ingredient.quantity}${ingredient.unit} (${ingredient.category})`}
+                                  </li>
+                                ))}
+                              </ul>                              
+                              <p><strong>recipeimageUrl:</strong> {modalData.receipeDetails.recipeimageUrl && 
+                              ( <img className='recipe-picture' style={{width: '360px', height: '300px', objectFit: 'cover', overflow: 'hidden',}}
+                              src={modalData.receipeDetails.recipeimageUrl} alt='Uploaded Image'/>
+                              )}</p>
+                              <p><strong>status:</strong> {modalData.receipeDetails.status}</p>
+
+                            </div>
+                          )}
+                        </Modal.Body>
+                        <Modal.Footer>
+                          <Button variant="secondary" onClick={handleDeclineReport}>
+                            Decline
+                          </Button>
+                          <Button variant="primary" onClick={handleAcceptReportWithComment}>
+                            Accept
+                          </Button>
+                        </Modal.Footer>
+                      </Modal>
+
+                      <Modal show={showAdminCommentModal} onHide={() => setShowAdminCommentModal(false)}>
+                        <Modal.Header closeButton>
+                          <Modal.Title>Admin Comments</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                          <Form.Control type="text" placeholder="Write your comment here" value={adminComment} onChange={(e) => setAdminComment(e.target.value)}/>
+                        </Modal.Body>
+                        <Modal.Footer>
+                          <Button variant="secondary" onClick={() => setShowAdminCommentModal(false)}>
+                            Cancel
+                          </Button>
+                          <Button variant="primary" onClick={handleAdminCommentSubmit}>
+                          Submit
+                          </Button>
+                        </Modal.Footer>
+                      </Modal>
+                      </td>
+                    </tr>
+                  </tbody>
+                ))}
               </Table>
             </div>
           </Tab>
@@ -249,16 +472,7 @@ const Admin = () => {
         </Modal.Footer>
       </Modal>
       </div>   
-      
-      
       </div>
-              
-      
-            
-
-
-
-
     </div>
   );
 }
