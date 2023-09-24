@@ -12,9 +12,12 @@ const HomePage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [selectedSubcategories, setSelectedSubcategories] = useState({});
   const [openCategories, setOpenCategories] = useState([]);
   const [subcategoriesChecked, setSubcategoriesChecked] = useState({});
+  
   const toggleSubcategory = (categoryId, subcategory) => {
     setSubcategoriesChecked((prev) => ({
       ...prev,
@@ -44,6 +47,7 @@ const HomePage = () => {
     });
   };
   
+
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
@@ -54,16 +58,36 @@ const HomePage = () => {
 
   useEffect(() => {
     const fetchAllPosts = async () => {
+      const currentUserId = localStorage.getItem('userId');
       try {
         const response = await fetch('/api/post/homeposts');
         const data = await response.json();
-        setPosts(data);
+        const filteredData = data.filter(post => 
+          post.status === 'visible' || (post.status === 'underreview' && post.userId === currentUserId)
+        );
+
+        setPosts(filteredData);
       } catch (error) {
         console.error(error);
       }
     };
+    
+    const fetchNotifications = async () => {
+      const currentUserId = localStorage.getItem('userId');
+      try {
+        const response = await fetch(`/api/notification/notification?userId=${currentUserId}`); 
+        const data = await response.json();
+        setNotifications(data);
+        console.log("notifications data :", data)
+        setUnreadCount(data.length);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    
 
     fetchAllPosts();
+    fetchNotifications();
   }, []);
  
   // Filter posts based on searchQuery
@@ -115,9 +139,30 @@ const HomePage = () => {
     return subcategoriesChecked[categoryId]?.[subcategory] || false;
   };
 
-  const stopPropagation = (e) => {
-    e.stopPropagation();
+  const handleNotificationClick = async (notificationId) => {
+    try {
+      const response = await fetch('/api/notification/notification', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          notificationId,
+          status: 'read',
+        }),
+      });
+  
+      const data = await response.json();
+      if (data.error) {
+        throw new Error(data.error);
+      }
+  
+    } catch (error) {
+      console.error('Error updating notification status:', error);
+    }
   };
+  
+
   return (
     <>
       <div className='container-fluid'>
@@ -139,6 +184,56 @@ const HomePage = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{width:'500px'}}
                 /></form>
+            <ul className="navbar-nav ml-auto" >
+
+            
+            <li className="nav-item" >
+              <a className="nav-link " style={{fontWeight: 'bold', color: 'white', fontFamily: 'cursive'}} aria-current="page" href="home">Recipe</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link active"  aria-current="page" href="../userpage/mealplannermain" style={{ color: 'white', fontFamily: 'cursive'}}>Planner</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link" aria-current="page" href="../userpage/recyclehome" style={{ color: 'white', fontFamily: 'cursive'}}>Recycle</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link" aria-current="page" href="../userpage/userprofileMR" style={{ color: 'white'}}><i className="fa fa-user"></i>
+</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link" aria-current="page" href='#' style={{ color: 'white'}}><i className="fa fa-sign-out"></i></a>
+            </li>
+            
+  
+              <Dropdown >
+                <Dropdown.Toggle style={{ border: 'none', color: 'inherit', fontSize: 'inherit',  color: 'white', backgroundColor: '#d8456b', paddingRight:'0px', paddingLeft:'0px', marginTop: '0px'}}><i className="fa fa-bell text-white"></i> {unreadCount > 0 && <span className="badge">{unreadCount}</span>}</Dropdown.Toggle>
+                <Dropdown.Menu >
+                  {notifications && notifications.length > 0 ? (notifications.map((notification, index) => (
+                    <Dropdown.Item key={index} onClick={() => handleNotificationClick(notification._id)} 
+                    href={`/userpage/report/${notification.reportId}`}>
+                      {notification.message}
+                    </Dropdown.Item>
+                  ))
+                  ) : (
+                    <Dropdown.Item>No new notifications</Dropdown.Item>
+                  )}
+                </Dropdown.Menu>
+              </Dropdown>
+            </ul>
+          </div>
+        </div>
+      </nav>
+          <div className="col-3 " style={{ paddingTop: '20px', backgroundColor: '#ffffff', overflow: 'hidden',  height: '90%' }}>
+            <h3 className="custom-cursive-font" style={{textAlign: 'center', fontWeight: 'bold'}}>Recipe Generator</h3>
+          <div class="card promoting-card">
+              <div class="card-body d-flex flex-row">
+                <div>
+                  <h4 class="card-title font-weight-bold mb-2">New spicy meals</h4>
+                  <p class="card-text"><i class="far fa-clock pr-2"></i>07/24/2018</p>
+                </div>
+              </div>
+              <div class="view overlay">
+
                 
                 <ul className="navbar-nav ml-auto" >
                 
