@@ -12,6 +12,10 @@ const HomePage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -23,16 +27,36 @@ const HomePage = () => {
  
   useEffect(() => {
     const fetchAllPosts = async () => {
+      const currentUserId = localStorage.getItem('userId');
       try {
         const response = await fetch('/api/post/homeposts');
         const data = await response.json();
-        setPosts(data);
+        const filteredData = data.filter(post => 
+          post.status === 'visible' || (post.status === 'underreview' && post.userId === currentUserId)
+        );
+
+        setPosts(filteredData);
       } catch (error) {
         console.error(error);
       }
     };
+    
+    const fetchNotifications = async () => {
+      const currentUserId = localStorage.getItem('userId');
+      try {
+        const response = await fetch(`/api/notification/notification?userId=${currentUserId}`); 
+        const data = await response.json();
+        setNotifications(data);
+        console.log("notifications data :", data)
+        setUnreadCount(data.length);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    
 
     fetchAllPosts();
+    fetchNotifications();
   }, []);
 
   // Filter posts based on searchQuery
@@ -50,6 +74,29 @@ const HomePage = () => {
     setIsAuthenticated(false);
   };
 
+  const handleNotificationClick = async (notificationId) => {
+    try {
+      const response = await fetch('/api/notification/notification', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          notificationId,
+          status: 'read',
+        }),
+      });
+  
+      const data = await response.json();
+      if (data.error) {
+        throw new Error(data.error);
+      }
+  
+    } catch (error) {
+      console.error('Error updating notification status:', error);
+    }
+  };
+  
   return (
     <>
      
@@ -97,10 +144,17 @@ const HomePage = () => {
             
   
               <Dropdown >
-                <Dropdown.Toggle style={{ border: 'none', color: 'inherit', fontSize: 'inherit',  color: 'white', backgroundColor: '#d8456b', paddingRight:'0px', paddingLeft:'0px', marginTop: '0px'}}><i className="fa fa-bell text-white"></i></Dropdown.Toggle>
+                <Dropdown.Toggle style={{ border: 'none', color: 'inherit', fontSize: 'inherit',  color: 'white', backgroundColor: '#d8456b', paddingRight:'0px', paddingLeft:'0px', marginTop: '0px'}}><i className="fa fa-bell text-white"></i> {unreadCount > 0 && <span className="badge">{unreadCount}</span>}</Dropdown.Toggle>
                 <Dropdown.Menu >
-                  <Dropdown.Item >Notification 1</Dropdown.Item>
-                  <Dropdown.Item >Notification 2</Dropdown.Item>
+                  {notifications && notifications.length > 0 ? (notifications.map((notification, index) => (
+                    <Dropdown.Item key={index} onClick={() => handleNotificationClick(notification._id)} 
+                    href={`/userpage/report/${notification.reportId}`}>
+                      {notification.message}
+                    </Dropdown.Item>
+                  ))
+                  ) : (
+                    <Dropdown.Item>No new notifications</Dropdown.Item>
+                  )}
                 </Dropdown.Menu>
               </Dropdown>
             </ul>

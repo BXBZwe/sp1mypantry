@@ -23,6 +23,7 @@ const LoginPage = () => {
       if (response.ok) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('userId', data.userId); 
+        
         console.log("UserID: ", data.userId);
         if (data.isAdmin){
           router.push('adminpage/adminhome');
@@ -35,6 +36,7 @@ const LoginPage = () => {
       }
     } catch (error) {
       console.log(error);
+      alert ("wrong password or email!!");
     }
   };
 

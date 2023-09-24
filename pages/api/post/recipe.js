@@ -60,6 +60,11 @@ const PostSchema = new Schema({
         type: String,
         default: ''
     },
+    status: {
+        type: String,
+        enum: ['visible', 'hidden', 'underreview'],
+        default: 'visible'
+    },
     userId: { type: Schema.Types.ObjectId, ref: 'Usercollection' },
 });
 
