@@ -133,7 +133,9 @@ const HomePage = () => {
     }
   };
 
-  
+  const stopPropagation = (e) => {
+    e.stopPropagation();
+  };
 
   const isSubcategoryChecked = (categoryId, subcategory) => {
     return subcategoriesChecked[categoryId]?.[subcategory] || false;
@@ -223,46 +225,7 @@ const HomePage = () => {
           </div>
         </div>
       </nav>
-          <div className="col-3 " style={{ paddingTop: '20px', backgroundColor: '#ffffff', overflow: 'hidden',  height: '90%' }}>
-            <h3 className="custom-cursive-font" style={{textAlign: 'center', fontWeight: 'bold'}}>Recipe Generator</h3>
-          <div class="card promoting-card">
-              <div class="card-body d-flex flex-row">
-                <div>
-                  <h4 class="card-title font-weight-bold mb-2">New spicy meals</h4>
-                  <p class="card-text"><i class="far fa-clock pr-2"></i>07/24/2018</p>
-                </div>
-              </div>
-              <div class="view overlay">
-
-                
-                <ul className="navbar-nav ml-auto" >
-                
-                  <li className="nav-item" >
-                    <a className="nav-link " style={{fontWeight: 'bold', color: 'white', fontFamily: 'cursive'}} aria-current="page" href="home">Recipe</a>
-                  </li>
-                  <li className="nav-item">
-                    <a className="nav-link active"  aria-current="page" href="../userpage/mealplannermain" style={{ color: 'white', fontFamily: 'cursive'}}>Planner</a>
-                  </li>
-                  <li className="nav-item">
-                    <a className="nav-link" aria-current="page" href="../userpage/recyclehome" style={{ color: 'white', fontFamily: 'cursive'}}>Recycle</a>
-                  </li>
-                  <li className="nav-item">
-                    <a className="nav-link" aria-current="page" href="../userpage/userprofileMR" style={{ color: 'white'}}><i className="fa fa-user"></i></a>
-                  </li>
-                  <li className="nav-item">
-                    <a className="nav-link" aria-current="page" href='#' style={{ color: 'white'}}><i className="fa fa-sign-out"></i></a>
-                  </li>
-                  <Dropdown >
-                    <Dropdown.Toggle style={{ border: 'none', color: 'inherit', fontSize: 'inherit',  color: 'white', backgroundColor: '#d8456b', paddingRight:'0px', paddingLeft:'0px', marginTop: '0px'}}><i className="fa fa-bell text-white"></i></Dropdown.Toggle>
-                    <Dropdown.Menu >
-                      <Dropdown.Item >Notification 1</Dropdown.Item>
-                      <Dropdown.Item >Notification 2</Dropdown.Item>
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </ul>
-              </div>
-            </div>
-          </nav>
+          
           <div className="col-12 col-md-3 side-menu" style={{ paddingTop: '20px', backgroundColor: '#ffffff', overflow: 'hidden', height: '90%', overflowY: 'auto' }}>
             <h3 className="custom-cursive-font" style={{ textAlign: 'center', fontWeight: 'bold' }}>Recipe Generator</h3>
             <div className="side-menu">
