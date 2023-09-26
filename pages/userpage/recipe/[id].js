@@ -152,7 +152,7 @@ const Itemprofile = ({isOpen, closeModal, postId}) => {
             className='navbar navbar-expand-lg'
           >
             <div className='container-fluid'>
-              <a className='navbar-brand custom-cursive-font' href='home'>
+              <a className='navbar-brand custom-cursive-font' href='../home'>
                 <h3 style={{ color: 'white', fontFamily: 'cursive' }}>MyPantry</h3>
               </a>
               <button
@@ -270,9 +270,12 @@ const Itemprofile = ({isOpen, closeModal, postId}) => {
               }}
             >
               Add to Wishlist
-            </button>
-            <button onClick={() => setShowReportModal(true)} style={{marginTop: '20px'}}>
-              Report Post
+            </button><br></br>
+            <button onClick={() => setShowReportModal(true)} style={{marginTop: '5px', backgroundColor: '#d8456b',
+                padding: '5px',
+                borderRadius: '10%',
+                width: '120px'}}>
+              Report
             </button>
 
             <Modal show={showReportModal} onHide={() => setShowReportModal(false)}>
@@ -281,7 +284,7 @@ const Itemprofile = ({isOpen, closeModal, postId}) => {
               </Modal.Header>
               <Modal.Body>
                 <div>
-                  <label>Reason:</label>
+                  <label style={{margin: '5px'}}>Reason:</label>
                   <select value={reason} onChange={(e) => setReason(e.target.value)}>
                     <option value="Inappropriate Content">Inappropriate Content</option>
                     <option value="Misinformation">Misinformation</option>
@@ -290,7 +293,7 @@ const Itemprofile = ({isOpen, closeModal, postId}) => {
                   </select>
                 </div>
                 <div>
-                  <label>Details:</label>
+                  <label style={{margin: '6.5px'}}>Details:</label>
                   <textarea value={details} onChange={(e) => setDetails(e.target.value)} rows="4"></textarea>
                 </div>
               </Modal.Body>
@@ -468,7 +471,7 @@ const Itemprofile = ({isOpen, closeModal, postId}) => {
                       textAlign: 'center',
                     }}
                   >
-                    {post.prepTime}
+                    {`${post.prepTime.hours} hours ${post.prepTime.minutes} minutes`}
                   </td>
                   <td
                     style={{
@@ -477,7 +480,7 @@ const Itemprofile = ({isOpen, closeModal, postId}) => {
                       textAlign: 'center',
                     }}
                   >
-                    {post.cookTime}
+                    {`${post.cookTime.hours} hours ${post.cookTime.minutes} minutes`}
                   </td>
                   <td
                     style={{
@@ -494,15 +497,15 @@ const Itemprofile = ({isOpen, closeModal, postId}) => {
 
             <h3 style={{ fontFamily: 'Cursive' }}>
               <i className='fa fa-star' style={{ paddingRight: '10px' }}></i>
-              Ingredients:
+              Description:
             </h3>
-            <h5 style={{ fontFamily: 'Cursive' }}>{post.description}</h5>
+            <h5 style={{ fontFamily: 'Cursive', whiteSpace: 'pre-line' }}>{post.description}</h5>
             <br></br>
             <h3 style={{ fontFamily: 'Cursive' }}>
               {' '}
               <i className='fa fa-star' style={{ paddingRight: '10px' }}></i>Instruction:
             </h3>
-            <h5 style={{ fontFamily: 'Inter, sans-serif' }}>{post.instruction}</h5>
+            <h5 style={{ fontFamily: 'Inter, sans-serif', whiteSpace: 'pre-line' }}>{post.instruction}</h5>
           </div>
         </div>
       </div>

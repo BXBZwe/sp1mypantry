@@ -30,7 +30,10 @@ export default async function handler(req, res) {
 const ingredientSchema = new Schema({
     name: String,
     quantity: Number,
-    unit: String,
+    unit: {
+        type: String,
+        enum: ['gram', 'pieces', 'cuts', 'cups', 'tbsp', 'tsp', 'clove', 'leaves', 'slices', 'pitch', 'ml', 'pack', 'scoop'],
+    },
     category: {
         type: String,
         enum: [
@@ -42,12 +45,19 @@ const ingredientSchema = new Schema({
 const PostSchema = new Schema({
     name: String,
     description: String,
-    prepTime: String,
+    cookTime: {
+        hours: { type: Number, default: 0 },
+        minutes: { type: Number, default: 0 }
+    },
+    prepTime: {
+        hours: { type: Number, default: 0 },
+        minutes: { type: Number, default: 0 }
+    },
+    
     servings: Number,
-    cookTime: String,
     origin: {
         type: String,
-        enum: ['Thailand', 'Myanmar', 'China']
+        enum: ['Thailand', 'Myanmar', 'China', 'Japan', 'India', 'Sounth_Korea', 'Singapore', 'Vietnam', 'Malaysia']
     },
     taste: String,
     mealtype: {
@@ -71,3 +81,7 @@ const PostSchema = new Schema({
 
 const Post = models?.posts || model('posts', PostSchema);
 export{Post};
+
+
+
+

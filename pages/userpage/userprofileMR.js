@@ -288,20 +288,28 @@ const UserprofileMR = () => {
     setShowForm(true);
   };
 
-
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
-    // Prevent prepTime, servings, and cookTime from going below 0
-    if (name === 'prepTime' || name === 'servings' || name === 'cookTime') {
+    // Prevent servings from going below 0
+    if (name === 'servings') {
       if (value < 0) {
         return;
       }
     }
-    
     setRecipeData((prevData) => ({
       ...prevData,
       [name]: value,
+    }));
+  };
+  // Specialized handleChange for prepTime and cookTime
+  const handleTimeChange = (timeType, unitType, value) => {
+    if (value < 0) return;
+    setRecipeData((prevData) => ({
+      ...prevData,
+      [timeType]: {
+        ...prevData[timeType],
+        [unitType]: parseInt(value),
+      },
     }));
   };
 
@@ -463,7 +471,7 @@ const UserprofileMR = () => {
             recycleimageUrl: recycleImageUrl
         };
         const token = localStorage.getItem('token');
-        const response = await fetch('/api/post/recycle', { // replace with your actual endpoint
+        const response = await fetch('/api/post/recycle', { 
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -645,12 +653,12 @@ const handleIngredientChange = (index, field, value) => {
         </Modal.Footer>
       </Modal>
 
-      <Modal show={showRecipeForm} onHide={handleRecipeFormClose} centered>
+      <Modal  show={showRecipeForm} onHide={handleRecipeFormClose} centered >
         <Modal.Header closeButton>
           <Modal.Title>Recipe Form</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          <Form>
+        <Modal.Body >
+          <Form >
             <Form.Group >
               <Form.Label>Name</Form.Label>
               <Form.Control type="text" name="name" id = "name" value={recipeData.name} onChange={handleChange} />
@@ -661,23 +669,30 @@ const handleIngredientChange = (index, field, value) => {
               <Form.Control as="textarea" name="description" id = "description" value={recipeData.description} onChange={handleChange} />
             </Form.Group>
 
-            <Row>
-              <Col>
-                <Form.Group >
-                  <Form.Label>Prep Time</Form.Label>
-                  <Form.Control type="number" name="prepTime" id = "prepTime" value={recipeData.prepTime} onChange={handleChange} />
+            <Row >
+            <Col >
+                <Form.Group style={{width: '150px'}}>
+                  <Form.Label>Preparation Time:</Form.Label>
+                  <Form.Label>Hours</Form.Label>
+                  <Form.Control type="number" name="prepTimeHours" value={recipeData.prepTime.hours} onChange={(e) => handleTimeChange('prepTime', 'hours', e.target.value)}/>
+                  <Form.Label>Minutes</Form.Label>
+                  <Form.Control type="number" name="prepTimeMinutes" value={recipeData.prepTime.minutes} onChange={(e) => handleTimeChange('prepTime', 'minutes', e.target.value)}/>
                 </Form.Group>
               </Col>
+              <Col>
+                <Form.Group style={{width: '130px'}} >
+                  <Form.Label>Cooking Time</Form.Label>
+                  <Form.Label>Hours</Form.Label>
+                  <Form.Control type="number" name="cookTimeHours" value={recipeData.cookTime.hours} onChange={(e) => handleTimeChange('cookTime', 'hours', e.target.value)}/>
+                  <Form.Label>Minutes</Form.Label>
+                  <Form.Control type="number" name="cookTimeMinutes" value={recipeData.cookTime.minutes} onChange={(e) => handleTimeChange('cookTime', 'minutes', e.target.value)}/>
+                </Form.Group>
+              </Col>
+              
               <Col>
                 <Form.Group >
                   <Form.Label>Servings</Form.Label>
                   <Form.Control type="number" name="servings" id = "servings" value={recipeData.servings} onChange={handleChange} />
-                </Form.Group>
-              </Col>
-              <Col>
-                <Form.Group >
-                  <Form.Label>Cook Time</Form.Label>
-                  <Form.Control type="number" name="cookTime" id = "cookTime" value={recipeData.cookTime} onChange={handleChange} />
                 </Form.Group>
               </Col>
               <Col>
@@ -688,6 +703,12 @@ const handleIngredientChange = (index, field, value) => {
                     <option value="Thailand">Thailand</option>
                     <option value="Myanmar">Myanmar </option>
                     <option value="China">China </option>
+                    <option value="Japan">Japan</option>
+                    <option value="India">India </option>
+                    <option value="Sounth_Korea">Sounth Korea </option>
+                    <option value="Singapore">Singapore</option>
+                    <option value="Vietnam">Vietnam </option>
+                    <option value="Malaysia">Malaysia </option>
                   </Form.Control>
                 </Form.Group>
               </Col>
@@ -718,7 +739,22 @@ const handleIngredientChange = (index, field, value) => {
                   <Form.Control type="number" placeholder="Quantity" value={ingredient.quantity} onChange={(e) => handleIngredientChange(index, 'quantity', e.target.value)} />
                 </Col>
                 <Col>
-                  <Form.Control type="text" placeholder="Unit" value={ingredient.unit} onChange={(e) => handleIngredientChange(index, 'unit', e.target.value)} />
+                  <Form.Control as="select" value={ingredient.unit} onChange={(e) => handleIngredientChange(index, 'unit', e.target.value)}>
+                    <option value="">Select Unit</option>
+                    <option value="gram">Gram</option>
+                    <option value="pieces">Pieces</option>
+                    <option value="cuts">Cuts</option>
+                    <option value="cups">Cups</option>
+                    <option value="tbsp">Tbsp</option>
+                    <option value="tsp">Tsp</option>
+                    <option value="clove">Clove</option>
+                    <option value="leaves">Leaves</option>
+                    <option value="slices">Slices</option>
+                    <option value="pitch">Pitch</option>
+                    <option value="ml">ML</option>
+                    <option value="pack">Pack</option>
+                    <option value="scoop">Scoop</option>
+                  </Form.Control>
                 </Col>
                 <Col>
                   <Form.Control as="select" value={ingredient.category} onChange={(e) => handleIngredientChange(index, 'category', e.target.value)}>
@@ -798,9 +834,9 @@ const handleIngredientChange = (index, field, value) => {
               <Form.Label>Category</Form.Label>
               <Form.Control as="select" name="recycletype" id = "recycletype" value={recycleData.recycletype} onChange={handleChangeRecycle}>
               <option value="">Select Category</option>
-              <option value="Lee">Plant</option>
-              <option value="Myanmar">Animal </option>
-              <option value="China">Hht </option>
+              <option value="Thailand">Plant</option>
+              <option value="Myanmar">Animalfood</option>
+              <option value="China">FaceWash</option>
               </Form.Control>
             </Form.Group>
 
