@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 const LoginPage = () => {
   const router = useRouter();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-
+  const [showPassword, setShowPassword] = useState(false);
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -51,7 +52,6 @@ const LoginPage = () => {
   };
 
   const loginBoxStyle = {
-    padding: '1rem',
     backgroundColor: '#f0f0f0',
     display: 'flex',
     flexDirection: 'column',
@@ -92,18 +92,35 @@ const LoginPage = () => {
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
-
-          <div style={{marginBottom: '20px'}} className="form-group">
-            <label>Password</label>
-            <input
-              type="password"
-              name = "password"
-              className="form-control"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
+          <div className="form-group">
+          <div className="form-group">
+  <label>Password</label>
+  <div style={{ display: 'flex', alignItems: 'center' }}>
+    <input
+      type={showPassword ? 'text' : 'password'} // Toggle between text and password
+      className="form-control"
+      placeholder="Password"
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      required
+    />
+    <div className="input-group-append">
+      <button
+        type="button"
+        className="btn"
+        onClick={() => setShowPassword(!showPassword)} // Toggle password visibility
+        style={{
+          backgroundColor: 'white',
+          border: 'none',
+          marginLeft: '-40px', // Adjust this value to control the distance between the input and the icon
+        }}
+      >
+        {showPassword ? <FaEyeSlash /> : <FaEye />}
+      </button>
+    </div>
+  </div>
+</div></div>
+          <br></br>
           <button type="submit" className="btn my-auto" style={buttonStyle}>
             Login
           </button>

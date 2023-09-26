@@ -57,7 +57,7 @@ const Signup = () => {
     backgroundColor: '#BBE4BA',
     marginBottom: '0.5rem',
     width: '55%',
-    margin: '5px 22% auto',
+    margin: '10px 22% auto',
   };
 
   return (

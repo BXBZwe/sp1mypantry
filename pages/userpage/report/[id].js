@@ -63,7 +63,18 @@ const ReportDetailPage = ({ match }) => {
   };
   
   return (
-    <div>
+    <div className='container-fluid'>
+        <div className='row vh-100'>
+        <div
+            className='col-sm'
+            style={{
+              padding: '20px',
+              backgroundColor: '#eceeee',
+              height: '90%',
+              overflowY: 'auto',
+              color: 'black'
+            }}
+          >
       {report && (
         <div>
           <h4>Report Details</h4>
@@ -102,13 +113,23 @@ const ReportDetailPage = ({ match }) => {
                  src={report.receipeDetails.recipeimageUrl} 
                  alt='Recipe' />
           )}
-  
+          <br></br>
           {/* Edit and Delete buttons */}
-          <button>Edit Post</button>
-          <button onClick={deletePost}>Delete Post</button>
+          <button style={{
+                backgroundColor: '#0b5ed7',
+                padding: '5px',
+                borderRadius: '10%',
+                margin: '10px'
+              }}>Edit Post</button>
+          <button onClick={deletePost} style={{
+                backgroundColor: 'red',
+                padding: '5px',
+                borderRadius: '10%',
+                
+              }}>Delete Post</button>
         </div>
       )}
-    </div>
+    </div></div></div>
   );
   
 };
