@@ -5,7 +5,7 @@ import { Row } from 'react-bootstrap';
 import { Card, Grid, Text } from "@nextui-org/react";
 import { Dropdown } from 'react-bootstrap';
 import 'font-awesome/css/font-awesome.min.css';
-
+import string_name from '../api/post/recipe'
 const HomePage = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [posts, setPosts] = useState([]);
@@ -26,35 +26,11 @@ const HomePage = () => {
         [subcategory]: !prev[categoryId]?.[subcategory],
       },
     }));
-    setSelectedSubcategories((prevSelected) => {
-      const updatedSelected = { ...prevSelected };
-  
-      if (!updatedSelected[categoryId]) {
-        updatedSelected[categoryId] = [];
-      }
-  
-      if (updatedSelected[categoryId].includes(subcategory)) {
-        // Subcategory is already selected, remove it
-        updatedSelected[categoryId] = updatedSelected[categoryId].filter(
-          (item) => item !== subcategory
-        );
-      } else {
-        // Subcategory is not selected, add it
-        updatedSelected[categoryId].push(subcategory);
-      }
-  
-      return updatedSelected;
-    });
+    
   };
-  
+ 
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
-
-  const closeDropdown = () => {
-    setIsDropdownOpen(false);
-  };
+  
 
   useEffect(() => {
     const fetchAllPosts = async () => {
@@ -119,9 +95,24 @@ const HomePage = () => {
     },
     {
       id: 3,
-      name: 'Mushrooms',
-      subcategories: ['oyster mushroom'],
-    }
+      name: 'Seafood & Swaweed',
+      subcategories: ['shrimp', 'crab', 'squid', 'lobster', 'lobster tail', 'salmon', 'tuna', 'whitefish', 'fish']
+    },
+    {
+      id: 4,
+      name: 'Fruites',
+      subcategories: ['lime', 'apple', 'orange', 'banana', 'pineapple', 'mango', 'peach', 'date', 'coconut', 'pear', 'grape', 'pomogranate'],
+    },
+    {
+      id: 5,
+      name: 'Dairy & Eggs',
+      subcategories: ['butter', 'egg', 'milk', 'yougurt', 'sour cream', 'cream', 'condensed milk'],
+    },
+    {
+      id: 6,
+      name: 'Sugar & Sweeteners',
+      subcategories: ['sugar', 'honey', 'syrup', 'chocolate', 'molasses'],
+    },
     // Add more categories as needed
   ];
  

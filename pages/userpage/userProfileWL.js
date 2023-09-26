@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { Button, Modal, Row, Col, Form } from 'react-bootstrap';
 import { Card, Grid, Text, Pagination } from "@nextui-org/react";
 import { useRouter } from 'next/router';
+import Uppy from '@uppy/core';
+import XHRUpload from '@uppy/xhr-upload';
 import { Dropdown } from 'react-bootstrap';
 import 'font-awesome/css/font-awesome.min.css';
 const UserprofileMR = () => {
@@ -20,13 +22,17 @@ const UserprofileMR = () => {
   const [updaterecycle, setUpdateRecycle] = useState();
   const [wishlists, setWishlist] = useState([]);
   const [wishlistrecycles, setWishlistRecycle] = useState([]);
+  const [uppy, setUppy] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [imageUrl, setImageUrl] = useState(null); 
+
 
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const token = localStorage.getItem('token'); 
-        const userId = localStorage.getItem('userId'); 
+        const token = localStorage.getItem('token');
+        const userId = localStorage.getItem('userId');
         console.log('Token:', token);
         console.log('User ID:', userId);
 
@@ -41,6 +47,7 @@ const UserprofileMR = () => {
         setName(data.name);
         setEmail(data.email);
         setPhone(data.phone);
+        setImageUrl(data.imageUrl);
 
         const responsepost = await fetch(`/api/post/recipe`, {
           headers: {
@@ -58,24 +65,24 @@ const UserprofileMR = () => {
         const repostData = await responserecycle.json();
         setRecycles(repostData);
 
-        const responsewishlist = await fetch(`/api/wishlist/getwishlist`,{
+        const responsewishlist = await fetch(`/api/wishlist/getwishlist`, {
           headers: {
-              'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${token}`
           }
         });
         const wishlistData = await responsewishlist.json();
         console.log('Recipe Wishlist Data:', wishlistData);
         setWishlist(wishlistData);
 
-        const responsewishlistrecycle = await fetch(`/api/wishlist/getwishlistrecycle`,{
+        const responsewishlistrecycle = await fetch(`/api/wishlist/getwishlistrecycle`, {
           headers: {
-              'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${token}`
           }
         });
         const recyclewishlistData = await responsewishlistrecycle.json();
         console.log('Recycle Wishlist Data:', recyclewishlistData);
         setWishlistRecycle(recyclewishlistData);
-        
+
 
       } catch (error) {
         console.error(error);
@@ -83,8 +90,12 @@ const UserprofileMR = () => {
     };
 
     fetchUserProfile();
+
+    
+
   }, []);
 
+  
   const [recipeData, setRecipeData] = useState({
     name: '',
     description: '',
@@ -106,7 +117,7 @@ const UserprofileMR = () => {
   });
 
 
- 
+
 
   const handleFormClose = () => {
     setShowForm(false);
@@ -138,14 +149,14 @@ const UserprofileMR = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
+
     // Prevent prepTime, servings, and cookTime from going below 0
     if (name === 'prepTime' || name === 'servings' || name === 'cookTime') {
       if (value < 0) {
         return;
       }
     }
-    
+
     setRecipeData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -155,17 +166,17 @@ const UserprofileMR = () => {
   const handleChangeRecycle = (e) => {
     const { name, value } = e.target;
     if (name === 'prepTime') {
-        if (value < 0) {
-          return;
-        }
+      if (value < 0) {
+        return;
       }
-      setRecycleData((prevData) => ({
-        ...prevData,
-        [name]: value,
-      }));
+    }
+    setRecycleData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
-  
+
   const handleUpdateRecipe = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
@@ -177,7 +188,7 @@ const UserprofileMR = () => {
       },
       body: JSON.stringify(recipeData)
     });
-    
+
     if (responseurecipe.ok) {
       setUpdateRecipe(null);  // Clear the currently editing ID
       router.reload();  // Reload to show updated post
@@ -198,7 +209,7 @@ const UserprofileMR = () => {
       },
       body: JSON.stringify(recycleData)
     });
-    
+
     if (responseurecycle.ok) {
       setUpdateRecycle(null);  // Clear the currently editing ID
       router.reload();  // Reload to show updated recycle
@@ -207,170 +218,178 @@ const UserprofileMR = () => {
     }
   };
 
-const handleSubmitRecipe = async (e) => {
-  e.preventDefault();
+  const handleSubmitRecipe = async (e) => {
+    e.preventDefault();
 
-  try {
-    const token = localStorage.getItem('token');
-    const response = await fetch('/api/post/recipe', { // replace with your actual endpoint
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(recipeData)
-    });
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/post/recipe', { // replace with your actual endpoint
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(recipeData)
+      });
 
-    if (!response.ok) {
-      throw new Error('Error in submitting recipe');
+      if (!response.ok) {
+        throw new Error('Error in submitting recipe');
+      }
+
+      setRecipeData({
+        name: '',
+        description: '',
+        prepTime: '',
+        servings: '',
+        cookTime: '',
+        origin: '',
+        taste: '',
+        category: '',
+        instruction: '',
+      });
+
+      handleRecipeFormClose();
+
+      router.reload(); // reload to show new post
+
+    } catch (error) {
+      console.error(error);
     }
+  };
 
-    setRecipeData({
-      name: '',
-      description: '',
-      prepTime: '',
-      servings: '',
-      cookTime: '',
-      origin: '',
-      taste: '',
-      category: '',
-      instruction: '',
-    });
+  const handleSubmitRecycle = async (e) => {
+    e.preventDefault();
 
-    handleRecipeFormClose();
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/post/recycle', { // replace with your actual endpoint
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(recycleData)
+      });
 
-    router.reload(); // reload to show new post
+      if (!response.ok) {
+        throw new Error('Error in submitting recycle post');
+      }
 
-  } catch (error) {
-    console.error(error);
-  }
-};
+      setRecycleData({
+        name: '',
+        description: '',
+        prepTime: '',
+        recycletype: '',
+        instruction: '',
+      });
 
-const handleSubmitRecycle = async (e) => {
-  e.preventDefault();
+      handleRecycleFormClose();
 
-  try {
-    const token = localStorage.getItem('token');
-    const response = await fetch('/api/post/recycle', { // replace with your actual endpoint
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(recycleData)
-    });
+      router.reload(); // reload to show new post
 
-    if (!response.ok) {
-      throw new Error('Error in submitting recycle post');
+    } catch (error) {
+      console.error(error);
     }
-
-    setRecycleData({
-      name: '',
-      description: '',
-      prepTime: '',
-      recycletype: '',
-      instruction: '',
-    });
-
-    handleRecycleFormClose();
-
-    router.reload(); // reload to show new post
-
-  } catch (error) {
-    console.error(error);
-  }
-};
+  };
 
 
   return (
     <>
-      
+
       <div className='container-fluid'>
         <div className="row vh-100">
-        <nav style={{ backgroundColor: '#d8456b', height: '10%' }} className="navbar navbar-expand-lg" >
-  <div className="container-fluid" >
-    <a className="navbar-brand custom-cursive-font" href="home" ><h3 style={{ color: 'white', fontFamily: 'cursive' }}>MyPantry</h3></a>
-    <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent">
-      <span className="navbar-toggler-icon"></span>
-    </button>
-    <div className="collapse navbar-collapse" id="navbarSupportedContent">
-    <span style={{width:'1070px'}}></span>
-      <ul className="navbar-nav ml-auto" >
+          <nav style={{ backgroundColor: '#d8456b', height: '10%' }} className="navbar navbar-expand-lg" >
+            <div className="container-fluid" >
+              <a className="navbar-brand custom-cursive-font" href="home" ><h3 style={{ color: 'white', fontFamily: 'cursive' }}>MyPantry</h3></a>
+              <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent">
+                <span className="navbar-toggler-icon"></span>
+              </button>
+              <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                <span style={{ width: '1070px' }}></span>
+                <ul className="navbar-nav ml-auto" >
 
-        <li className="nav-item" >
-          <a className="nav-link " style={{ fontWeight: 'bold', color: 'white', fontFamily: 'cursive' }} aria-current="page" href="home">Recipe</a>
-        </li>
-        <li className="nav-item">
-          <a className="nav-link active" aria-current="page" href="../userpage/mealplannermain" style={{ color: 'white', fontFamily: 'cursive' }}>Planner</a>
-        </li>
-        <li className="nav-item">
-          <a className="nav-link" aria-current="page" href="../userpage/recyclehome" style={{ color: 'white', fontFamily: 'cursive' }}>Recycle</a>
-        </li>
-        <li className="nav-item">
-          <a className="nav-link" aria-current="page" href="../userpage/userprofileMR" style={{ color: 'white' }}><i className="fa fa-user"></i>
-          </a>
-        </li>
-        <li className="nav-item">
-          <a className="nav-link" aria-current="page" href='#' style={{ color: 'white' }}><i className="fa fa-sign-out"></i></a>
-        </li>
+                  <li className="nav-item" >
+                    <a className="nav-link " style={{ fontWeight: 'bold', color: 'white', fontFamily: 'cursive' }} aria-current="page" href="home">Recipe</a>
+                  </li>
+                  <li className="nav-item">
+                    <a className="nav-link active" aria-current="page" href="../userpage/mealplannermain" style={{ color: 'white', fontFamily: 'cursive' }}>Planner</a>
+                  </li>
+                  <li className="nav-item">
+                    <a className="nav-link" aria-current="page" href="../userpage/recyclehome" style={{ color: 'white', fontFamily: 'cursive' }}>Recycle</a>
+                  </li>
+                  <li className="nav-item">
+                    <a className="nav-link" aria-current="page" href="../userpage/userprofileMR" style={{ color: 'white' }}><i className="fa fa-user"></i>
+                    </a>
+                  </li>
+                  <li className="nav-item">
+                    <a className="nav-link" aria-current="page" href='#' style={{ color: 'white' }}><i className="fa fa-sign-out"></i></a>
+                  </li>
 
-        <Dropdown >
-          <Dropdown.Toggle style={{ border: 'none', color: 'inherit', fontSize: 'inherit', color: 'white', backgroundColor: '#d8456b', paddingRight: '0px', paddingLeft: '0px', marginTop: '0px' }}><i className="fa fa-bell text-white"></i></Dropdown.Toggle>
-          <Dropdown.Menu >
-            <Dropdown.Item >Notification 1</Dropdown.Item>
-            <Dropdown.Item >Notification 2</Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
-      </ul>
-    </div>
-  </div>
-</nav>
-<div className="col-3 " style={{ paddingTop: '20px', backgroundColor: '#ffffff', overflowY: 'Auto', textAlign: 'center',  height: '90%' }}> 
-<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '50px' }}>
-        
-        
-        <h3 style={{ marginTop: '20px' }}>{name}</h3>
-        <p style={{fontFamily: 'cursive'}}>{email} <br></br> {phone}</p>
-        
-        <div style={{ marginTop: '50px' }}>
-          <Link href="/userpage/userprofileMR" passHref>
-            <button className="btn btn-primary" style={{ marginRight: '10px' }}>My Recipe</button>
-          </Link>
-          <Link href="/userpage/userprofileWL" passHref>
-            <button className="btn btn-primary" style={{ marginRight: '10px', fontWeight: 'bold' }}>Wishlist</button>
-          </Link>
-          <Link href="/userpage/userprofileRE" passHref>
-            <button className="btn btn-primary" style={{ marginRight: '10px' }}>My Recycle</button>
-          </Link>
-          <Button className="btn btn-primary" onClick={handleFormOpen}><i className="fa fa-plus"></i></Button>
-        </div>
-        
-        
-      </div>
-</div>
-<div className="col-sm " style={{ paddingTop: '20px', backgroundColor: '#eceeee', overflow: 'hidden',  height: '90%', overflowY: 'auto'}}>  
-<Grid.Container gap={2} justify="flex-start">
-          {wishlists.map((post, index) => (
-            <Grid xs={6} sm={3} key={index}>
-              <Card isPressable>
-                <Card.Body css={{ p: 0 }}>
-                </Card.Body>
-                <Card.Footer css={{ justifyItems: "flex-start" }}>
-                  <Row wrap="wrap" justify="space-between" align="center">
-                    <div key={post._id}>
-                        <Link href= {`/userpage/recipe/${post._id}`} style={{textDecoration: 'none'}}>
-                        <Text b>{post.name}</Text>
-                        </Link>
-                    </div>       
-                  </Row>
-                </Card.Footer>
-              </Card>
-            </Grid>
-          ))}
-        </Grid.Container>
-</div>
+                  <Dropdown >
+                    <Dropdown.Toggle style={{ border: 'none', color: 'inherit', fontSize: 'inherit', color: 'white', backgroundColor: '#d8456b', paddingRight: '0px', paddingLeft: '0px', marginTop: '0px' }}><i className="fa fa-bell text-white"></i></Dropdown.Toggle>
+                    <Dropdown.Menu >
+                      <Dropdown.Item >Notification 1</Dropdown.Item>
+                      <Dropdown.Item >Notification 2</Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </ul>
+              </div>
+            </div>
+          </nav>
 
-</div></div>
+          <div className="col-3 " style={{ paddingTop: '20px', backgroundColor: '#ffffff', overflowY: 'Auto', textAlign: 'center', height: '90%' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '50px' }}>
+            {selectedFile && <p>{selectedFile.name}</p>}
+            {imageUrl && <img className="recipe-picture" style ={{ width: '300px', height: '300px',borderRadius: '50%',objectFit: 'cover',overflow: 'hidden'}}
+            src={imageUrl} alt="Uploaded Image" />}
+            
+
+              <h3 style={{ marginTop: '20px' }}>{name}</h3>
+              <p style={{ fontFamily: 'cursive' }}>{email} <br></br> {phone}</p>
+
+              <div style={{ marginTop: '50px' }}>
+                <Link href="/userpage/userprofileMR" passHref>
+                  <button className="btn btn-primary" style={{ marginRight: '10px' }}>My Recipe</button>
+                </Link>
+                <Link href="/userpage/userprofileWL" passHref>
+                  <button className="btn btn-primary" style={{ marginRight: '10px', fontWeight: 'bold' }}>Wishlist</button>
+                </Link>
+                <Link href="/userpage/userprofileRE" passHref>
+                  <button className="btn btn-primary" style={{ marginRight: '10px' }}>My Recycle</button>
+                </Link>
+                <Button className="btn btn-primary" onClick={handleFormOpen}><i className="fa fa-plus"></i></Button>
+              </div>
+
+
+            </div>
+          </div>
+          <div className="col-sm " style={{ paddingTop: '20px', backgroundColor: '#eceeee', overflow: 'hidden', height: '90%', overflowY: 'auto' }}>
+            <Grid.Container gap={2} justify="flex-start">
+              {wishlists.map((post, index) => (
+                <Grid xs={6} sm={3} key={index}>
+                  <Card isPressable>
+
+                    <Card.Body css={{ alignItems: 'center', width: '100%' }}>
+                      {post.recipeimageUrl && <img className="recipe-picture" style={{ width: '180px', height: '150px', objectFit: 'cover', overflow: 'hidden' }}
+                        src={post.recipeimageUrl} alt="Uploaded Image" />}
+
+                    </Card.Body>
+                    <Card.Footer css={{ justifyItems: "flex-start" }}>
+                      <Row wrap="wrap" justify="space-between" align="center">
+                        <div key={post._id}>
+                          <Link href={`/userpage/recipe/${post._id}`} style={{ textDecoration: 'none' }}>
+                            <Text b>{post.name}</Text>
+                          </Link>
+                        </div>
+                      </Row>
+                    </Card.Footer>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid.Container>
+          </div>
+
+        </div></div>
 
       <Modal show={showForm} onHide={handleFormClose} centered>
         <Modal.Header closeButton>
@@ -382,9 +401,9 @@ const handleSubmitRecycle = async (e) => {
               <Button variant="primary" style={{ width: '100%' }} onClick={handleRecipeFormOpen}>Recipe</Button>
             </Col>
             <Col className="text-center">
-              
-                <Button variant="primary" style={{ width: '100%' }} onClick={handleReycleFormOpen}>Recycle</Button>
-             
+
+              <Button variant="primary" style={{ width: '100%' }} onClick={handleReycleFormOpen}>Recycle</Button>
+
             </Col>
           </Row>
         </Modal.Body>
@@ -403,37 +422,37 @@ const handleSubmitRecycle = async (e) => {
           <Form>
             <Form.Group >
               <Form.Label>Name</Form.Label>
-              <Form.Control type="text" name="name" id = "name" value={recipeData.name} onChange={handleChange} />
+              <Form.Control type="text" name="name" id="name" value={recipeData.name} onChange={handleChange} />
             </Form.Group>
 
             <Form.Group >
               <Form.Label>Description</Form.Label>
-              <Form.Control as="textarea" name="description" id = "description" value={recipeData.description} onChange={handleChange} />
+              <Form.Control as="textarea" name="description" id="description" value={recipeData.description} onChange={handleChange} />
             </Form.Group>
 
             <Row>
               <Col>
                 <Form.Group >
                   <Form.Label>Prep Time</Form.Label>
-                  <Form.Control type="number" name="prepTime" id = "prepTime" value={recipeData.prepTime} onChange={handleChange} />
+                  <Form.Control type="number" name="prepTime" id="prepTime" value={recipeData.prepTime} onChange={handleChange} />
                 </Form.Group>
               </Col>
               <Col>
                 <Form.Group >
                   <Form.Label>Servings</Form.Label>
-                  <Form.Control type="number" name="servings" id = "servings" value={recipeData.servings} onChange={handleChange} />
+                  <Form.Control type="number" name="servings" id="servings" value={recipeData.servings} onChange={handleChange} />
                 </Form.Group>
               </Col>
               <Col>
                 <Form.Group >
                   <Form.Label>Cook Time</Form.Label>
-                  <Form.Control type="number" name="cookTime" id = "cookTime" value={recipeData.cookTime} onChange={handleChange} />
+                  <Form.Control type="number" name="cookTime" id="cookTime" value={recipeData.cookTime} onChange={handleChange} />
                 </Form.Group>
               </Col>
               <Col>
                 <Form.Group >
                   <Form.Label>Origin</Form.Label>
-                  <Form.Control as="select" name="origin" id = "origin" value={recipeData.origin} onChange={handleChange}>
+                  <Form.Control as="select" name="origin" id="origin" value={recipeData.origin} onChange={handleChange}>
                     <option value="">Select Origin</option>
                     <option value="Thailand">Thailand</option>
                     <option value="Myanmar">Myanmar </option>
@@ -445,12 +464,12 @@ const handleSubmitRecycle = async (e) => {
 
             <Form.Group >
               <Form.Label>Taste</Form.Label>
-              <Form.Control type="text" name="taste" id ="taste" value={recipeData.taste} onChange={handleChange} />
+              <Form.Control type="text" name="taste" id="taste" value={recipeData.taste} onChange={handleChange} />
             </Form.Group>
 
             <Form.Group >
               <Form.Label>Category</Form.Label>
-              <Form.Control as="select" name="mealtype" id = "mealtype" value={recipeData.type} onChange={handleChange}>
+              <Form.Control as="select" name="mealtype" id="mealtype" value={recipeData.type} onChange={handleChange}>
                 <option value="">Select Type</option>
                 <option value="Maindish">Main dish</option>
                 <option value="Dessert">Dessert </option>
@@ -460,10 +479,10 @@ const handleSubmitRecycle = async (e) => {
 
             <Form.Group >
               <Form.Label>Instruction</Form.Label>
-              <Form.Control as="textarea" name="instruction" id = "instruction" value={recipeData.instruction} onChange={handleChange} />
+              <Form.Control as="textarea" name="instruction" id="instruction" value={recipeData.instruction} onChange={handleChange} />
             </Form.Group>
           </Form>
-          
+
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleRecipeFormClose}>
@@ -474,43 +493,43 @@ const handleSubmitRecycle = async (e) => {
       </Modal>
 
       <Modal show={showRecycleForm} onHide={handleRecycleFormClose} centered>
-      <Modal.Header closeButton>
+        <Modal.Header closeButton>
           <Modal.Title>Recycle Form</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
             <Form.Group>
               <Form.Label>Name</Form.Label>
-              <Form.Control type="text" name="name" id ="name" value={recycleData.name} onChange={handleChangeRecycle} />
+              <Form.Control type="text" name="name" id="name" value={recycleData.name} onChange={handleChangeRecycle} />
             </Form.Group>
 
             <Form.Group>
               <Form.Label>Description</Form.Label>
-              <Form.Control as="textarea" name="description" id = "description" value={recycleData.description} onChange={handleChangeRecycle} />
+              <Form.Control as="textarea" name="description" id="description" value={recycleData.description} onChange={handleChangeRecycle} />
             </Form.Group>
 
             <Col>
-                <Form.Group>
-                  <Form.Label>Prep Time</Form.Label>
-                  <Form.Control type="number" name="prepTime" id = "prepTime" value={recycleData.prepTime} onChange={handleChangeRecycle} />
-                </Form.Group>
-              </Col>
+              <Form.Group>
+                <Form.Label>Prep Time</Form.Label>
+                <Form.Control type="number" name="prepTime" id="prepTime" value={recycleData.prepTime} onChange={handleChangeRecycle} />
+              </Form.Group>
+            </Col>
 
-            
+            Plant
 
             <Form.Group>
               <Form.Label>Category</Form.Label>
-              <Form.Control as="select" name="recycletype" id = "recycletype" value={recycleData.recycletype} onChange={handleChangeRecycle}>
-              <option value="">Select Category</option>
-              <option value="Lee">Plant</option>
-              <option value="Myanmar">Animal </option>
-              <option value="China">Hht </option>
+              <Form.Control as="select" name="recycletype" id="recycletype" value={recycleData.recycletype} onChange={handleChangeRecycle}>
+                <option value="">Select Category</option>
+                <option value="Plant">Plant</option>
+                <option value="Animalfood">Animal </option>
+                <option value="FaceWash">Hht </option>
               </Form.Control>
             </Form.Group>
 
             <Form.Group>
               <Form.Label>Instruction</Form.Label>
-              <Form.Control as="textarea" name="instruction" id = "instruction" value={recycleData.instruction} onChange={handleChangeRecycle} />
+              <Form.Control as="textarea" name="instruction" id="instruction" value={recycleData.instruction} onChange={handleChangeRecycle} />
             </Form.Group>
           </Form>
         </Modal.Body>

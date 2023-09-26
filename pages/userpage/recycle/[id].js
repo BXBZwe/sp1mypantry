@@ -206,13 +206,13 @@ const Itemprofile = () => {
               <i className='fa fa-star' style={{ paddingRight: '10px' }}></i>
               Description:
             </h3>
-              <h5 style={{fontFamily: 'Inter, sans-serif'}}>{recycle.description}</h5>
+              <h5 style={{fontFamily: 'Inter, sans-serif' , whiteSpace: 'pre-line'}}>{recycle.description}</h5>
               <br></br>
               <h3 style={{ fontFamily: 'Cursive' }}>
               <i className='fa fa-star' style={{ paddingRight: '10px' }}></i>
               Instructions:
             </h3>
-              <h5 style={{fontFamily: 'Inter, sans-serif'}}>{recycle.instruction}</h5>
+              <h5 style={{fontFamily: 'Inter, sans-serif', whiteSpace: 'pre-line'}}>{recycle.instruction}</h5>
 
 
 
