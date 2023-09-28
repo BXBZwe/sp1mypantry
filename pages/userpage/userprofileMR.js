@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Link from 'next/link';
-import { Button, Modal, Row, Col, Form } from 'react-bootstrap';
+import { Modal, Row, Col } from 'react-bootstrap';
 import { Card, Grid, Text, Pagination } from "@nextui-org/react";
 import { useRouter } from 'next/router';
 import Uppy from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { Dropdown } from 'react-bootstrap';
 import 'font-awesome/css/font-awesome.min.css';
-
+import { Navbar, Nav, Form, FormControl, Button } from 'react-bootstrap';
 const UserprofileMR = () => {
   const [showForm, setShowForm] = useState(false);
   const [showRecipeForm, setShowRecipeForm] = useState(false);
@@ -24,19 +24,20 @@ const UserprofileMR = () => {
   const [ingredients, setIngredients] = useState([]);
   const [uppy, setUppy] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [imageUrl, setImageUrl] = useState(null); 
-  const[recipeselectedFile, setRecipeselectedFile] = useState(null);
+  const [imageUrl, setImageUrl] = useState(null);
+  const [recipeselectedFile, setRecipeselectedFile] = useState(null);
   const [recipeUppy, setRecipeUppy] = useState(null);
   const [recipeImageUrl, setRecipeImageUrl] = useState(null);
-  const[recycleselectedFile, setRecycleselectedFile] = useState(null);
+  const [recycleselectedFile, setRecycleselectedFile] = useState(null);
   const [recycleUppy, setRecycleUppy] = useState(null);
   const [recycleImageUrl, setRecycleImageUrl] = useState(null);
-
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const token = localStorage.getItem('token'); 
+        const token = localStorage.getItem('token');
         console.log('Token:', token);
         const response = await fetch(`/api/user/profile`, {
           headers: {
@@ -71,30 +72,30 @@ const UserprofileMR = () => {
         console.error(error);
       }
     };
-    
+
     fetchUserProfile();
 
     const instance = new Uppy({
       autoProceed: false,
       restrictions: {
-          maxNumberOfFiles: 1,
-          allowedFileTypes: ['image/*'],
+        maxNumberOfFiles: 1,
+        allowedFileTypes: ['image/*'],
       },
     });
-    
+
     instance.use(XHRUpload, {
       endpoint: '/api/picupload',
       formData: true,
       fieldName: 'image',
     });
-    
+
     instance.on('complete', (result) => {
       console.log('profile Picture Upload complete:', result);
       if (result.successful && result.successful.length > 0) {
         //console.log("Response body from upload:", result.successful[0].response.body);
         const uploadedImageUrl = result.successful[0].response.body.uploadURL;
         //console.log("Extracted URL:", uploadedImageUrl);
-        
+
         setImageUrl(uploadedImageUrl);
         saveImageUrlToDB(uploadedImageUrl);
       }
@@ -156,7 +157,7 @@ const UserprofileMR = () => {
       recipeinstnace.close();
       recycleinstance.close();
     };
-    
+
   }, []);
 
   const saveImageUrlToDB = async (uploadedImageUrl) => {
@@ -177,25 +178,25 @@ const UserprofileMR = () => {
       console.error('Error saving image URL:', error);
     }
   };
-  
+
 
   const handleFileChange = (e) => {
     if (uppy) {
-        uppy.addFile({
-            name: e.target.files[0].name,
-            type: e.target.files[0].type,
-            data: e.target.files[0],
-        });
+      uppy.addFile({
+        name: e.target.files[0].name,
+        type: e.target.files[0].type,
+        data: e.target.files[0],
+      });
 
-        setSelectedFile(e.target.files[0]);
+      setSelectedFile(e.target.files[0]);
     }
   }
 
-  
+
   const handleUpload = async (e) => {
     e.preventDefault();
     if (uppy) {
-        uppy.upload();
+      uppy.upload();
     }
   }
 
@@ -259,7 +260,7 @@ const UserprofileMR = () => {
   });
 
 
- 
+
 
   const handleFormClose = () => {
     setShowForm(false);
@@ -316,35 +317,35 @@ const UserprofileMR = () => {
   const handleChangeRecycle = (e) => {
     const { name, value } = e.target;
     if (name === 'prepTime') {
-        if (value < 0) {
-          return;
-        }
+      if (value < 0) {
+        return;
       }
-      setRecycleData((prevData) => ({
-        ...prevData,
-        [name]: value,
-      }));
+    }
+    setRecycleData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
   const handleDeleteRecipe = async (recipeId) => {
     const token = localStorage.getItem('token');
     const responsedrecipe = await fetch(`/api/post/deleteRecipe/${recipeId}`, {
-        method: 'DELETE',
-        headers: {
-            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
-        },
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+      },
     });
 
     if (responsedrecipe.ok) {
-        // Filter out the deleted recipe
-        const updatedRecipes = posts.filter(post => post._id !== recipeId);
-        // Update the state
-        setPosts(updatedRecipes);
+      // Filter out the deleted recipe
+      const updatedRecipes = posts.filter(post => post._id !== recipeId);
+      // Update the state
+      setPosts(updatedRecipes);
     } else {
-        // Handle the error
-        console.error(`Failed to delete recipe with ID ${recipeId}`);
+      // Handle the error
+      console.error(`Failed to delete recipe with ID ${recipeId}`);
     }
-};
+  };
   const handleUpdateRecipe = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
@@ -356,7 +357,7 @@ const UserprofileMR = () => {
       },
       body: JSON.stringify(recipeData)
     });
-    
+
     if (responseurecipe.ok) {
       setUpdateRecipe(null);  // Clear the currently editing ID
       router.reload();  // Reload to show updated post
@@ -393,7 +394,7 @@ const UserprofileMR = () => {
       },
       body: JSON.stringify(recycleData)
     });
-    
+
     if (responseurecycle.ok) {
       setUpdateRecycle(null);  // Clear the currently editing ID
       router.reload();  // Reload to show updated recycle
@@ -406,72 +407,72 @@ const UserprofileMR = () => {
     e.preventDefault();
     recipeData.ingredients = ingredients;
     console.log("Submitting recipe data:", recipeData);
-    if (updaterecipe){
+    if (updaterecipe) {
       handleUpdateRecipe(e);
     } else {
       try {
         if (recipeUppy) {
-            await recipeUppy.upload();
+          await recipeUppy.upload();
         }
-        const finalRecipeData  = {
-            ...recipeData,
-            recipeimageUrl: recipeImageUrl
+        const finalRecipeData = {
+          ...recipeData,
+          recipeimageUrl: recipeImageUrl
 
         };
         const token = localStorage.getItem('token');
         const response = await fetch('/api/post/recipe', {
-            method: 'POST',
-            headers: {
-                 'Content-Type': 'application/json',
-                 'Authorization': `Bearer ${token}`
-                },
-            body: JSON.stringify(finalRecipeData)
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(finalRecipeData)
         });
 
         if (!response.ok) {
-            throw new Error('Error in submitting recipe');
+          throw new Error('Error in submitting recipe');
         }
 
         setRecipeData({
-            name: '',
-            description: '',
-            prepTime: '',
-            servings: '',
-            cookTime: '',
-            origin: '',
-            taste: '',
-            category: '',
-            ingredients: [],
-            recipeimageUrl: '',
-            instruction: '',
-          });
-      
-          handleRecipeFormClose();
-      
-          router.reload(); // reload to show new post    
+          name: '',
+          description: '',
+          prepTime: '',
+          servings: '',
+          cookTime: '',
+          origin: '',
+          taste: '',
+          category: '',
+          ingredients: [],
+          recipeimageUrl: '',
+          instruction: '',
+        });
+
+        handleRecipeFormClose();
+
+        router.reload(); // reload to show new post    
       } catch (error) {
         console.error(error);
       }
     }
-  };  
+  };
 
   const handleSubmitRecycle = async (e) => {
     e.preventDefault();
-  
-    if (updaterecycle){
+
+    if (updaterecycle) {
       handleUpdateRecycle(e);
     } else {
       try {
         if (recycleUppy) {
-            await recycleUppy.upload();
+          await recycleUppy.upload();
         }
 
         const finalRecycleData = {
-            ...recycleData,
-            recycleimageUrl: recycleImageUrl
+          ...recycleData,
+          recycleimageUrl: recycleImageUrl
         };
         const token = localStorage.getItem('token');
-        const response = await fetch('/api/post/recycle', { 
+        const response = await fetch('/api/post/recycle', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -479,11 +480,11 @@ const UserprofileMR = () => {
           },
           body: JSON.stringify(finalRecycleData)
         });
-    
+
         if (!response.ok) {
           throw new Error('Error in submitting recycle post');
         }
-    
+
         setRecycleData({
           name: '',
           description: '',
@@ -492,9 +493,9 @@ const UserprofileMR = () => {
           instruction: '',
           recycleimageUrl: ','
         });
-    
+
         handleRecycleFormClose();
-    
+
         router.reload(); // reload to show new post
       } catch (error) {
         console.error(error);
@@ -502,374 +503,384 @@ const UserprofileMR = () => {
     }
   };
 
-const handleAddIngredient = () => {
-  setIngredients([...ingredients, {name: '', quantity: 0, unit: '', category: ''}]);
-};
+  const handleAddIngredient = () => {
+    setIngredients([...ingredients, { name: '', quantity: 0, unit: '', category: '' }]);
+  };
 
-const handleIngredientChange = (index, field, value) => {
-  const newIngredients = [...ingredients];
-  newIngredients[index][field] = value;
-  setIngredients(newIngredients);
-};
+  const handleIngredientChange = (index, field, value) => {
+    const newIngredients = [...ingredients];
+    newIngredients[index][field] = value;
+    setIngredients(newIngredients);
+  };
 
 
   return (
     <>
       <div className='container-fluid'>
         <div className="row vh-100">
-        <nav style={{ backgroundColor: '#d8456b', height: '10%' }} className="navbar navbar-expand-lg" >
-  <div className="container-fluid" >
-    <a className="navbar-brand custom-cursive-font" href="home" ><h3 style={{ color: 'white', fontFamily: 'cursive' }}>MyPantry</h3></a>
-    <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent">
-      <span className="navbar-toggler-icon"></span>
-    </button>
-    <div className="collapse navbar-collapse" id="navbarSupportedContent">
-    <span style={{width:'1070px'}}></span>
-      <ul className="navbar-nav ml-auto" >
+          <Navbar bg="primary" expand="lg" variant="dark">
+            <div className="container">
+              <Navbar.Brand href="home" style={{ fontFamily: 'cursive', fontSize: '30px', paddingRight: '845px' }}>MyPantry</Navbar.Brand>
 
-        <li className="nav-item" >
-          <a className="nav-link " style={{ fontWeight: 'bold', color: 'white', fontFamily: 'cursive' }} aria-current="page" href="home">Recipe</a>
-        </li>
-        <li className="nav-item">
-          <a className="nav-link active" aria-current="page" href="../userpage/mealplannermain" style={{ color: 'white', fontFamily: 'cursive' }}>Planner</a>
-        </li>
-        <li className="nav-item">
-          <a className="nav-link" aria-current="page" href="../userpage/recyclehome" style={{ color: 'white', fontFamily: 'cursive' }}>Recycle</a>
-        </li>
-        <li className="nav-item">
-          <a className="nav-link" aria-current="page" href="../userpage/userprofileMR" style={{ color: 'white' }}><i className="fa fa-user"></i>
-          </a>
-        </li>
-        <li className="nav-item">
-          <a className="nav-link" aria-current="page" href='#' style={{ color: 'white' }}><i className="fa fa-sign-out"></i></a>
-        </li>
+              <Navbar.Toggle aria-controls="navbarSupportedContent" />
+              <Navbar.Collapse id="navbarSupportedContent">
 
-        <Dropdown >
-          <Dropdown.Toggle style={{ border: 'none', color: 'inherit', fontSize: 'inherit', color: 'white', backgroundColor: '#d8456b', paddingRight: '0px', paddingLeft: '0px', marginTop: '0px' }}><i className="fa fa-bell text-white"></i></Dropdown.Toggle>
-          <Dropdown.Menu >
-            <Dropdown.Item >Notification 1</Dropdown.Item>
-            <Dropdown.Item >Notification 2</Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
-      </ul>
-    </div>
-  </div>
-</nav>
+                <Nav className="navbar-nav ml-auto">
+                  <Nav.Link href="home" >Recipe</Nav.Link>
+                  <Nav.Link href="../userpage/mealplannermain" >Planner</Nav.Link>
+                  <Nav.Link href="../userpage/recyclehome">Recycle</Nav.Link>
 
-        <div className="col-3 " style={{ paddingTop: '20px', backgroundColor: '#ffffff', overflowY: 'Auto', textAlign: 'center',  height: '90%' }}>  
-        {selectedFile && <p>{selectedFile.name}</p>}
-        {imageUrl && <img className="recipe-picture" style ={{ width: '300px', height: '300px',borderRadius: '50%',objectFit: 'cover',overflow: 'hidden'}}
-        src={imageUrl} alt="Uploaded Image" />}
-        <input type="file" onChange={handleFileChange} />
-        <button onClick={handleUpload}>Upload</button>
-        <span style={{fontFamily: 'cursive'}}><h3 style={{ marginTop: '20px', fontStyle: 'cursive', fontWeight: 'bold'}}>{name}</h3>
-        <p>{email} <br></br> {phone}</p>
-        </span>
-        <div style={{ marginTop: '50px' }}>
-          <Link href="/userpage/userprofileMR" passHref>
-            <button className="btn btn-primary" style={{ marginRight: '10px', fontWeight: 'bold' }}>My Recipe</button>
-          </Link>
-          <Link href="/userpage/userProfileWL" >
-            <button className="btn btn-primary" style={{ marginRight: '10px' }}>Wishlist</button>
-          </Link>
-          <Link href="/userpage/userprofileRE" >
-            <button className="btn btn-primary" style={{ marginRight: '10px' }}>My Recycle</button>
-          </Link>
-          <Button className="btn btn-primary" onClick={handleFormOpen}><i className="fa fa-plus"></i></Button>
-        </div>
-        
+
+                  <Nav.Link href="../userpage/userprofileMR" style={{ fontWeight: 'bold', color: 'white' }}>
+                    <i className="fa fa-user"></i>
+                  </Nav.Link>
+                  <Nav.Link href="#">
+                    <i className="fa fa-sign-out"></i>
+                  </Nav.Link>
+                </Nav>
+                <Dropdown>
+                  <Dropdown.Toggle className="custom-dropdown-menu"
+                    style={{ border: 'none', fontSize: 'inherit', paddingRight: '0px', paddingLeft: '0px', marginTop: '0px' }}>
+
+                    <i className="fa fa-bell " ></i>
+                    {unreadCount > 0 && <span className="badge">{unreadCount}</span>}
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu style={{ right: 'auto', left: 0 }}>
+                    {notifications && notifications.length > 0 ? (
+                      notifications.map((notification, index) => (
+                        <Dropdown.Item
+                          key={index}
+                          onClick={() => handleNotificationClick(notification._id)}
+                          href={`/userpage/report/${notification.reportId}`}
+                        >
+                          {notification.message}
+                        </Dropdown.Item>
+                      ))
+                    ) : (
+                      <Dropdown.Item>No new notifications</Dropdown.Item>
+                    )}
+                  </Dropdown.Menu>
+                </Dropdown>
+
+              </Navbar.Collapse>
+            </div>
+          </Navbar>
+
+          <div className="col-12 col-md-3" style={{ paddingTop: '20px', backgroundColor: '#ffffff', overflowY: 'auto', textAlign: 'center', height: '90%' }}>
+            {selectedFile && <p>{selectedFile.name}</p>}
+            {imageUrl && <img className="recipe-picture" style={{ width: '100%', maxWidth: '300px', height: 'auto', borderRadius: '50%', objectFit: 'cover' }} src={imageUrl} alt="Uploaded Image" />}
+            <input type="file" onChange={handleFileChange} />
+            <button onClick={handleUpload}>Upload</button>
+            <div style={{ fontFamily: 'cursive', marginTop: '20px' }}>
+              <h3 style={{ fontStyle: 'cursive', fontWeight: 'bold' }}>{name}</h3>
+              <p>{email}<br />{phone}</p>
+            </div>
+            <div style={{ marginTop: '50px' }}>
+              <Link href="/userpage/userprofileMR" passHref>
+                <button className="btn btn-primary" style={{ marginRight: '10px', fontWeight: 'bold' }}>My Recipe</button>
+              </Link>
+              <Link href="/userpage/userProfileWL">
+                <button className="btn btn-primary" style={{ marginRight: '10px' }}>Wishlist</button>
+              </Link>
+              <Link href="/userpage/userprofileRE">
+                <button className="btn btn-primary" style={{ marginRight: '10px' }}>My Recycle</button>
+              </Link>
+              <Button className="btn btn-primary" onClick={handleFormOpen}><i className="fa fa-plus"></i></Button>
+            </div>
           </div>
 
-          <div className="col-sm " style={{ paddingTop: '20px', backgroundColor: '#eceeee', overflow: 'hidden',  height: '90%', overflowY: 'auto'}}>
-          <Grid.Container gap={2} justify="flex-start">
-          {posts.map((post, index) => (
-            <Grid xs={6} sm={3} key={index}>
-               
-               
+
+          <div className="col-sm " style={{ paddingTop: '20px', backgroundColor: '#eceeee', overflow: 'hidden', height: '90%', overflowY: 'auto' }}>
+            <Grid.Container gap={2} justify="flex-start">
               
-              <Card isPressable >
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <button
-                  style={{ width: '40px', backgroundColor: '#0b5ed7' }}
-                  onClick={() => {
-                    if (window.confirm('Are you sure you want to delete this recipe?')) {
-                      handleDeleteRecipe(post._id);
-                    }
-                  }}
-                >
-                  <i className="fa fa-trash"></i>
-                </button>
-                <button
-                  style={{ width: '40px', backgroundColor: '#0b5ed7' }}
-                  onClick={() => handleEditRecipe(post)}
-                >
-                  <i className="fa fa-edit"></i>
-                </button>
-              </div>
-              <Link href= {`/userpage/recipe/${post._id}`} style={{textDecoration: 'none'}}>
-  <Card.Body css={{ alignItems: 'center', width: '100%'}}>
-                {post.recipeimageUrl && <img className="recipe-picture" style ={{ width: '150px', height: '150px', objectFit: 'cover', overflow: 'hidden'}}
-                src={post.recipeimageUrl} alt="Uploaded Image" />}
-                
-                </Card.Body>
-                </Link>
-                <Link href= {`/userpage/recipe/${post._id}`} style={{textDecoration: 'none'}}>
-                <Card.Footer css={{ justifyItems: "flex-start" }}>
-                  <Row wrap="wrap" justify="space-between" align="center">
-                    <div key={post._id}>
-                       
-                        <Text b>{post.name}</Text>
-                        
-                    </div>     
-                  </Row>
-                </Card.Footer>
-                </Link>
-              </Card>
-              
-            </Grid>
-          ))}
-        </Grid.Container>
-        
-          
+              {posts.map((post, index) => (
+                <Grid xs={6} sm={2} md={3} lg={2.1} xl={5} xxl={5} gap={2} key={index}>
+
+
+
+                  <Card isPressable >
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <button
+                        style={{ width: '40px', backgroundColor: '#0b5ed7' }}
+                        onClick={() => {
+                          if (window.confirm('Are you sure you want to delete this recipe?')) {
+                            handleDeleteRecipe(post._id);
+                          }
+                        }}
+                      >
+                        <i className="fa fa-trash"></i>
+                      </button>
+                      <button
+                        style={{ width: '40px', backgroundColor: '#0b5ed7' }}
+                        onClick={() => handleEditRecipe(post)}
+                      >
+                        <i className="fa fa-edit"></i>
+                      </button>
+                    </div>
+                    <Link href={`/userpage/recipe/${post._id}`} style={{ textDecoration: 'none' }}>
+                      <Card.Body css={{ alignItems: 'center', width: '100%' }}>
+                        {post.recipeimageUrl && <img className="recipe-picture" style={{ width: '150px', height: '150px', objectFit: 'cover', overflow: 'hidden' }}
+                          src={post.recipeimageUrl} alt="Uploaded Image" />}
+
+                      </Card.Body>
+                    </Link>
+                    <Link href={`/userpage/recipe/${post._id}`} style={{ textDecoration: 'none' }}>
+                      <Card.Footer css={{ justifyItems: "flex-start" }}>
+                        <Row wrap="wrap" justify="space-between" align="center">
+                          <div key={post._id}>
+
+                            <Text b>{post.name}</Text>
+
+                          </div>
+                        </Row>
+                      </Card.Footer>
+                    </Link>
+                  </Card>
+
+                </Grid>
+              ))}
+            </Grid.Container>
+
+
           </div>
           <Modal show={showForm} onHide={handleFormClose} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Desired Options</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Row>
-            <Col className="text-center">
-              <Button variant="primary" style={{ width: '100%' }} onClick={handleRecipeFormOpen}>Recipe</Button>
-            </Col>
-            <Col className="text-center">
-                <Button variant="primary" style={{ width: '100%' }} onClick={handleReycleFormOpen}>Recycle</Button>
-            </Col>
-          </Row>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleFormClose}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-      <Modal  show={showRecipeForm} onHide={handleRecipeFormClose} centered >
-        <Modal.Header closeButton>
-          <Modal.Title>Recipe Form</Modal.Title>
-        </Modal.Header>
-        <Modal.Body >
-          <Form >
-            <Form.Group >
-              <Form.Label>Name</Form.Label>
-              <Form.Control type="text" name="name" id = "name" value={recipeData.name} onChange={handleChange} />
-            </Form.Group>
-
-            <Form.Group >
-              <Form.Label>Description</Form.Label>
-              <Form.Control as="textarea" name="description" id = "description" value={recipeData.description} onChange={handleChange} />
-            </Form.Group>
-
-            <Row >
-            <Col >
-                <Form.Group style={{width: '150px'}}>
-                  <Form.Label>Preparation Time:</Form.Label>
-                  <Form.Label>Hours</Form.Label>
-                  <Form.Control type="number" name="prepTimeHours" value={recipeData.prepTime.hours} onChange={(e) => handleTimeChange('prepTime', 'hours', e.target.value)}/>
-                  <Form.Label>Minutes</Form.Label>
-                  <Form.Control type="number" name="prepTimeMinutes" value={recipeData.prepTime.minutes} onChange={(e) => handleTimeChange('prepTime', 'minutes', e.target.value)}/>
-                </Form.Group>
-              </Col>
-              <Col>
-                <Form.Group style={{width: '130px'}} >
-                  <Form.Label>Cooking Time</Form.Label>
-                  <Form.Label>Hours</Form.Label>
-                  <Form.Control type="number" name="cookTimeHours" value={recipeData.cookTime.hours} onChange={(e) => handleTimeChange('cookTime', 'hours', e.target.value)}/>
-                  <Form.Label>Minutes</Form.Label>
-                  <Form.Control type="number" name="cookTimeMinutes" value={recipeData.cookTime.minutes} onChange={(e) => handleTimeChange('cookTime', 'minutes', e.target.value)}/>
-                </Form.Group>
-              </Col>
-              
-              <Col>
-                <Form.Group >
-                  <Form.Label>Servings</Form.Label>
-                  <Form.Control type="number" name="servings" id = "servings" value={recipeData.servings} onChange={handleChange} />
-                </Form.Group>
-              </Col>
-              <Col>
-                <Form.Group >
-                  <Form.Label>Origin</Form.Label>
-                  <Form.Control as="select" name="origin" id = "origin" value={recipeData.origin} onChange={handleChange}>
-                    <option value="">Select Origin</option>
-                    <option value="Thailand">Thailand</option>
-                    <option value="Myanmar">Myanmar </option>
-                    <option value="China">China </option>
-                    <option value="Japan">Japan</option>
-                    <option value="India">India </option>
-                    <option value="Sounth_Korea">Sounth Korea </option>
-                    <option value="Singapore">Singapore</option>
-                    <option value="Vietnam">Vietnam </option>
-                    <option value="Malaysia">Malaysia </option>
-                  </Form.Control>
-                </Form.Group>
-              </Col>
-            </Row>
-
-            <Form.Group >
-              <Form.Label>Taste</Form.Label>
-              <Form.Control type="text" name="taste" id ="taste" value={recipeData.taste} onChange={handleChange} />
-            </Form.Group>
-
-            <Form.Group >
-              <Form.Label>Category</Form.Label>
-              <Form.Control as="select" name="mealtype" id = "mealtype" value={recipeData.type} onChange={handleChange}>
-                <option value="">Select Type</option>
-                <option value="Maindish">Main dish</option>
-                <option value="Dessert">Dessert </option>
-                <option value="Salad">Salad </option>
-              </Form.Control>
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Ingredients</Form.Label>
-              {ingredients.map((ingredient, index) => (
-              <Row key={index}>
-                <Col>
-                  <Form.Control type="text" placeholder="Name" value={ingredient.name} onChange={(e) => handleIngredientChange(index, 'name', e.target.value)} />
+            <Modal.Header closeButton>
+              <Modal.Title>Desired Options</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Row>
+                <Col className="text-center">
+                  <Button variant="primary" style={{ width: '100%' }} onClick={handleRecipeFormOpen}>Recipe</Button>
                 </Col>
-                <Col>
-                  <Form.Control type="number" placeholder="Quantity" value={ingredient.quantity} onChange={(e) => handleIngredientChange(index, 'quantity', e.target.value)} />
-                </Col>
-                <Col>
-                  <Form.Control as="select" value={ingredient.unit} onChange={(e) => handleIngredientChange(index, 'unit', e.target.value)}>
-                    <option value="">Select Unit</option>
-                    <option value="gram">Gram</option>
-                    <option value="pieces">Pieces</option>
-                    <option value="cuts">Cuts</option>
-                    <option value="cups">Cups</option>
-                    <option value="tbsp">Tbsp</option>
-                    <option value="tsp">Tsp</option>
-                    <option value="clove">Clove</option>
-                    <option value="leaves">Leaves</option>
-                    <option value="slices">Slices</option>
-                    <option value="pitch">Pitch</option>
-                    <option value="ml">ML</option>
-                    <option value="pack">Pack</option>
-                    <option value="scoop">Scoop</option>
-                  </Form.Control>
-                </Col>
-                <Col>
-                  <Form.Control as="select" value={ingredient.category} onChange={(e) => handleIngredientChange(index, 'category', e.target.value)}>
-                    <option value=" ">Select Catagory</option>
-                    <option value="MEAT">Meat</option>
-                    <option value="VEGETABLES">Vegetables</option>
-                    <option value="SPICES_HERBS">SPICES HERBS</option>
-                    <option value="LIQUIDS">LIQUIDS</option>
-                    <option value="GRAINS_STARCHES">GRAINS STARCHES</option>
-                    <option value="DAIRY">DAIRY</option>
-                    <option value="OILS">OILS</option>
-                    <option value="SUGARS_SWEETENERS">SUGARS SWEETENERS</option>
-                    <option value="FRUITS">FRUITS</option>
-                    <option value="NUTS">NUTS</option>
-                    <option value="SAUCES">SAUCES</option>
-                    <option value="BAKING_INGREDIENTS">BAKING INGREDIENTS</option>
-                    <option value="ALCOHOL">ALCOHOL</option>
-                    <option value="OTHERS">OTHERS</option>
-
-                  </Form.Control>
+                <Col className="text-center">
+                  <Button variant="primary" style={{ width: '100%' }} onClick={handleReycleFormOpen}>Recycle</Button>
                 </Col>
               </Row>
-              ))}
-              <Button style={{margin: '10px', padding: '5px'}} onClick={handleAddIngredient}>Add Ingredient</Button>
-            </Form.Group>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleFormClose}>
+                Close
+              </Button>
+            </Modal.Footer>
+          </Modal>
 
-
-            <Form.Group >
-              <Form.Label>Instruction</Form.Label>
-              <Form.Control as="textarea" name="instruction" id = "instruction" value={recipeData.instruction} onChange={handleChange} />
-            </Form.Group>
-
-            <Form.Group>
-              <Form.Label>Recipe Image</Form.Label>
-              <input type="file" onChange={recipehandleFileChange} />
-              <button style={{margin: '10px'}} onClick={recipehandleupload}>Upload</button>{recipeselectedFile && <p>{recipeselectedFile.name}</p>}
-              {recipeImageUrl && <img className="recycle-picture" style ={{ width: '100px', height: '100px',borderRadius: '50%',objectFit: 'cover',overflow: 'hidden'}}
-              src={recipeImageUrl} alt="Uploaded Image" />}
-            </Form.Group>
-          </Form>
-          
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleRecipeFormClose}>
-            Back
-          </Button>
-          <Button variant="primary" onClick={handleSubmitRecipe}>Save</Button>
-        </Modal.Footer>
-      </Modal>
-
-      <Modal show={showRecycleForm} onHide={handleRecycleFormClose} centered>
-      <Modal.Header closeButton>
-          <Modal.Title>Recycle Form</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group>
-              <Form.Label>Name</Form.Label>
-              <Form.Control type="text" name="name" id ="name" value={recycleData.name} onChange={handleChangeRecycle} />
-            </Form.Group>
-
-            <Form.Group>
-              <Form.Label>Description</Form.Label>
-              <Form.Control as="textarea" name="description" id = "description" value={recycleData.description} onChange={handleChangeRecycle} />
-            </Form.Group>
-
-            <Col>
-                <Form.Group>
-                  <Form.Label>Prep Time</Form.Label>
-                  <Form.Control type="number" name="prepTime" id = "prepTime" value={recycleData.prepTime} onChange={handleChangeRecycle} />
+          <Modal show={showRecipeForm} onHide={handleRecipeFormClose} centered >
+            <Modal.Header closeButton>
+              <Modal.Title>Recipe Form</Modal.Title>
+            </Modal.Header>
+            <Modal.Body >
+              <Form >
+                <Form.Group >
+                  <Form.Label>Name</Form.Label>
+                  <Form.Control type="text" name="name" id="name" value={recipeData.name} onChange={handleChange} />
                 </Form.Group>
-              </Col>
-              
-            
 
-            <Form.Group>
-              <Form.Label>Category</Form.Label>
-              <Form.Control as="select" name="recycletype" id = "recycletype" value={recycleData.recycletype} onChange={handleChangeRecycle}>
-              <option value="">Select Category</option>
-              <option value="Thailand">Plant</option>
-              <option value="Myanmar">Animalfood</option>
-              <option value="China">FaceWash</option>
-              </Form.Control>
-            </Form.Group>
+                <Form.Group >
+                  <Form.Label>Description</Form.Label>
+                  <Form.Control as="textarea" name="description" id="description" value={recipeData.description} onChange={handleChange} />
+                </Form.Group>
 
-            <Form.Group>
-              <Form.Label>Instruction</Form.Label>
-              <Form.Control as="textarea" name="instruction" id = "instruction" value={recycleData.instruction} onChange={handleChangeRecycle} />
-            </Form.Group>
+                <Row >
+                  <Col >
+                    <Form.Group style={{ width: '150px' }}>
+                      <Form.Label>Preparation Time:</Form.Label>
+                      <Form.Label>Hours</Form.Label>
+                      <Form.Control type="number" name="prepTimeHours" value={recipeData.prepTime.hours} onChange={(e) => handleTimeChange('prepTime', 'hours', e.target.value)} />
+                      <Form.Label>Minutes</Form.Label>
+                      <Form.Control type="number" name="prepTimeMinutes" value={recipeData.prepTime.minutes} onChange={(e) => handleTimeChange('prepTime', 'minutes', e.target.value)} />
+                    </Form.Group>
+                  </Col>
+                  <Col>
+                    <Form.Group style={{ width: '130px' }} >
+                      <Form.Label>Cooking Time</Form.Label>
+                      <Form.Label>Hours</Form.Label>
+                      <Form.Control type="number" name="cookTimeHours" value={recipeData.cookTime.hours} onChange={(e) => handleTimeChange('cookTime', 'hours', e.target.value)} />
+                      <Form.Label>Minutes</Form.Label>
+                      <Form.Control type="number" name="cookTimeMinutes" value={recipeData.cookTime.minutes} onChange={(e) => handleTimeChange('cookTime', 'minutes', e.target.value)} />
+                    </Form.Group>
+                  </Col>
 
-            <Form.Group>
-              <Form.Label>Recycle Image</Form.Label>
-              <input type="file" onChange={recyclehandleFileChange} />
-              <button style={{margin: '5px'}} onClick={recyclehandleupload}>Upload</button>{recycleselectedFile && <p>{recycleselectedFile.name}</p>}
-              {recycleImageUrl && <img className="recycle-picture" style ={{ width: '100px', height: '100px',borderRadius: '50%',objectFit: 'cover',overflow: 'hidden'}}
-              src={recycleImageUrl} alt="Uploaded Image" />}
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleRecycleFormClose}>
-            Back
-          </Button>
-          <Button variant="primary" onClick={handleSubmitRecycle}>Save</Button>
-        </Modal.Footer>
-      </Modal>
+                  <Col>
+                    <Form.Group >
+                      <Form.Label>Servings</Form.Label>
+                      <Form.Control type="number" name="servings" id="servings" value={recipeData.servings} onChange={handleChange} />
+                    </Form.Group>
+                  </Col>
+                  <Col>
+                    <Form.Group >
+                      <Form.Label>Origin</Form.Label>
+                      <Form.Control as="select" name="origin" id="origin" value={recipeData.origin} onChange={handleChange}>
+                        <option value="">Select Origin</option>
+                        <option value="Thailand">Thailand</option>
+                        <option value="Myanmar">Myanmar </option>
+                        <option value="China">China </option>
+                        <option value="Japan">Japan</option>
+                        <option value="India">India </option>
+                        <option value="Sounth_Korea">Sounth Korea </option>
+                        <option value="Singapore">Singapore</option>
+                        <option value="Vietnam">Vietnam </option>
+                        <option value="Malaysia">Malaysia </option>
+                      </Form.Control>
+                    </Form.Group>
+                  </Col>
+                </Row>
+
+                <Form.Group >
+                  <Form.Label>Taste</Form.Label>
+                  <Form.Control type="text" name="taste" id="taste" value={recipeData.taste} onChange={handleChange} />
+                </Form.Group>
+
+                <Form.Group >
+                  <Form.Label>Category</Form.Label>
+                  <Form.Control as="select" name="mealtype" id="mealtype" value={recipeData.type} onChange={handleChange}>
+                    <option value="">Select Type</option>
+                    <option value="Maindish">Main dish</option>
+                    <option value="Dessert">Dessert </option>
+                    <option value="Salad">Salad </option>
+                  </Form.Control>
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label>Ingredients</Form.Label>
+                  {ingredients.map((ingredient, index) => (
+                    <Row key={index}>
+                      <Col>
+                        <Form.Control type="text" placeholder="Name" value={ingredient.name} onChange={(e) => handleIngredientChange(index, 'name', e.target.value)} />
+                      </Col>
+                      <Col>
+                        <Form.Control type="number" placeholder="Quantity" value={ingredient.quantity} onChange={(e) => handleIngredientChange(index, 'quantity', e.target.value)} />
+                      </Col>
+                      <Col>
+                        <Form.Control as="select" value={ingredient.unit} onChange={(e) => handleIngredientChange(index, 'unit', e.target.value)}>
+                          <option value="">Select Unit</option>
+                          <option value="gram">Gram</option>
+                          <option value="pieces">Pieces</option>
+                          <option value="cuts">Cuts</option>
+                          <option value="cups">Cups</option>
+                          <option value="tbsp">Tbsp</option>
+                          <option value="tsp">Tsp</option>
+                          <option value="clove">Clove</option>
+                          <option value="leaves">Leaves</option>
+                          <option value="slices">Slices</option>
+                          <option value="pitch">Pitch</option>
+                          <option value="ml">ML</option>
+                          <option value="pack">Pack</option>
+                          <option value="scoop">Scoop</option>
+                        </Form.Control>
+                      </Col>
+                      <Col>
+                        <Form.Control as="select" value={ingredient.category} onChange={(e) => handleIngredientChange(index, 'category', e.target.value)}>
+                          <option value=" ">Select Catagory</option>
+                          <option value="MEAT">Meat</option>
+                          <option value="VEGETABLES">Vegetables</option>
+                          <option value="SPICES_HERBS">SPICES HERBS</option>
+                          <option value="LIQUIDS">LIQUIDS</option>
+                          <option value="GRAINS_STARCHES">GRAINS STARCHES</option>
+                          <option value="DAIRY">DAIRY</option>
+                          <option value="OILS">OILS</option>
+                          <option value="SUGARS_SWEETENERS">SUGARS SWEETENERS</option>
+                          <option value="FRUITS">FRUITS</option>
+                          <option value="NUTS">NUTS</option>
+                          <option value="SAUCES">SAUCES</option>
+                          <option value="BAKING_INGREDIENTS">BAKING INGREDIENTS</option>
+                          <option value="ALCOHOL">ALCOHOL</option>
+                          <option value="OTHERS">OTHERS</option>
+
+                        </Form.Control>
+                      </Col>
+                    </Row>
+                  ))}
+                  <Button style={{ margin: '10px', padding: '5px' }} onClick={handleAddIngredient}>Add Ingredient</Button>
+                </Form.Group>
+
+
+                <Form.Group >
+                  <Form.Label>Instruction</Form.Label>
+                  <Form.Control as="textarea" name="instruction" id="instruction" value={recipeData.instruction} onChange={handleChange} />
+                </Form.Group>
+
+                <Form.Group>
+                  <Form.Label>Recipe Image</Form.Label>
+                  <input type="file" onChange={recipehandleFileChange} />
+                  <button style={{ margin: '10px' }} onClick={recipehandleupload}>Upload</button>{recipeselectedFile && <p>{recipeselectedFile.name}</p>}
+                  {recipeImageUrl && <img className="recycle-picture" style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', overflow: 'hidden' }}
+                    src={recipeImageUrl} alt="Uploaded Image" />}
+                </Form.Group>
+              </Form>
+
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleRecipeFormClose}>
+                Back
+              </Button>
+              <Button variant="primary" onClick={handleSubmitRecipe}>Save</Button>
+            </Modal.Footer>
+          </Modal>
+
+          <Modal show={showRecycleForm} onHide={handleRecycleFormClose} centered>
+            <Modal.Header closeButton>
+              <Modal.Title>Recycle Form</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Form>
+                <Form.Group>
+                  <Form.Label>Name</Form.Label>
+                  <Form.Control type="text" name="name" id="name" value={recycleData.name} onChange={handleChangeRecycle} />
+                </Form.Group>
+
+                <Form.Group>
+                  <Form.Label>Description</Form.Label>
+                  <Form.Control as="textarea" name="description" id="description" value={recycleData.description} onChange={handleChangeRecycle} />
+                </Form.Group>
+
+                <Col>
+                  <Form.Group>
+                    <Form.Label>Prep Time</Form.Label>
+                    <Form.Control type="number" name="prepTime" id="prepTime" value={recycleData.prepTime} onChange={handleChangeRecycle} />
+                  </Form.Group>
+                </Col>
+
+
+
+                <Form.Group>
+                  <Form.Label>Category</Form.Label>
+                  <Form.Control as="select" name="recycletype" id="recycletype" value={recycleData.recycletype} onChange={handleChangeRecycle}>
+                    <option value="">Select Category</option>
+                    <option value="Thailand">Plant</option>
+                    <option value="Myanmar">Animalfood</option>
+                    <option value="China">FaceWash</option>
+                  </Form.Control>
+                </Form.Group>
+
+                <Form.Group>
+                  <Form.Label>Instruction</Form.Label>
+                  <Form.Control as="textarea" name="instruction" id="instruction" value={recycleData.instruction} onChange={handleChangeRecycle} />
+                </Form.Group>
+
+                <Form.Group>
+                  <Form.Label>Recycle Image</Form.Label>
+                  <input type="file" onChange={recyclehandleFileChange} />
+                  <button style={{ margin: '5px' }} onClick={recyclehandleupload}>Upload</button>{recycleselectedFile && <p>{recycleselectedFile.name}</p>}
+                  {recycleImageUrl && <img className="recycle-picture" style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', overflow: 'hidden' }}
+                    src={recycleImageUrl} alt="Uploaded Image" />}
+                </Form.Group>
+              </Form>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleRecycleFormClose}>
+                Back
+              </Button>
+              <Button variant="primary" onClick={handleSubmitRecycle}>Save</Button>
+            </Modal.Footer>
+          </Modal>
         </div>
       </div>
-      
-      
 
 
 
 
-      
+
+
+
     </>
   );
 };

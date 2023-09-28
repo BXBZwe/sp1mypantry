@@ -4,12 +4,14 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { Dropdown } from 'react-bootstrap';
 import 'font-awesome/css/font-awesome.min.css';
+import { Navbar, Nav, Form, FormControl, Button } from 'react-bootstrap';
 const Itemprofile = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const router = useRouter();
     const {id} = router.query;
     const [recycle, setRecycle] = useState();
-
+    const [notifications, setNotifications] = useState([]);
+    const [unreadCount, setUnreadCount] = useState(0);
     useEffect(() => {
       const fetchPost = async () => {
         try {
@@ -60,122 +62,83 @@ const Itemprofile = () => {
     <>
       <div className='container-fluid'>
         <div className='row vh-100'>
-          <nav
-            style={{ backgroundColor: '#d8456b', height: '10%' }}
-            className='navbar navbar-expand-lg'
-          >
-            <div className='container-fluid'>
-              <a className='navbar-brand custom-cursive-font' href='home'>
-                <h3 style={{ color: 'white', fontFamily: 'cursive' }}>MyPantry</h3>
-              </a>
-              <button
-                className='navbar-toggler'
-                type='button'
-                data-bs-toggle='collapse'
-                data-bs-target='#navbarSupportedContent'
-                aria-controls='navbarSupportedContent'
-              >
-                <span className='navbar-toggler-icon'></span>
-              </button>
-              <div className='collapse navbar-collapse' id='navbarSupportedContent'>
-                <span style={{ width: '1070px' }}></span>
-                <ul className='navbar-nav ml-auto'>
-                  <li className='nav-item'>
-                    <Link
-                      className='nav-link '
-                      style={{  color: 'white', fontFamily: 'cursive' }}
-                      aria-current='page'
-                      href='../home'
-                    >
-                      Recipe
-                    </Link>
-                  </li>
-                  <li className='nav-item'>
-                    <Link
-                      className='nav-link active'
-                      aria-current='page'
-                      href='/userpage/mealplannermain'
-                      style={{ color: 'white', fontFamily: 'cursive' }}
-                    >
-                      Planner
-                    </Link>
-                  </li>
-                  <li className='nav-item'>
-                    <Link
-                      className='nav-link'
-                      aria-current='page'
-                      href='/userpage/recyclehome'
-                      style={{ color: 'white', fontFamily: 'cursive' }}
-                    >
-                      Recycle
-                    </Link>
-                  </li>
-                  <li className='nav-item'>
-                    <Link
-                      className='nav-link'
-                      aria-current='page'
-                      href='/userpage/userprofileMR'
-                      style={{ color: 'white' }}
-                    >
-                      <i className='fa fa-user'></i>
-                    </Link>
-                  </li>
-                  <li className='nav-item'>
-                    <a className='nav-link' aria-current='page' href='#' style={{ color: 'white' }}>
-                      <i className='fa fa-sign-out'></i>
-                    </a>
-                  </li>
+        <Navbar bg="primary" expand="lg" variant="dark">
+            <div className="container">
+              <Navbar.Brand href="../home" style={{ fontFamily: 'cursive', fontSize: '30px', paddingRight: '845px' }}>MyPantry</Navbar.Brand>
 
-                  <Dropdown>
-                    <Dropdown.Toggle
-                      style={{
-                        border: 'none',
-                        color: 'inherit',
-                        fontSize: 'inherit',
-                        color: 'white',
-                        backgroundColor: '#d8456b',
-                        paddingRight: '0px',
-                        paddingLeft: '0px',
-                        marginTop: '0px',
-                      }}
-                    >
-                      <i className='fa fa-bell text-white'></i>
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu>
-                      <Dropdown.Item>Notification 1</Dropdown.Item>
-                      <Dropdown.Item>Notification 2</Dropdown.Item>
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </ul>
-              </div>
+              <Navbar.Toggle aria-controls="navbarSupportedContent" />
+              <Navbar.Collapse id="navbarSupportedContent">
+
+                <Nav className="navbar-nav ml-auto">
+                  <Nav.Link href="../home" >Recipe</Nav.Link>
+                  <Nav.Link href="../mealplannermain" >Planner</Nav.Link>
+                  <Nav.Link href="../recyclehome">Recycle</Nav.Link>
+
+
+                  <Nav.Link href="../userprofileMR">
+                    <i className="fa fa-user"></i>
+                  </Nav.Link>
+                  <Nav.Link href="#">
+                    <i className="fa fa-sign-out"></i>
+                  </Nav.Link>
+                </Nav>
+                <Dropdown>
+                  <Dropdown.Toggle className="custom-dropdown-menu"
+                    style={{ border: 'none', fontSize: 'inherit', paddingRight: '0px', paddingLeft: '0px', marginTop: '0px' }}>
+
+                    <i className="fa fa-bell " ></i>
+                    {unreadCount > 0 && <span className="badge">{unreadCount}</span>}
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu style={{ right: 'auto', left: 0 }}>
+                    {notifications && notifications.length > 0 ? (
+                      notifications.map((notification, index) => (
+                        <Dropdown.Item
+                          key={index}
+                          onClick={() => handleNotificationClick(notification._id)}
+                          href={`/userpage/report/${notification.reportId}`}
+                        >
+                          {notification.message}
+                        </Dropdown.Item>
+                      ))
+                    ) : (
+                      <Dropdown.Item>No new notifications</Dropdown.Item>
+                    )}
+                  </Dropdown.Menu>
+                </Dropdown>
+
+              </Navbar.Collapse>
             </div>
-          </nav>
-          <div
-            className='col-3 '
-            style={{
-              paddingTop: '20px',
-              backgroundColor: '#ffffff',
-              overflowY: 'Auto',
-              textAlign: 'center',
-              height: '90%',
-            }}
-          >
-            {recycle.recycleimageUrl && <img className="recycle-picture" style={{
-                  width: '360px',
-                  height: '300px',
-                  objectFit: 'cover',
-                  overflow: 'hidden',
-                }}
-          src={recycle.recycleimageUrl} alt="Uploaded Image" />}
-          
-          <h2 style={{fontFamily: 'cursive', font: 'bold', marginTop: '10px' }}>{recycle.name}</h2>
-          <button onClick={addrecyclewishlist} style={{
-                backgroundColor: '#0b5ed7',
-                padding: '5px',
-                borderRadius: '10%',
-              }}>Add to Wishlist</button>
-          <p>{errorMessage}</p>
-          </div>
+          </Navbar>
+          <div className='col-md-4 col-lg-3 col-xl-3 col-xxl-3' style={{ paddingTop: '20px', backgroundColor: '#ffffff', overflowY: 'auto', textAlign: 'center', height: '90%' }}>
+  {recycle.recycleimageUrl && (
+    <img
+      className='recycle-picture'
+      style={{
+        width: '100%',
+        maxWidth: '360px',
+        height: 'auto',
+        objectFit: 'cover',
+        overflow: 'hidden',
+      }}
+      src={recycle.recycleimageUrl}
+      alt='Uploaded Image'
+    />
+  )}
+  <h2 style={{ fontFamily: 'cursive', fontWeight: 'bold', marginTop: '10px' }}>{recycle.name}</h2>
+  <button
+    onClick={addrecyclewishlist}
+    className='btn btn-primary'
+    style={{
+      padding: '5px 15px',
+      borderRadius: '10%',
+      marginTop: '10px',
+    }}
+  >
+    Add to Wishlist
+  </button>
+  <p>{errorMessage}</p>
+</div>
+
           <div
             className='col-sm'
             style={{
