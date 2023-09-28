@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Dropdown, Modal, Button  } from 'react-bootstrap';
+import { Dropdown, Modal } from 'react-bootstrap';
 import 'font-awesome/css/font-awesome.min.css';
-
-const Itemprofile = ({isOpen, closeModal, postId}) => {
+import { Navbar, Nav, Form, FormControl, Button } from 'react-bootstrap';
+const Itemprofile = ({ isOpen, closeModal, postId }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
   const { id } = router.query;
@@ -18,7 +18,8 @@ const Itemprofile = ({isOpen, closeModal, postId}) => {
   const [details, setDetails] = useState('');
   const [showReportModal, setShowReportModal] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
 
 
   const scalingfactors = {
@@ -138,7 +139,7 @@ const Itemprofile = ({isOpen, closeModal, postId}) => {
       console.error('Error reporting:', error);
     }
   };
-  
+
 
 
 
@@ -147,112 +148,60 @@ const Itemprofile = ({isOpen, closeModal, postId}) => {
     <>
       <div className='container-fluid'>
         <div className='row vh-100'>
-          <nav
-            style={{ backgroundColor: '#d8456b', height: '10%' }}
-            className='navbar navbar-expand-lg'
-          >
-            <div className='container-fluid'>
-              <a className='navbar-brand custom-cursive-font' href='../home'>
-                <h3 style={{ color: 'white', fontFamily: 'cursive' }}>MyPantry</h3>
-              </a>
-              <button
-                className='navbar-toggler'
-                type='button'
-                data-bs-toggle='collapse'
-                data-bs-target='#navbarSupportedContent'
-                aria-controls='navbarSupportedContent'
-              >
-                <span className='navbar-toggler-icon'></span>
-              </button>
-              <div className='collapse navbar-collapse' id='navbarSupportedContent'>
-                <span style={{ width: '1070px' }}></span>
-                <ul className='navbar-nav ml-auto'>
-                  <li className='nav-item'>
-                    <Link
-                      className='nav-link '
-                      style={{  color: 'white', fontFamily: 'cursive' }}
-                      aria-current='page'
-                      href='../home'
-                    >
-                      Recipe
-                    </Link>
-                  </li>
-                  <li className='nav-item'>
-                    <Link
-                      className='nav-link active'
-                      aria-current='page'
-                      href='/userpage/mealplannermain'
-                      style={{ color: 'white', fontFamily: 'cursive' }}
-                    >
-                      Planner
-                    </Link>
-                  </li>
-                  <li className='nav-item'>
-                    <Link
-                      className='nav-link'
-                      aria-current='page'
-                      href='/userpage/recyclehome'
-                      style={{ color: 'white', fontFamily: 'cursive' }}
-                    >
-                      Recycle
-                    </Link>
-                  </li>
-                  <li className='nav-item'>
-                    <Link
-                      className='nav-link'
-                      aria-current='page'
-                      href='/userpage/userprofileMR'
-                      style={{ color: 'white' }}
-                    >
-                      <i className='fa fa-user'></i>
-                    </Link>
-                  </li>
-                  <li className='nav-item'>
-                    <a className='nav-link' aria-current='page' href='#' style={{ color: 'white' }}>
-                      <i className='fa fa-sign-out'></i>
-                    </a>
-                  </li>
+          <Navbar bg="primary" expand="lg" variant="dark">
+            <div className="container">
+              <Navbar.Brand href="../home" style={{ fontFamily: 'cursive', fontSize: '30px', paddingRight: '845px' }}>MyPantry</Navbar.Brand>
 
-                  <Dropdown>
-                    <Dropdown.Toggle
-                      style={{
-                        border: 'none',
-                        color: 'inherit',
-                        fontSize: 'inherit',
-                        color: 'white',
-                        backgroundColor: '#d8456b',
-                        paddingRight: '0px',
-                        paddingLeft: '0px',
-                        marginTop: '0px',
-                      }}
-                    >
-                      <i className='fa fa-bell text-white'></i>
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu>
-                      <Dropdown.Item>Notification 1</Dropdown.Item>
-                      <Dropdown.Item>Notification 2</Dropdown.Item>
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </ul>
-              </div>
+              <Navbar.Toggle aria-controls="navbarSupportedContent" />
+              <Navbar.Collapse id="navbarSupportedContent">
+
+                <Nav className="navbar-nav ml-auto">
+                  <Nav.Link href="../home" >Recipe</Nav.Link>
+                  <Nav.Link href="../mealplannermain" >Planner</Nav.Link>
+                  <Nav.Link href="../recyclehome">Recycle</Nav.Link>
+
+
+                  <Nav.Link href="../userprofileMR">
+                    <i className="fa fa-user"></i>
+                  </Nav.Link>
+                  <Nav.Link href="#">
+                    <i className="fa fa-sign-out"></i>
+                  </Nav.Link>
+                </Nav>
+                <Dropdown>
+                  <Dropdown.Toggle className="custom-dropdown-menu"
+                    style={{ border: 'none', fontSize: 'inherit', paddingRight: '0px',  }}>
+                    <i className="fa fa-bell " ></i>
+                    {unreadCount > 0 && <span className="badge">{unreadCount}</span>}
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu style={{ right: 'auto', left: 0 }}>
+                    {notifications && notifications.length > 0 ? (
+                      notifications.map((notification, index) => (
+                        <Dropdown.Item
+                          key={index}
+                          onClick={() => handleNotificationClick(notification._id)}
+                          href={`/userpage/report/${notification.reportId}`}
+                        >
+                          {notification.message}
+                        </Dropdown.Item>
+                      ))
+                    ) : (
+                      <Dropdown.Item>No new notifications</Dropdown.Item>
+                    )}
+                  </Dropdown.Menu>
+                </Dropdown>
+
+              </Navbar.Collapse>
             </div>
-          </nav>
-          <div
-            className='col-3 '
-            style={{
-              paddingTop: '20px',
-              backgroundColor: '#ffffff',
-              overflowY: 'Auto',
-              textAlign: 'center',
-              height: '90%',
-            }}
-          >
+          </Navbar>
+          <div className="col-12 col-md-4" style={{ paddingTop: '5px', backgroundColor: '#ffffff', overflowY: 'auto', textAlign: 'center', height: '90%' }}>
             {post.recipeimageUrl && (
               <img
                 className='recipe-picture'
                 style={{
-                  width: '360px',
-                  height: '300px',
+                  width: '100%',
+                  maxWidth: '450px',
+                  height: 'auto',
                   objectFit: 'cover',
                   overflow: 'hidden',
                 }}
@@ -260,21 +209,27 @@ const Itemprofile = ({isOpen, closeModal, postId}) => {
                 alt='Uploaded Image'
               />
             )}
-            <h2 style={{ fontFamily: 'cursive', font: 'bold' }}>{post.name}</h2>
+            <h2 style={{ fontFamily: 'cursive', fontWeight: 'bold' }}>{post.name}</h2>
             <button
               onClick={addrecipewishlist}
               style={{
                 backgroundColor: '#0b5ed7',
-                padding: '5px',
+                padding: '5px 10px',
                 borderRadius: '10%',
+                marginBottom: '5px',
               }}
             >
               Add to Wishlist
-            </button><br></br>
-            <button onClick={() => setShowReportModal(true)} style={{marginTop: '5px', backgroundColor: '#d8456b',
-                padding: '5px',
+            </button>
+            <br />
+            <button
+              onClick={() => setShowReportModal(true)}
+              style={{
+                backgroundColor: '#d8456b',
+                padding: '5px 40px',
                 borderRadius: '10%',
-                width: '120px'}}>
+              }}
+            >
               Report
             </button>
 
@@ -284,7 +239,7 @@ const Itemprofile = ({isOpen, closeModal, postId}) => {
               </Modal.Header>
               <Modal.Body>
                 <div>
-                  <label style={{margin: '5px'}}>Reason:</label>
+                  <label style={{ margin: '5px' }}>Reason:</label>
                   <select value={reason} onChange={(e) => setReason(e.target.value)}>
                     <option value="Inappropriate Content">Inappropriate Content</option>
                     <option value="Misinformation">Misinformation</option>
@@ -293,7 +248,7 @@ const Itemprofile = ({isOpen, closeModal, postId}) => {
                   </select>
                 </div>
                 <div>
-                  <label style={{margin: '6.5px'}}>Details:</label>
+                  <label style={{ margin: '6.5px' }}>Details:</label>
                   <textarea value={details} onChange={(e) => setDetails(e.target.value)} rows="4"></textarea>
                 </div>
               </Modal.Body>
@@ -331,8 +286,11 @@ const Itemprofile = ({isOpen, closeModal, postId}) => {
               value={scaledServings}
               onChange={(e) => setScaledServings(e.target.value)}
               placeholder='Number of servings'
+              style={{ margin: '10px 0' }}
             />
-            <button onClick={handleScaleIngredients}>Scale Ingredients</button>
+            <button onClick={handleScaleIngredients} style={{ marginBottom: '10px' }}>
+              Scale Ingredients
+            </button>
 
             {/* Display scaled ingredients under the button */}
             {scaledIngredientsVisible && (
@@ -356,157 +314,51 @@ const Itemprofile = ({isOpen, closeModal, postId}) => {
               </table>
             )}
           </div>
-          <div
-            className='col-sm'
-            style={{
-              padding: '20px',
-              backgroundColor: '#eceeee',
-              height: '90%',
-              overflowY: 'auto',
-            }}
-          >
-            <table
-              class='table table-bordered border-primary'
-              style={{ width: '100%', marginTop: '20px', borderCollapse: 'collapse' }}
-            >
-              <thead>
-                <tr>
-                  <th
-                    style={{
-                      padding: '8px',
-                      borderBottom: '1px solid black',
-                      textAlign: 'center',
-                    }}
-                  >
-                    Category
-                  </th>
-                  <th
-                    style={{
-                      padding: '8px',
-                      borderBottom: '1px solid black',
-                      textAlign: 'center',
-                    }}
-                  >
-                    Origin
-                  </th>
-                  <th
-                    style={{
-                      padding: '8px',
-                      borderBottom: '1px solid black',
-                      textAlign: 'center',
-                    }}
-                  >
-                    Taste
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td
-                    style={{
-                      padding: '8px',
-                      borderBottom: '1px solid black',
-                      textAlign: 'center',
-                    }}
-                  >
-                    {post.mealtype}
-                  </td>
-                  <td
-                    style={{
-                      padding: '8px',
-                      borderBottom: '1px solid black',
-                      textAlign: 'center',
-                    }}
-                  >
-                    {post.origin}
-                  </td>
-                  <td
-                    style={{
-                      padding: '8px',
-                      borderBottom: '1px solid black',
-                      textAlign: 'center',
-                    }}
-                  >
-                    {post.taste}
-                  </td>
-                </tr>
-              </tbody>
-              <thead>
-                <tr>
-                  <th
-                    style={{
-                      padding: '8px',
-                      borderBottom: '1px solid black',
-                      textAlign: 'center',
-                    }}
-                  >
-                    Preparation Time
-                  </th>
-                  <th
-                    style={{
-                      padding: '8px',
-                      borderBottom: '1px solid black',
-                      textAlign: 'center',
-                    }}
-                  >
-                    Cooking Time
-                  </th>
-                  <th
-                    style={{
-                      padding: '8px',
-                      borderBottom: '1px solid black',
-                      textAlign: 'center',
-                    }}
-                  >
-                    Servings
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td
-                    style={{
-                      padding: '8px',
-                      borderBottom: '1px solid black',
-                      textAlign: 'center',
-                    }}
-                  >
-                    {`${post.prepTime.hours} hours ${post.prepTime.minutes} minutes`}
-                  </td>
-                  <td
-                    style={{
-                      padding: '8px',
-                      borderBottom: '1px solid black',
-                      textAlign: 'center',
-                    }}
-                  >
-                    {`${post.cookTime.hours} hours ${post.cookTime.minutes} minutes`}
-                  </td>
-                  <td
-                    style={{
-                      padding: '8px',
-                      borderBottom: '1px solid black',
-                      textAlign: 'center',
-                    }}
-                  >
-                    {post.servings}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
 
-            <h3 style={{ fontFamily: 'Cursive' }}>
-              <i className='fa fa-star' style={{ paddingRight: '10px' }}></i>
-              Description:
-            </h3>
-            <h5 style={{ fontFamily: 'Cursive', whiteSpace: 'pre-line' }}>{post.description}</h5>
-            <br></br>
-            <h3 style={{ fontFamily: 'Cursive' }}>
-              {' '}
-              <i className='fa fa-star' style={{ paddingRight: '10px' }}></i>Instruction:
-            </h3>
-            <h5 style={{ fontFamily: 'Inter, sans-serif', whiteSpace: 'pre-line' }}>{post.instruction}</h5>
-          </div>
+          <div className="col-sm" style={{ padding: '20px', backgroundColor: '#eceeee', height: '90%', overflowY: 'auto' }}>
+  <table className="table table-bordered border-primary">
+    <thead>
+      <tr>
+        <th className="text-center">Category</th>
+        <th className="text-center">Origin</th>
+        <th className="text-center">Taste</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td className="text-center">{post.mealtype}</td>
+        <td className="text-center">{post.origin}</td>
+        <td className="text-center">{post.taste}</td>
+      </tr>
+    </tbody>
+    <thead>
+      <tr>
+        <th className="text-center">Preparation Time</th>
+        <th className="text-center">Cooking Time</th>
+        <th className="text-center">Servings</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td className="text-center">{`${post.prepTime.hours} hours ${post.prepTime.minutes} minutes`}</td>
+        <td className="text-center">{`${post.cookTime.hours} hours ${post.cookTime.minutes} minutes`}</td>
+        <td className="text-center">{post.servings}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 style={{ fontFamily: 'cursive' }}>
+    <i className='fa fa-star' style={{ paddingRight: '10px' }}></i>
+    Description:
+  </h3>
+  <h5 style={{ fontFamily: 'cursive', whiteSpace: 'pre-line' }}>{post.description}</h5>
+  <br />
+  <h3 style={{ fontFamily: 'cursive' }}>
+    <i className='fa fa-star' style={{ paddingRight: '10px' }}></i>Instruction:
+  </h3>
+  <h5 style={{ fontFamily: 'Inter, sans-serif', whiteSpace: 'pre-line' }}>{post.instruction}</h5>
+</div>
+
         </div>
       </div>
     </>
