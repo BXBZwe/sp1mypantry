@@ -110,42 +110,101 @@ const AdminUserprofile = () => {
     return (
         <>
         
-        <div className='container-fluid'>
-        <div className="row vh-100">
-        <nav style={{backgroundColor: '#d8456b', height: '10%'}} className="navbar navbar-expand-lg " >
-        <div className="container-fluid" >
-          <a className="navbar-brand custom-cursive-font" href="adminhome" ><h3 style={{color: 'white'}}>MyPantry - Admin</h3></a>
-          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent">
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse"  id="navbarSupportedContent">
-          <span className="navbar-nav  mx-auto"></span>
-            <ul className="navbar-nav ml-auto" >
-            <li className="nav-item" >
-              <a className="nav-link active" style={{ color: 'white'}} aria-current="page" href="adminhome">Home</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link "  aria-current="page" href="adminprofile" style={{fontWeight: 'bold', color: 'white'}}>Profile</a>
-            </li>    
-            </ul>
+        <div className="container-fluid">
+        <div className="row">
+          <nav
+            style={{ backgroundColor: '#d8456b' }}
+            className="navbar navbar-expand-lg navbar-dark"
+          >
+            <div className="container">
+              <a className="navbar-brand custom-cursive-font" href="adminhome">
+                <h3>MyPantry - Admin</h3>
+              </a>
+              <button
+                className="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent"
+              >
+                <span className="navbar-toggler-icon"></span>
+              </button>
+              <div
+                className="collapse navbar-collapse"
+                id="navbarSupportedContent"
+              >
+                <span className="navbar-nav mx-auto"></span>
+                <ul className="navbar-nav ml-auto">
+                  <li className="nav-item">
+                    <a
+                      className="nav-link active"
+                      style={{ color: 'white' }}
+                      aria-current="page"
+                      href="adminhome"
+                    >
+                      Home
+                    </a>
+                  </li>
+                  <li className="nav-item">
+                    <a
+                      className="nav-link"
+                      aria-current="page"
+                      href="adminprofile"
+                      style={{ fontWeight: 'bold', color: 'white' }}
+                    >
+                      Profile
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </nav>
+          <div
+            className="col-sm"
+            style={{
+              backgroundColor: '#ffffff',
+              overflow: 'hidden',
+              textAlign: 'center',
+            }}
+          >
+            {imageUrl && (
+              <img
+                className="profile-picture"
+                style={{
+                  width: '20%',
+                  borderRadius: '50%',
+                  objectFit: 'cover',
+                  marginTop: '50px',
+                }}
+                src={imageUrl}
+                alt="Uploaded Image"
+              />
+            )}
+
+            <br />
+            <input type="file" onChange={handleFileChange} />
+            <button onClick={handleUpload}>Upload</button>
+            {selectedFile && <p>{selectedFile.name}</p>}
+
+            <h3 style={{ marginTop: '20px' }}>{name}</h3>
+            <p>
+              {email} <br />
+              {phone}
+            </p>
+            <button
+              style={{
+                fontWeight: 'bold',
+                width: '100px',
+                padding: '5px',
+                borderRadius: '5px',
+                backgroundColor: '#0b5ed7',
+              }}
+            >
+              Signout
+            </button>
           </div>
         </div>
-      </nav>
-      <div className="col sm " style={{  backgroundColor: '#ffffff', overflow: 'hidden', textAlign: 'center',  height: '90%' }}>
-                 {imageUrl && <img className="profile-picture" style ={{ width: '20%',borderRadius: '50%',objectFit: 'cover',overflow: 'hidden', marginTop: '50px'}}
-                src={imageUrl} alt="Uploaded Image" />}
-                
-                <br></br>
-                <input type="file" onChange={handleFileChange} />
-                <button onClick={handleUpload}>Upload</button>{selectedFile && <p>{selectedFile.name}</p>}
-               
-                <h3 style={{ marginTop: '20px' }}>{name}</h3>
-                <p>{email} <br></br> {phone}</p>
-                <button style={{fontWeight: 'bold', width: '100px', padding: '5px', borderRadius: '5px', backgroundColor: '#0b5ed7'}}>Signout</button>
-            
-                
-            </div>
-</div></div>
+      </div>
         </>
     );
 };

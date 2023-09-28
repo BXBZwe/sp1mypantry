@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Link from 'next/link';
-import { Row } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
 import { Card, Grid, Text } from "@nextui-org/react";
 import { Dropdown } from 'react-bootstrap';
 import 'font-awesome/css/font-awesome.min.css';
 import string_name from '../api/post/recipe'
+import { Navbar, Nav, Form, FormControl, Button } from 'react-bootstrap';
 const HomePage = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [posts, setPosts] = useState([]);
@@ -14,23 +15,14 @@ const HomePage = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [selectedSubcategories, setSelectedSubcategories] = useState({});
+  const [selectedSubcategories, setSelectedSubcategories] = useState([]);
   const [openCategories, setOpenCategories] = useState([]);
   const [subcategoriesChecked, setSubcategoriesChecked] = useState({});
-  
-  const toggleSubcategory = (categoryId, subcategory) => {
-    setSubcategoriesChecked((prev) => ({
-      ...prev,
-      [categoryId]: {
-        ...(prev[categoryId] || {}),
-        [subcategory]: !prev[categoryId]?.[subcategory],
-      },
-    }));
-    
-  };
- 
 
-  
+
+
+
+
 
   useEffect(() => {
     const fetchAllPosts = async () => {
@@ -38,7 +30,7 @@ const HomePage = () => {
       try {
         const response = await fetch('/api/post/homeposts');
         const data = await response.json();
-        const filteredData = data.filter(post => 
+        const filteredData = data.filter(post =>
           post.status === 'visible' || (post.status === 'underreview' && post.userId === currentUserId)
         );
 
@@ -47,11 +39,11 @@ const HomePage = () => {
         console.error(error);
       }
     };
-    
+
     const fetchNotifications = async () => {
       const currentUserId = localStorage.getItem('userId');
       try {
-        const response = await fetch(`/api/notification/notification?userId=${currentUserId}`); 
+        const response = await fetch(`/api/notification/notification?userId=${currentUserId}`);
         const data = await response.json();
         setNotifications(data);
         console.log("notifications data :", data)
@@ -60,21 +52,38 @@ const HomePage = () => {
         console.error(error);
       }
     };
-    
+
 
     fetchAllPosts();
     fetchNotifications();
   }, []);
- 
+
   // Filter posts based on searchQuery
-  const filteredPosts = posts.filter((post) =>
+  var filteredPosts = posts.filter((post) =>
     post.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  // Filter posts based on searchQuery and selected subcategories
+  var filterPosts = posts.filter((post) =>
+    post.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+    Object.keys(subcategoriesChecked).every((categoryId) =>
+      Object.keys(subcategoriesChecked[categoryId]).some(
+        (subcategory) =>
+          subcategoriesChecked[categoryId][subcategory] &&
+          post.ingredients.some((ingredient) =>
+            ingredient.categoryId === categoryId &&
+            ingredient.subcategory === subcategory &&
+            isSubcategoryChecked(categoryId, subcategory)
+          )
+      )
+    )
+  );
+
+
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
-  
+
   const handleSignOut = () => {
     // You can implement your signout logic here.
     // For this example, we'll simply set isAuthenticated to false.
@@ -84,14 +93,14 @@ const HomePage = () => {
     {
       id: 1,
       name: 'Meats',
-      subcategories: ['bacon', 'ground beef', 'beef', 'ham', 'sausage', 
-      'pork loin', 'chicken', 'duck'],
+      subcategories: ['bacon', 'ground beef', 'beef', 'ham', 'sausage',
+        'pork loin', 'chicken', 'duck'],
     },
     {
       id: 2,
       name: 'Vegetables & Greens',
       subcategories: ['garlic', 'onion', 'pepper', 'carrot', 'tomato', 'potato',
-    'avocado', 'cucumber'],
+        'avocado', 'cucumber'],
     },
     {
       id: 3,
@@ -115,7 +124,7 @@ const HomePage = () => {
     },
     // Add more categories as needed
   ];
- 
+
   const toggleCategory = (categoryId) => {
     if (openCategories.includes(categoryId)) {
       setOpenCategories(openCategories.filter((id) => id !== categoryId));
@@ -123,13 +132,30 @@ const HomePage = () => {
       setOpenCategories([...openCategories, categoryId]);
     }
   };
+  const toggleSubcategory = (categoryId, subcategory) => {
+    setSubcategoriesChecked((prev) => ({
+      ...prev,
+      [categoryId]: {
+        ...(prev[categoryId] || {}),
+        [subcategory]: !prev[categoryId]?.[subcategory],
+      },
+    }));
+  };
 
   const stopPropagation = (e) => {
     e.stopPropagation();
   };
 
+
+  //return the selected ingredients as true, others as false in an array
+  //need to create an array of selected ingredients and filtered it against the filteredPosts array
   const isSubcategoryChecked = (categoryId, subcategory) => {
-    return subcategoriesChecked[categoryId]?.[subcategory] || false;
+    const checkedSubCategories = subcategoriesChecked[categoryId]?.[subcategory] || false;
+    console.log(subcategory)
+    //setSelectedSubcategories([...selectedSubcategories, subcategory])
+    //console.log(filteredPosts.filter(((post) => post.ingredients.filter((ingredient) => selectedSubcategories.filter((selectedSubCategory) => ingredient.name == selectedSubCategory)))))
+
+    return checkedSubCategories
   };
 
   const handleNotificationClick = async (notificationId) => {
@@ -144,152 +170,151 @@ const HomePage = () => {
           status: 'read',
         }),
       });
-  
+
       const data = await response.json();
       if (data.error) {
         throw new Error(data.error);
       }
-  
+
     } catch (error) {
       console.error('Error updating notification status:', error);
     }
   };
-  
+  <style jsx>{`
+  .custom-dropdown-menu {
+    right: auto !important;
+    left: 0 !important;
+  }
+`}</style>
+
 
   return (
     <>
       <div className='container-fluid'>
         <div className="row vh-100">
-        <nav style={{backgroundColor: '#d8456b', height: '10%'}} className="navbar navbar-expand-lg " >
-            <div className="container-fluid" >
-              <a className="navbar-brand custom-cursive-font" href="home" ><h3 style={{color: 'white', fontFamily: 'cursive'}}>MyPantry</h3></a>
-              <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent">
-                <span className="navbar-toggler-icon"></span>
-              </button>
-              <div className="collapse navbar-collapse"  id="navbarSupportedContent">
-              <form className="d-flex mx-auto text-center">
-                <input
-                className="form-control me-1"
-                type="search"
-                placeholder="Search"
-                aria-label="Search"  
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{width:'500px'}}
-                /></form>
-            <ul className="navbar-nav ml-auto" >
+          <Navbar bg="primary" expand="lg" variant="dark">
+            <div className="container">
+              <Navbar.Brand href="home" style={{ fontFamily: 'cursive', fontSize: '30px', paddingRight: '260px' }}>MyPantry</Navbar.Brand>
 
-            
-            <li className="nav-item" >
-              <a className="nav-link " style={{fontWeight: 'bold', color: 'white', fontFamily: 'cursive'}} aria-current="page" href="home">Recipe</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link active"  aria-current="page" href="../userpage/mealplannermain" style={{ color: 'white', fontFamily: 'cursive'}}>Planner</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" aria-current="page" href="../userpage/recyclehome" style={{ color: 'white', fontFamily: 'cursive'}}>Recycle</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" aria-current="page" href="../userpage/userprofileMR" style={{ color: 'white'}}><i className="fa fa-user"></i>
-</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" aria-current="page" href='#' style={{ color: 'white'}}><i className="fa fa-sign-out"></i></a>
-            </li>
-            
-  
-              <Dropdown >
-                <Dropdown.Toggle style={{ border: 'none', color: 'inherit', fontSize: 'inherit',  color: 'white', backgroundColor: '#d8456b', paddingRight:'0px', paddingLeft:'0px', marginTop: '0px'}}><i className="fa fa-bell text-white"></i> {unreadCount > 0 && <span className="badge">{unreadCount}</span>}</Dropdown.Toggle>
-                <Dropdown.Menu >
-                  {notifications && notifications.length > 0 ? (notifications.map((notification, index) => (
-                    <Dropdown.Item key={index} onClick={() => handleNotificationClick(notification._id)} 
-                    href={`/userpage/report/${notification.reportId}`}>
-                      {notification.message}
-                    </Dropdown.Item>
-                  ))
-                  ) : (
-                    <Dropdown.Item>No new notifications</Dropdown.Item>
-                  )}
-                </Dropdown.Menu>
-              </Dropdown>
-            </ul>
-          </div>
-        </div>
-      </nav>
-          
-          <div className="col-12 col-md-3 side-menu" style={{ paddingTop: '20px', backgroundColor: '#ffffff', overflow: 'hidden', height: '90%', overflowY: 'auto' }}>
-            <h3 className="custom-cursive-font" style={{ textAlign: 'center', fontWeight: 'bold' }}>Recipe Generator</h3>
-            <div className="side-menu">
-      <ul className="list-group">
-        {categoriesData.map((category) => (
-          <li
-            key={category.id}
-            className={`list-group-item ${
-              openCategories.includes(category.id) ? 'active' : ''
-            }`}
-            onClick={() => toggleCategory(category.id)}
-            style={{
-              cursor: 'pointer',
-              backgroundColor: openCategories.includes(category.id)
-                ? '#'
-                : 'white',
-              color: openCategories.includes(category.id) ? 'black' : 'black',
-              transition: 'background-color 0.5s, color 0.5s',
-              outline: 'none',
-            }}
-          >
-            {category.name}
-            
-            {openCategories.includes(category.id) && (
-              <ul className="list-group subcategories" style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', listStyleType: 'none' }}>
-                {category.subcategories.map((subcategory) => (
-                  <li key={subcategory} onClick={stopPropagation}>
-                    <button
-                      className={`btn btn-sm ${
-                        isSubcategoryChecked(category.id, subcategory)
-                          ? 'btn-success'
-                          : 'btn-light'
-                      }`}
-                      onClick={() =>
-                        toggleSubcategory(category.id, subcategory)
-                      }
-                    >
-                      {subcategory}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </li>
-        ))}
-      </ul>
-    </div>
+              <Navbar.Toggle aria-controls="navbarSupportedContent" />
+              <Navbar.Collapse id="navbarSupportedContent">
+                <Form inline style={{ fontFamily: 'cursive', fontSize: '30px', paddingRight: '240px' }}>
+                  <FormControl
+                    type="search"
+                    placeholder="Search"
+                    className="mr-sm-2"
+                    aria-label="Search"
+                    style={{ width: '350px' }}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
 
-          </div>
-          <div className="col-sm" style={{ padding: '20px', backgroundColor: '#eceeee', height: '90%', overflowY: 'auto' }}>
-            <div className="scrollable-content">
-              <Grid.Container gap={2} justify="flex-start">
-                {filteredPosts.map((post, index) => (
-                  <Grid xs={4} sm={3} md={2} lg={2} key={index}>
-                    <Link href={`/userpage/recipe/${post._id}`} style={{ textDecoration: 'none' }}>
-                      <Card isPressable>
-                        <Card.Body css={{ alignItems: 'center', width: '100%' }}>
-                          {post.recipeimageUrl && <img className="recipe-picture" style={{ width: '150px', height: '150px', objectFit: 'cover', overflow: 'hidden' }} src={post.recipeimageUrl} alt="Uploaded Image" />}
-                        </Card.Body>
-                        <Card.Footer css={{ justifyItems: "flex-start" }}>
-                          <Row wrap="wrap" justify="space-between" align="center">
-                            <div key={post._id}>
-                              <Text b>{post.name}</Text>
-                            </div>
-                          </Row>
-                        </Card.Footer>
-                      </Card>
-                    </Link>
-                  </Grid>
-                ))}
-              </Grid.Container>
+                </Form>
+                <Nav className="navbar-nav ml-auto">
+                  <Nav.Link href="home" style={{ fontWeight: 'bold', color: 'white' }}>Recipe</Nav.Link>
+                  <Nav.Link href="../userpage/mealplannermain">Planner</Nav.Link>
+                  <Nav.Link href="../userpage/recyclehome">Recycle</Nav.Link>
+
+
+                  <Nav.Link href="../userpage/userprofileMR">
+                    <i className="fa fa-user"></i>
+                  </Nav.Link>
+                  <Nav.Link href="#">
+                    <i className="fa fa-sign-out"></i>
+                  </Nav.Link>
+                </Nav>
+                <Dropdown>
+                  <Dropdown.Toggle className="custom-dropdown-menu" id="notifications-dropdown" variant="transparent"
+                  style={{ border: 'none', color: 'inherit', fontSize: 'inherit',  color: 'white', paddingRight:'0px', paddingLeft:'0px', marginTop: '0px'}}>
+                    <i className="fa fa-bell text-white"></i>
+                    {unreadCount > 0 && <span className="badge">{unreadCount}</span>}
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu style={{ right: 'auto', left: 0 }}>
+                    {notifications && notifications.length > 0 ? (
+                      notifications.map((notification, index) => (
+                        <Dropdown.Item
+                          key={index}
+                          onClick={() => handleNotificationClick(notification._id)}
+                          href={`/userpage/report/${notification.reportId}`}
+                        >
+                          {notification.message}
+                        </Dropdown.Item>
+                      ))
+                    ) : (
+                      <Dropdown.Item>No new notifications</Dropdown.Item>
+                    )}
+                  </Dropdown.Menu>
+                </Dropdown>
+
+              </Navbar.Collapse>
             </div>
-          </div>
+          </Navbar>
+
+          <div className="col-12 col-md-3 side-menu" style={{ paddingTop: '20px', backgroundColor: '#ffffff', overflow: 'hidden', height: '90%', overflowY: 'auto' }}>
+  <h3 className="custom-cursive-font" style={{ textAlign: 'center', fontWeight: 'bold' }}>Recipe Generator</h3>
+  <div className="side-menu">
+    <ul className="list-group">
+      {categoriesData.map((category) => (
+        <li
+          key={category.id}
+          className={`list-group-item ${openCategories.includes(category.id) ? 'active' : ''}`}
+          onClick={() => toggleCategory(category.id)}
+          style={{
+            cursor: 'pointer',
+            backgroundColor: openCategories.includes(category.id) ? '#ffffff' : 'white',
+            color: openCategories.includes(category.id) ? 'black' : 'black',
+            transition: 'background-color 0.5s, color 0.5s',
+            outline: 'none',
+          }}
+        >
+          {category.name}
+
+          {openCategories.includes(category.id) && (
+            <ul className="list-group subcategories" style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', listStyleType: 'none' }}>
+              {category.subcategories.map((subcategory) => (
+                <li key={subcategory} onClick={stopPropagation}>
+                  <button
+                    className={`btn btn-sm ${isSubcategoryChecked(category.id, subcategory) ? 'btn-success' : 'btn-light'}`}
+                    onClick={() => toggleSubcategory(category.id, subcategory)}
+                  >
+                    {subcategory}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </li>
+      ))}
+    </ul>
+  </div>
+</div>
+<div className="col-sm" style={{ padding: '20px', backgroundColor: '#eceeee', height: '90%', overflowY: 'auto' }}>
+  <div className="scrollable-content">
+    <Container fluid>
+      <Row xs={1} sm={2} md={3} lg={4} xl={5} xxl={6} gap={2}>
+        {filterPosts.map((post, index) => (
+          <Col key={index}>
+            <Link href={`/userpage/recipe/${post._id}`} style={{ textDecoration: 'none' }}>
+              <Card isPressable>
+                <Card.Body css={{ alignItems: 'center', width: '100%' }}>
+                  {post.recipeimageUrl && <img className="recipe-picture" style={{ width: '100%', height: '150px', objectFit: 'cover', overflow: 'hidden' }} src={post.recipeimageUrl} alt="Uploaded Image" />}
+                </Card.Body>
+                <Card.Footer css={{ justifyItems: "flex-start" }}>
+                  <Row wrap="wrap" justify="space-between" align="center">
+                    <div key={post._id}>
+                      <Text b>{post.name}</Text>
+                    </div>
+                  </Row>
+                </Card.Footer>
+              </Card>
+            </Link>
+          </Col>
+        ))}
+      </Row>
+    </Container>
+  </div>
+</div>
+
         </div>
       </div>
     </>

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Tab, Tabs, Table, Button, Modal, Form } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Dropdown } from 'react-bootstrap';
+import { Navbar, Nav, FormControl } from 'react-bootstrap';
+import 'font-awesome/css/font-awesome.min.css';
 
 const Admin = () => {
   const handleTabSelect = (key) => {
@@ -19,9 +21,24 @@ const Admin = () => {
   const [adminComment, setAdminComment] = useState("");
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredUsers, setFilteredUsers] = useState(users);
 
+  const handleSearchInputChange = (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
 
+    // Filter users based on the search query or show all users if the query is empty
+    const filtered = query
+      ? users.filter((user) =>
+          user.name.toLowerCase().includes(query.toLowerCase()) ||
+          user.email.toLowerCase().includes(query.toLowerCase()) ||
+          user.phone.toLowerCase().includes(query.toLowerCase())
+        )
+      : users;
 
+    setFilteredUsers(filtered);
+  };
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -31,14 +48,14 @@ const Admin = () => {
     setIsDropdownOpen(false);
   };
 
-  
+
   useEffect(() => {
     const FetchAllusers = async () => {
       try {
         const response = await fetch('/api/user/getuser');
         const data = await response.json();
         setUsers(data);
-      } catch(error) {
+      } catch (error) {
         console.error(error);
       }
     };
@@ -73,7 +90,7 @@ const Admin = () => {
     const fetchNotifications = async () => {
       const currentUserId = localStorage.getItem('userId');
       try {
-        const response = await fetch(`/api/notification/notification?userId=${currentUserId}`); 
+        const response = await fetch(`/api/notification/notification?userId=${currentUserId}`);
         const data = await response.json();
         setNotifications(data);
         console.log("notifications data :", data)
@@ -111,12 +128,12 @@ const Admin = () => {
           currentUserId: currentUserId
         }),
       });
-  
+
       const data = await response.json();
       if (data.error) {
         throw new Error(data.error);
       }
-  
+
       alert('Report accepted successfully!');
       setShowAdminCommentModal(true);
       // TODO: update the UI, e.g., remove the report from the list, or update its status
@@ -124,7 +141,7 @@ const Admin = () => {
       console.error('Error accepting report:', error);
     }
   };
-  
+
   const handleNotificationClick = async (notificationId) => {
     try {
       const response = await fetch('/api/notification/notification', {
@@ -137,17 +154,17 @@ const Admin = () => {
           status: 'read',
         }),
       });
-  
+
       const data = await response.json();
       if (data.error) {
         throw new Error(data.error);
       }
-  
+
     } catch (error) {
       console.error('Error updating notification status:', error);
     }
   };
-  
+
   const handleDeclineReport = async () => {
     try {
       const response = await fetch('/api/report/adminaction', {
@@ -160,12 +177,12 @@ const Admin = () => {
           action: 'declined'
         }),
       });
-  
+
       const data = await response.json();
       if (data.error) {
         throw new Error(data.error);
       }
-  
+
       alert('Report declined successfully!');
       // TODO: update the UI, e.g., remove the report from the list, or update its status
     } catch (error) {
@@ -186,292 +203,262 @@ const Admin = () => {
           reportId: selectedReportId,
           action: 'accepted',
           adminComment,
-          currentUserId: currentUserId 
+          currentUserId: currentUserId
         }),
       });
-  
+
       const data = await response.json();
-  
+
       if (data.error) {
         throw new Error(data.error);
       }
-  
+
       alert('Admin comment submitted and report accepted successfully.');
       setShowAdminCommentModal(false); // close the modal
     } catch (error) {
       console.error('Error submitting admin comment:', error);
     }
   };
-  
-  
+
+
   return (
-      <div className='container-fluid'>
-        <div className="row vh-100">
-        <nav style={{backgroundColor: '#d8456b', height: '10%'}} className="navbar navbar-expand-lg " >
-        <div className="container-fluid" >
-          <a className="navbar-brand custom-cursive-font" href="adminhome" ><h3 style={{color: 'white'}}>MyPantry - Admin</h3></a>
-          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent">
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse"  id="navbarSupportedContent">
-          <span className="navbar-nav  mx-auto"></span>
-            <ul className="navbar-nav ml-auto" >
-            
-        
-            <li className="nav-item" >
-              <a className="nav-link active" style={{fontWeight: 'bold', color: 'white'}} aria-current="page" href="adminhome">Home</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link "  aria-current="page" href="adminprofile" style={{ color: 'white'}}>Profile</a>
-            </li>
-            <Dropdown >
-                <Dropdown.Toggle style={{ border: 'none', color: 'inherit', fontSize: 'inherit',  color: 'white', backgroundColor: '#d8456b', paddingRight:'0px', paddingLeft:'0px', marginTop: '0px'}}><i className="fa fa-bell text-white"></i> {unreadCount > 0 && <span className="badge">{unreadCount}</span>}</Dropdown.Toggle>
-                <Dropdown.Menu >
-                  {notifications && notifications.length > 0 ? (notifications.map((notification, index) => (
-                    <Dropdown.Item key={index} onClick={() => handleNotificationClick(notification._id)} 
-                    href={`/userpage/report/${notification.reportId}`}>
-                      {notification.message}
-                    </Dropdown.Item>
-                  ))
-                  ) : (
-                    <Dropdown.Item>No new notifications</Dropdown.Item>
-                  )}
-                </Dropdown.Menu>
-            </Dropdown>
-      
-            </ul>
+    <div className='container-fluid'>
+      <div className="row vh-100">
+        <Navbar expand="lg" style={{ backgroundColor: '#d8456b' }}>
+          <div className="container">
+            <Navbar.Brand href="home" style={{ fontFamily: 'cursive', fontSize: '30px', paddingRight: '845px' }}>MyPantry</Navbar.Brand>
+
+            <Navbar.Toggle aria-controls="navbarSupportedContent" />
+            <Navbar.Collapse id="navbarSupportedContent">
+              <ul className="navbar-nav ml-auto" >
+
+
+                <li className="nav-item" >
+                  <a className="nav-link active" style={{ fontWeight: 'bold', color: 'white' }} aria-current="page" href="adminhome">Home</a>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link " aria-current="page" href="adminprofile" style={{ color: 'white' }}>Profile</a>
+                </li>
+                <Dropdown >
+                  <Dropdown.Toggle style={{ border: 'none', color: 'inherit', fontSize: 'inherit', color: 'white', backgroundColor: '#d8456b', paddingRight: '0px', paddingLeft: '0px', marginTop: '0px' }}><i className="fa fa-bell text-white"></i> {unreadCount > 0 && <span className="badge">{unreadCount}</span>}</Dropdown.Toggle>
+                  <Dropdown.Menu >
+                    {notifications && notifications.length > 0 ? (notifications.map((notification, index) => (
+                      <Dropdown.Item key={index} onClick={() => handleNotificationClick(notification._id)}
+                        href={`/userpage/report/${notification.reportId}`}>
+                        {notification.message}
+                      </Dropdown.Item>
+                    ))
+                    ) : (
+                      <Dropdown.Item>No new notifications</Dropdown.Item>
+                    )}
+                  </Dropdown.Menu>
+                </Dropdown>
+
+              </ul>
+
+
+            </Navbar.Collapse>
           </div>
+        </Navbar>
+
+        <div className="col sm " style={{ backgroundColor: '#ffffff', overflow: 'hidden', textAlign: 'center', height: '90%' }}>
+          <div className="content">
+
+            <Tabs defaultActiveKey="user-list" onSelect={handleTabSelect} >
+            <Tab eventKey="user-list" title="User List">
+      <div className="container">
+        <br />
+        <div className="input-group mb-3">
+          <input
+            type="search"
+            className="form-control"
+            placeholder="Search"
+            style={{ width: '100%' }}
+            value={searchQuery}
+            onChange={handleSearchInputChange}
+          />
         </div>
-      </nav>
-      <div className="col sm " style={{  backgroundColor: '#ffffff', overflow: 'hidden', textAlign: 'center',  height: '90%' }}>
-      <div className="content">
-       
-        <Tabs defaultActiveKey="user-list" onSelect={handleTabSelect} >
-          <Tab eventKey="user-list" title="User List" >
-          <br></br>  
-          <input style={{width: '30%'}} type="search" placeholder="Search" />
-           
-            <div className="container" >
-                <Table striped bordered>
-                  <thead>
-                    <tr>
-                      <th className="text-center">UserID</th>
-                      <th className="text-center">Username</th>
-                      <th className="text-center">Email</th>
-                      <th className="text-center">Phone Number</th>
-                      <th></th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  {users.map((user) => (
-                    <tbody key={user._id}>
-                      <tr>
-                        <td className="text-center">{user._id}</td>
-                        <td className="text-center">{user.name}</td>
-                        <td className="text-center">{user.email}</td>
-                        <td className="text-center">{user.phone}</td>
-                        <td className="text-center">
-                          <Button variant="danger">Ban</Button>
-                        </td>
-                        <td className="text-center">
-                          <Button variant="secondary">Unban</Button>
-                        </td>
-                      </tr>
-                    </tbody>
-                  ))}
-                </Table>
-            </div>
-          </Tab>
-
-          <Tab eventKey="item-list" title="Recipe Item List">
-          <br></br>  
-          <input style={{width: '30%'}} type="search" placeholder="Search" />
-           
-            
-            <div className="container">
-              
-              <Table striped bordered>
-                <thead>
-                  <tr>
-                    <th className="text-center">Item Name</th>
-                    <th className="text-center">Meal Type</th>
-                    <th className="text-center">Origin</th>
-                    <th className="text-center">Uploader ID</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                {posts.map((post, index) => (
-                  <tbody key={post._id}>
-                  <tr>
-                    <td className="text-center">{post.name}</td>
-                    <td className="text-center">{post.mealtype}</td>
-                    <td className="text-center">{post.origin}</td>
-                    <td className="text-center">{post.userId}</td>
-                    <td className="text-center">
-                      <Button variant="primary">Delete</Button>
-                    </td>
-                  </tr>
-                </tbody>
-                ))}
-              </Table>
-            </div>
-          </Tab>
-
-          <Tab eventKey="Recycleitem-list" title="Recycle Item List">
-          <br></br>  
-          <input style={{width: '30%'}} type="search" placeholder="Search" />
-           
-            <div className="container">
-              
-              <Table striped bordered>
-                <thead>
-                  <tr>
-                    <th className="text-center">Item Name</th>
-                    <th className="text-center">Recycle Type</th>
-                    <th className="text-center">Uploader ID</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                {recycles.map((recycle, index) => (
-                  <tbody key={recycle._id}>
-                  <tr>
-                    <td className="text-center">{recycle.name}</td>
-                    <td className="text-center">{recycle.recycletype}</td>
-                    <td className="text-center">{recycle.userId}</td>
-                    <td className="text-center">
-                      <Button variant="primary">Delete</Button>
-                    </td>
-                  </tr>
-                </tbody>
-                ))}
-              </Table>
-            </div>
-          </Tab>
-
-          <Tab eventKey="report-notice" title="Report">
-          <br></br>  
-          <input style={{width: '30%'}} type="search" placeholder="Search" />
-         
-            <div className="container">
-           
-              <Table striped bordered>
-                <thead>
-                  <tr>
-                    <th className="text-center">Reported By</th>
-                    <th className="text-center">Reason</th>
-                    <th className="text-center">Post Type</th>  
-                    <th className="text-center">Details</th>
-                  </tr>
-                </thead>
-                {reports.map((report) => (
-                  <tbody key={report._id}>
-                    <tr>
-                      <td className="text-center">{report.reportedName}</td>
-                      <td className="text-center">{report.reason}</td>
-                      <td className="text-center">{report.postType}</td>  
-                      <td className="text-center">
-                      <Button variant="dark" onClick={() => handleShowDetails(report)}>
-                        Details
-                      </Button>
-                      <Modal show={showModal} onHide={() => setShowModal(false)}>
-                        <Modal.Header closeButton>
-                          <Modal.Title>Detail</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                          {modalData && (
-                            <div>
-                              <h4>Report Details</h4>
-                              <p><strong>Reported By:</strong> {modalData.reportedName}</p>
-                              <p><strong>Detail Reason:</strong> {modalData.additionalDetails}</p>
-                              <p><strong>Post Type:</strong> {modalData.postType}</p>
-
-                              <h4>Reported Post Details</h4>
-                              <p><strong>Recipe Name:</strong> {modalData.receipeDetails.name}</p>
-                              <p><strong>Description:</strong> {modalData.receipeDetails.description}</p>
-                              <p><strong>prepTime:</strong> {modalData.receipeDetails.prepTime}</p>
-                              <p><strong>servings:</strong> {modalData.receipeDetails.servings}</p>
-                              <p><strong>cookTime:</strong> {modalData.receipeDetails.cookTime}</p>
-                              <p><strong>origin:</strong> {modalData.receipeDetails.origin}</p>
-                              <p><strong>taste:</strong> {modalData.receipeDetails.taste}</p>
-                              <p><strong>mealtype:</strong> {modalData.receipeDetails.mealtype}</p>
-                              <p><strong>instruction:</strong> {modalData.receipeDetails.instruction}</p>
-                              <p><strong>Ingredients:</strong></p>
-                              <ul>
-                                {modalData.receipeDetails.ingredients.map((ingredient, index) => (
-                                  <li key={index}>
-                                    {`${ingredient.name} - ${ingredient.quantity}${ingredient.unit} (${ingredient.category})`}
-                                  </li>
-                                ))}
-                              </ul>                              
-                              <p><strong>recipeimageUrl:</strong> {modalData.receipeDetails.recipeimageUrl && 
-                              ( <img className='recipe-picture' style={{width: '360px', height: '300px', objectFit: 'cover', overflow: 'hidden',}}
-                              src={modalData.receipeDetails.recipeimageUrl} alt='Uploaded Image'/>
-                              )}</p>
-                              <p><strong>status:</strong> {modalData.receipeDetails.status}</p>
-
-                            </div>
-                          )}
-                        </Modal.Body>
-                        <Modal.Footer>
-                          <Button variant="secondary" onClick={handleDeclineReport}>
-                            Decline
-                          </Button>
-                          <Button variant="primary" onClick={handleAcceptReportWithComment}>
-                            Accept
-                          </Button>
-                        </Modal.Footer>
-                      </Modal>
-
-                      <Modal show={showAdminCommentModal} onHide={() => setShowAdminCommentModal(false)}>
-                        <Modal.Header closeButton>
-                          <Modal.Title>Admin Comments</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                          <Form.Control type="text" placeholder="Write your comment here" value={adminComment} onChange={(e) => setAdminComment(e.target.value)}/>
-                        </Modal.Body>
-                        <Modal.Footer>
-                          <Button variant="secondary" onClick={() => setShowAdminCommentModal(false)}>
-                            Cancel
-                          </Button>
-                          <Button variant="primary" onClick={handleAdminCommentSubmit}>
-                          Submit
-                          </Button>
-                        </Modal.Footer>
-                      </Modal>
-                      </td>
-                    </tr>
-                  </tbody>
-                ))}
-              </Table>
-            </div>
-          </Tab>
-        </Tabs>
+        <div className="table-responsive">
+          <table className="table table-striped table-bordered">
+            <thead>
+              <tr>
+                <th className="text-center">UserID</th>
+                <th className="text-center">Username</th>
+                <th className="text-center">Email</th>
+                <th className="text-center">Phone Number</th>
+                <th></th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredUsers.map((user) => (
+                <tr key={user._id}>
+                  <td className="text-center">{user._id}</td>
+                  <td className="text-center">{user.name}</td>
+                  <td className="text-center">{user.email}</td>
+                  <td className="text-center">{user.phone}</td>
+                  <td className="text-center">
+                    <Button variant="danger">Ban</Button>
+                  </td>
+                  <td className="text-center">
+                    <Button variant="secondary">Unban</Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
+    </Tab>
 
-      <Modal
-        show={false}
-        onHide={() => {
-          
-        }}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Detail</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>This is the detail description of the item</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => {
-            
-          }}>
-            Decline
-          </Button>
-          <Button variant="primary" onClick={() => {
-            
-          }}>
-            Accept
-          </Button>
-        </Modal.Footer>
-      </Modal>
-      </div>   
+
+              <Tab eventKey="item-list" title="Recipe Item List">
+                <div className="container">
+                  <br />
+                  <div className="input-group mb-3">
+                    <input
+                      type="search"
+                      className="form-control"
+                      placeholder="Search"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+                  <div className="table-responsive">
+                    <table className="table table-striped table-bordered">
+                      <thead>
+                        <tr>
+                          <th className="text-center">Item Name</th>
+                          <th className="text-center">Meal Type</th>
+                          <th className="text-center">Origin</th>
+                          <th className="text-center">Uploader ID</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {posts.map((post, index) => (
+                          <tr key={post._id}>
+                            <td className="text-center">{post.name}</td>
+                            <td className="text-center">{post.mealtype}</td>
+                            <td className="text-center">{post.origin}</td>
+                            <td className="text-center">{post.userId}</td>
+                            <td className="text-center">
+                              <Button variant="primary">Delete</Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </Tab>
+
+              <Tab eventKey="Recycleitem-list" title="Recycle Item List">
+                <div className="container">
+                  <br />
+                  <div className="input-group mb-3">
+                    <input
+                      type="search"
+                      className="form-control"
+                      placeholder="Search"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+                  <div className="table-responsive">
+                    <table className="table table-striped table-bordered">
+                      <thead>
+                        <tr>
+                          <th className="text-center">Item Name</th>
+                          <th className="text-center">Recycle Type</th>
+                          <th className="text-center">Uploader ID</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {recycles.map((recycle, index) => (
+                          <tr key={recycle._id}>
+                            <td className="text-center">{recycle.name}</td>
+                            <td className="text-center">{recycle.recycletype}</td>
+                            <td className="text-center">{recycle.userId}</td>
+                            <td className="text-center">
+                              <Button variant="primary">Delete</Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </Tab>
+
+
+              <Tab eventKey="report-notice" title="Report">
+                <div className="container">
+                  <br />
+                  <div className="input-group mb-3">
+                    <input
+                      type="search"
+                      className="form-control"
+                      placeholder="Search"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+                  <div className="table-responsive">
+                    <table className="table table-striped table-bordered">
+                      <thead>
+                        <tr>
+                          <th className="text-center">Reported By</th>
+                          <th className="text-center">Reason</th>
+                          <th className="text-center">Post Type</th>
+                          <th className="text-center">Details</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {reports.map((report) => (
+                          <tr key={report._id}>
+                            <td className="text-center">{report.reportedName}</td>
+                            <td className="text-center">{report.reason}</td>
+                            <td className="text-center">{report.postType}</td>
+                            <td className="text-center">
+                              <Button variant="dark" onClick={() => handleShowDetails(report)}>
+                                Details
+                              </Button>
+                              {/* Rest of your modal code here */}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </Tab>
+
+            </Tabs>
+          </div>
+
+          <Modal
+            show={false}
+            onHide={() => {
+
+            }}
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>Detail</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>This is the detail description of the item</Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={() => {
+
+              }}>
+                Decline
+              </Button>
+              <Button variant="primary" onClick={() => {
+
+              }}>
+                Accept
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        </div>
       </div>
     </div>
   );
