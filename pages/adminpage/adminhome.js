@@ -392,46 +392,102 @@ const Admin = () => {
 
 
               <Tab eventKey="report-notice" title="Report">
-                <div className="container">
-                  <br />
-                  <div className="input-group mb-3">
-                    <input
-                      type="search"
-                      className="form-control"
-                      placeholder="Search"
-                      style={{ width: '100%' }}
-                    />
-                  </div>
-                  <div className="table-responsive">
-                    <table className="table table-striped table-bordered">
-                      <thead>
-                        <tr>
-                          <th className="text-center">Reported By</th>
-                          <th className="text-center">Reason</th>
-                          <th className="text-center">Post Type</th>
-                          <th className="text-center">Details</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {reports.map((report) => (
-                          <tr key={report._id}>
-                            <td className="text-center">{report.reportedName}</td>
-                            <td className="text-center">{report.reason}</td>
-                            <td className="text-center">{report.postType}</td>
-                            <td className="text-center">
-                              <Button variant="dark" onClick={() => handleShowDetails(report)}>
-                                Details
-                              </Button>
-                              {/* Rest of your modal code here */}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </Tab>
+          <br></br>  
+          <input style={{width: '30%'}} type="search" placeholder="Search" />
+         
+            <div className="container">
+           
+              <Table striped bordered>
+                <thead>
+                  <tr>
+                    <th className="text-center">Reported By</th>
+                    <th className="text-center">Reason</th>
+                    <th className="text-center">Post Type</th>  
+                    <th className="text-center">Details</th>
+                  </tr>
+                </thead>
+                {reports.map((report) => (
+                  <tbody key={report._id}>
+                    <tr>
+                      <td className="text-center">{report.reportedName}</td>
+                      <td className="text-center">{report.reason}</td>
+                      <td className="text-center">{report.postType}</td>  
+                      <td className="text-center">
+                      <Button variant="dark" onClick={() => handleShowDetails(report)}>
+                        Details
+                      </Button>
+                      <Modal show={showModal} onHide={() => setShowModal(false)}>
+                        <Modal.Header closeButton>
+                          <Modal.Title>Detail</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                          {modalData && (
+                            <div>
+                              <h4>Report Details</h4>
+                              <p><strong>Reported By:</strong> {modalData.reportedName}</p>
+                              <p><strong>Detail Reason:</strong> {modalData.additionalDetails}</p>
+                              <p><strong>Post Type:</strong> {modalData.postType}</p>
 
+                              <h4>Reported Post Details</h4>
+                              <p><strong>Recipe Name:</strong> {modalData.receipeDetails.name}</p>
+                              <p><strong>Description:</strong> {modalData.receipeDetails.description}</p>
+                              <p><strong>prepTime:</strong> {modalData.receipeDetails.prepTime}</p>
+                              <p><strong>servings:</strong> {modalData.receipeDetails.servings}</p>
+                              <p><strong>cookTime:</strong> {modalData.receipeDetails.cookTime}</p>
+                              <p><strong>origin:</strong> {modalData.receipeDetails.origin}</p>
+                              <p><strong>taste:</strong> {modalData.receipeDetails.taste}</p>
+                              <p><strong>mealtype:</strong> {modalData.receipeDetails.mealtype}</p>
+                              <p><strong>instruction:</strong> {modalData.receipeDetails.instruction}</p>
+                              <p><strong>Ingredients:</strong></p>
+                              <ul>
+                                {modalData.receipeDetails.ingredients.map((ingredient, index) => (
+                                  <li key={index}>
+                                    {`${ingredient.name} - ${ingredient.quantity}${ingredient.unit} (${ingredient.category})`}
+                                  </li>
+                                ))}
+                              </ul>                              
+                              <p><strong>recipe image:</strong> {modalData.receipeDetails.recipeimageUrl && 
+                              ( <img className='recipe-picture' style={{width: '360px', height: '300px', objectFit: 'cover', overflow: 'hidden',}}
+                              src={modalData.receipeDetails.recipeimageUrl} alt='Uploaded Image'/>
+                              )}</p>
+                              <p><strong>status:</strong> {modalData.receipeDetails.status}</p>
+
+                            </div>
+                          )}
+                        </Modal.Body>
+                        <Modal.Footer>
+                          <Button variant="secondary" onClick={handleDeclineReport}>
+                            Decline
+                          </Button>
+                          <Button variant="primary" onClick={handleAcceptReportWithComment}>
+                            Accept
+                          </Button>
+                        </Modal.Footer>
+                      </Modal>
+
+                      <Modal show={showAdminCommentModal} onHide={() => setShowAdminCommentModal(false)}>
+                        <Modal.Header closeButton>
+                          <Modal.Title>Admin Comments</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                          <Form.Control type="text" placeholder="Write your comment here" value={adminComment} onChange={(e) => setAdminComment(e.target.value)}/>
+                        </Modal.Body>
+                        <Modal.Footer>
+                          <Button variant="secondary" onClick={() => setShowAdminCommentModal(false)}>
+                            Cancel
+                          </Button>
+                          <Button variant="primary" onClick={handleAdminCommentSubmit}>
+                          Submit
+                          </Button>
+                        </Modal.Footer>
+                      </Modal>
+                      </td>
+                    </tr>
+                  </tbody>
+                ))}
+              </Table>
+            </div>
+          </Tab>
             </Tabs>
           </div>
 
