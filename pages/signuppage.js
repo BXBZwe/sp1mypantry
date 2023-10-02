@@ -64,7 +64,7 @@ const Signup = () => {
     <div style={containerStyle}>
       <div style={loginBoxStyle}>
         <h1 style={{ textAlign: 'center', marginBottom: '25px', fontFamily: 'cursive' }}>MyPantry</h1>
-        <form onSubmit={handleSignup}>
+        <form>
           <div className="form-group">
             <label>Name</label>
             <input type="text" className="form-control" placeholder="Enter text" value={name} onChange={(e) => setName(e.target.value)} required />
@@ -93,7 +93,7 @@ const Signup = () => {
                   type="button"
                   className="btn "
                   onClick={() => setShowPassword(!showPassword)} // Toggle password visibility
-                  style={{backgroundColor: 'white', border: 'none'}}
+                  style={{ backgroundColor: 'white', border: 'none' }}
                 >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
@@ -101,7 +101,7 @@ const Signup = () => {
             </div>
           </div>
           <br></br>
-          <button type="submit" className="btn my-auto" style={buttonStyle}>Sign Up</button>
+          <button type="submit" className="btn my-auto" style={buttonStyle} onClick={handleSignup}>Sign Up</button>
           <Link href="../">
             <button className="btn" style={buttonStyle}>
               Cancel

@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Dropdown } from 'react-bootstrap';
 import { Navbar, Nav, FormControl } from 'react-bootstrap';
 import 'font-awesome/css/font-awesome.min.css';
+import Image from 'next/image';
 
 const Admin = () => {
   const handleTabSelect = (key) => {
@@ -31,10 +32,10 @@ const Admin = () => {
     // Filter users based on the search query or show all users if the query is empty
     const filtered = query
       ? users.filter((user) =>
-          user.name.toLowerCase().includes(query.toLowerCase()) ||
-          user.email.toLowerCase().includes(query.toLowerCase()) ||
-          user.phone.toLowerCase().includes(query.toLowerCase())
-        )
+        user.name.toLowerCase().includes(query.toLowerCase()) ||
+        user.email.toLowerCase().includes(query.toLowerCase()) ||
+        user.phone.toLowerCase().includes(query.toLowerCase())
+      )
       : users;
 
     setFilteredUsers(filtered);
@@ -265,51 +266,51 @@ const Admin = () => {
           <div className="content">
 
             <Tabs defaultActiveKey="user-list" onSelect={handleTabSelect} >
-            <Tab eventKey="user-list" title="User List">
-      <div className="container">
-        <br />
-        <div className="input-group mb-3">
-          <input
-            type="search"
-            className="form-control"
-            placeholder="Search"
-            style={{ width: '100%' }}
-            value={searchQuery}
-            onChange={handleSearchInputChange}
-          />
-        </div>
-        <div className="table-responsive">
-          <table className="table table-striped table-bordered">
-            <thead>
-              <tr>
-                <th className="text-center">UserID</th>
-                <th className="text-center">Username</th>
-                <th className="text-center">Email</th>
-                <th className="text-center">Phone Number</th>
-                <th></th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredUsers.map((user) => (
-                <tr key={user._id}>
-                  <td className="text-center">{user._id}</td>
-                  <td className="text-center">{user.name}</td>
-                  <td className="text-center">{user.email}</td>
-                  <td className="text-center">{user.phone}</td>
-                  <td className="text-center">
-                    <Button variant="danger">Ban</Button>
-                  </td>
-                  <td className="text-center">
-                    <Button variant="secondary">Unban</Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </Tab>
+              <Tab eventKey="user-list" title="User List">
+                <div className="container">
+                  <br />
+                  <div className="input-group mb-3">
+                    <input
+                      type="search"
+                      className="form-control"
+                      placeholder="Search"
+                      style={{ width: '100%' }}
+                      value={searchQuery}
+                      onChange={handleSearchInputChange}
+                    />
+                  </div>
+                  <div className="table-responsive">
+                    <table className="table table-striped table-bordered">
+                      <thead>
+                        <tr>
+                          <th className="text-center">UserID</th>
+                          <th className="text-center">Username</th>
+                          <th className="text-center">Email</th>
+                          <th className="text-center">Phone Number</th>
+                          <th></th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredUsers.map((user) => (
+                          <tr key={user._id}>
+                            <td className="text-center">{user._id}</td>
+                            <td className="text-center">{user.name}</td>
+                            <td className="text-center">{user.email}</td>
+                            <td className="text-center">{user.phone}</td>
+                            <td className="text-center">
+                              <Button variant="danger">Ban</Button>
+                            </td>
+                            <td className="text-center">
+                              <Button variant="secondary">Unban</Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </Tab>
 
 
               <Tab eventKey="item-list" title="Recipe Item List">
@@ -392,127 +393,110 @@ const Admin = () => {
 
 
               <Tab eventKey="report-notice" title="Report">
-          <br></br>  
-          <input style={{width: '30%'}} type="search" placeholder="Search" />
-         
-            <div className="container">
-           
-              <Table striped bordered>
-                <thead>
-                  <tr>
-                    <th className="text-center">Reported By</th>
-                    <th className="text-center">Reason</th>
-                    <th className="text-center">Post Type</th>  
-                    <th className="text-center">Details</th>
-                  </tr>
-                </thead>
-                {reports.map((report) => (
-                  <tbody key={report._id}>
-                    <tr>
-                      <td className="text-center">{report.reportedName}</td>
-                      <td className="text-center">{report.reason}</td>
-                      <td className="text-center">{report.postType}</td>  
-                      <td className="text-center">
-                      <Button variant="dark" onClick={() => handleShowDetails(report)}>
-                        Details
-                      </Button>
-                      <Modal show={showModal} onHide={() => setShowModal(false)}>
-                        <Modal.Header closeButton>
-                          <Modal.Title>Detail</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                          {modalData && (
-                            <div>
-                              <h4>Report Details</h4>
-                              <p><strong>Reported By:</strong> {modalData.reportedName}</p>
-                              <p><strong>Detail Reason:</strong> {modalData.additionalDetails}</p>
-                              <p><strong>Post Type:</strong> {modalData.postType}</p>
+                <br></br>
+                <input style={{ width: '30%' }} type="search" placeholder="Search" />
 
-                              <h4>Reported Post Details</h4>
-                              <p><strong>Recipe Name:</strong> {modalData.receipeDetails.name}</p>
-                              <p><strong>Description:</strong> {modalData.receipeDetails.description}</p>
-                              <p><strong>prepTime:</strong> {modalData.receipeDetails.prepTime}</p>
-                              <p><strong>servings:</strong> {modalData.receipeDetails.servings}</p>
-                              <p><strong>cookTime:</strong> {modalData.receipeDetails.cookTime}</p>
-                              <p><strong>origin:</strong> {modalData.receipeDetails.origin}</p>
-                              <p><strong>taste:</strong> {modalData.receipeDetails.taste}</p>
-                              <p><strong>mealtype:</strong> {modalData.receipeDetails.mealtype}</p>
-                              <p><strong>instruction:</strong> {modalData.receipeDetails.instruction}</p>
-                              <p><strong>Ingredients:</strong></p>
-                              <ul>
-                                {modalData.receipeDetails.ingredients.map((ingredient, index) => (
-                                  <li key={index}>
-                                    {`${ingredient.name} - ${ingredient.quantity}${ingredient.unit} (${ingredient.category})`}
-                                  </li>
-                                ))}
-                              </ul>                              
-                              <p><strong>recipe image:</strong> {modalData.receipeDetails.recipeimageUrl && 
-                              ( <img className='recipe-picture' style={{width: '360px', height: '300px', objectFit: 'cover', overflow: 'hidden',}}
-                              src={modalData.receipeDetails.recipeimageUrl} alt='Uploaded Image'/>
-                              )}</p>
-                              <p><strong>status:</strong> {modalData.receipeDetails.status}</p>
+                <div className="container">
 
-                            </div>
-                          )}
-                        </Modal.Body>
-                        <Modal.Footer>
-                          <Button variant="secondary" onClick={handleDeclineReport}>
-                            Decline
-                          </Button>
-                          <Button variant="primary" onClick={handleAcceptReportWithComment}>
-                            Accept
-                          </Button>
-                        </Modal.Footer>
-                      </Modal>
+                  <Table striped bordered>
+                    <thead>
+                      <tr>
+                        <th className="text-center">Reported By</th>
+                        <th className="text-center">Reason</th>
+                        <th className="text-center">Post Type</th>
+                        <th className="text-center">Details</th>
+                      </tr>
+                    </thead>
+                    {reports.map((report) => (
+                      <tbody key={report._id}>
+                        <tr>
+                          <td className="text-center">{report.reportedName}</td>
+                          <td className="text-center">{report.reason}</td>
+                          <td className="text-center">{report.postType}</td>
+                          <td className="text-center">
+                            <Button variant="dark" onClick={() => handleShowDetails(report)}>
+                              Details
+                            </Button>
+                            <Modal show={showModal} onHide={() => setShowModal(false)}>
+                              <Modal.Header closeButton>
+                                <Modal.Title>Detail</Modal.Title>
+                              </Modal.Header>
+                              <Modal.Body>
+                                {modalData && (
+                                  <div>
+                                    <h4>Report Details</h4>
+                                    <p><strong>Reported By:</strong> {modalData.reportedName}</p>
+                                    <p><strong>Detail Reason:</strong> {modalData.additionalDetails}</p>
+                                    <p><strong>Post Type:</strong> {modalData.postType}</p>
 
-                      <Modal show={showAdminCommentModal} onHide={() => setShowAdminCommentModal(false)}>
-                        <Modal.Header closeButton>
-                          <Modal.Title>Admin Comments</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                          <Form.Control type="text" placeholder="Write your comment here" value={adminComment} onChange={(e) => setAdminComment(e.target.value)}/>
-                        </Modal.Body>
-                        <Modal.Footer>
-                          <Button variant="secondary" onClick={() => setShowAdminCommentModal(false)}>
-                            Cancel
-                          </Button>
-                          <Button variant="primary" onClick={handleAdminCommentSubmit}>
-                          Submit
-                          </Button>
-                        </Modal.Footer>
-                      </Modal>
-                      </td>
-                    </tr>
-                  </tbody>
-                ))}
-              </Table>
-            </div>
-          </Tab>
+                                    <h4>Reported Post Details</h4>
+                                    <p><strong>Recipe Name:</strong> {modalData.receipeDetails.name}</p>
+                                    <p><strong>Description:</strong> {modalData.receipeDetails.description}</p>
+                                    <p><strong>prepTime:</strong> {modalData.receipeDetails.prepTime}</p>
+                                    <p><strong>servings:</strong> {modalData.receipeDetails.servings}</p>
+                                    <p><strong>cookTime:</strong> {modalData.receipeDetails.cookTime}</p>
+                                    <p><strong>origin:</strong> {modalData.receipeDetails.origin}</p>
+                                    <p><strong>taste:</strong> {modalData.receipeDetails.taste}</p>
+                                    <p><strong>mealtype:</strong> {modalData.receipeDetails.mealtype}</p>
+                                    <p><strong>instruction:</strong> {modalData.receipeDetails.instruction}</p>
+                                    <p><strong>Ingredients:</strong></p>
+                                    <ul>
+                                      {modalData.receipeDetails.ingredients.map((ingredient, index) => (
+                                        <li key={index}>
+                                          {`${ingredient.name} - ${ingredient.quantity}${ingredient.unit} (${ingredient.category})`}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                    <p><strong>recipe image:</strong> {modalData.receipeDetails.recipeimageUrl &&
+                                      (<Image className='recipe-picture' width  = {360} height = {300} priority
+                                        src={modalData.receipeDetails.recipeimageUrl} alt='Uploaded Image' />
+                                      )}</p>
+                                    <p><strong>status:</strong> {modalData.receipeDetails.status}</p>
+
+                                  </div>
+                                )}
+                              </Modal.Body>
+                              <Modal.Footer>
+                                <Button variant="secondary" onClick={handleDeclineReport}>
+                                  Decline
+                                </Button>
+                                <Button variant="primary" onClick={handleAcceptReportWithComment}>
+                                  Accept
+                                </Button>
+                              </Modal.Footer>
+                            </Modal>
+
+                            <Modal show={showAdminCommentModal} onHide={() => setShowAdminCommentModal(false)}>
+                              <Modal.Header closeButton>
+                                <Modal.Title>Admin Comments</Modal.Title>
+                              </Modal.Header>
+                              <Modal.Body>
+                                <Form.Control type="text" placeholder="Write your comment here" value={adminComment} onChange={(e) => setAdminComment(e.target.value)} />
+                              </Modal.Body>
+                              <Modal.Footer>
+                                <Button variant="secondary" onClick={() => setShowAdminCommentModal(false)}>
+                                  Cancel
+                                </Button>
+                                <Button variant="primary" onClick={handleAdminCommentSubmit}>
+                                  Submit
+                                </Button>
+                              </Modal.Footer>
+                            </Modal>
+                          </td>
+                        </tr>
+                      </tbody>
+                    ))}
+                  </Table>
+                </div>
+              </Tab>
             </Tabs>
           </div>
 
           <Modal
             show={false}
             onHide={() => {
-
             }}
           >
-            <Modal.Header closeButton>
-              <Modal.Title>Detail</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>This is the detail description of the item</Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={() => {
-
-              }}>
-                Decline
-              </Button>
-              <Button variant="primary" onClick={() => {
-
-              }}>
-                Accept
-              </Button>
-            </Modal.Footer>
           </Modal>
         </div>
       </div>

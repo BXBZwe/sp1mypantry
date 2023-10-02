@@ -5,67 +5,69 @@ import { useRouter } from 'next/router';
 import { Dropdown } from 'react-bootstrap';
 import 'font-awesome/css/font-awesome.min.css';
 import { Navbar, Nav, Form, FormControl, Button } from 'react-bootstrap';
+import Image from 'next/image';
+
 const Itemprofile = () => {
-    const [errorMessage, setErrorMessage] = useState('');
-    const router = useRouter();
-    const {id} = router.query;
-    const [recycle, setRecycle] = useState();
-    const [notifications, setNotifications] = useState([]);
-    const [unreadCount, setUnreadCount] = useState(0);
-    useEffect(() => {
-      const fetchPost = async () => {
-        try {
-          const response = await fetch(`/api/post/getrecycle?postId=${id}`);
-          const data = await response.json();
-          setRecycle(data);
-        } catch (error) {
-          console.error(error);
-        }
-      };
-  
-      if (id) {
-        fetchPost();
-      }
-    }, [id]);
-  
-    if (!recycle) {
-      return <div>Loading...</div>;
-    }
-
-    const addrecyclewishlist = async () => {
+  const [errorMessage, setErrorMessage] = useState('');
+  const router = useRouter();
+  const { id } = router.query;
+  const [recycle, setRecycle] = useState();
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  useEffect(() => {
+    const fetchPost = async () => {
       try {
-        const token = localStorage.getItem('token'); 
-        const userId = localStorage.getItem('userId'); 
-        console.log("userID: ", userId);
-        const response = await fetch('/api/wishlist/addrecyclewishlist', {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
-          },
-          body: JSON.stringify({ userId: userId, recycleId: id }), // replace user.id and post.id with actual values
-        });
-        if(!response.ok){
-          const errorMessage = await response.text();
-          setErrorMessage(errorMessage);
-        }
-        else{
-          setErrorMessage('');
-        }
-
-        console.log('Recycle Response: ', response);
+        const response = await fetch(`/api/post/getrecycle?postId=${id}`);
+        const data = await response.json();
+        setRecycle(data);
       } catch (error) {
-        console.error('Error:', error);
-        console.log('An error occurred while adding the post to the wishlist.');
+        console.error(error);
       }
     };
+
+    if (id) {
+      fetchPost();
+    }
+  }, [id]);
+
+  if (!recycle) {
+    return <div>Loading...</div>;
+  }
+
+  const addrecyclewishlist = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const userId = localStorage.getItem('userId');
+      console.log("userID: ", userId);
+      const response = await fetch('/api/wishlist/addrecyclewishlist', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+        },
+        body: JSON.stringify({ userId: userId, recycleId: id }), // replace user.id and post.id with actual values
+      });
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        setErrorMessage(errorMessage);
+      }
+      else {
+        setErrorMessage('');
+      }
+
+      console.log('Recycle Response: ', response);
+    } catch (error) {
+      console.error('Error:', error);
+      console.log('An error occurred while adding the post to the wishlist.');
+    }
+  };
   return (
     <>
       <div className='container-fluid'>
         <div className='row vh-100'>
-        <Navbar bg="primary" expand="lg" variant="dark">
+          <Navbar bg="primary" expand="lg" variant="dark">
             <div className="container">
-              <Navbar.Brand href="../home" style={{ fontFamily: 'cursive', fontSize: '30px', paddingRight: '845px' }}>MyPantry</Navbar.Brand>
-
+              <Navbar.Brand href="../home" style={{ fontFamily: 'cursive', fontSize: '30px' }}>MyPantry</Navbar.Brand>
+              <span style={{paddingRight: '845px'}}></span>
               <Navbar.Toggle aria-controls="navbarSupportedContent" />
               <Navbar.Collapse id="navbarSupportedContent">
 
@@ -75,7 +77,7 @@ const Itemprofile = () => {
                   <Nav.Link href="../recyclehome">Recycle</Nav.Link>
 
 
-                  <Nav.Link href="../userprofileMR">
+                  <Nav.Link href="../userprofile">
                     <i className="fa fa-user"></i>
                   </Nav.Link>
                   <Nav.Link href="#">
@@ -110,34 +112,30 @@ const Itemprofile = () => {
             </div>
           </Navbar>
           <div className='col-md-4 col-lg-3 col-xl-3 col-xxl-3' style={{ paddingTop: '20px', backgroundColor: '#ffffff', overflowY: 'auto', textAlign: 'center', height: '90%' }}>
-  {recycle.recycleimageUrl && (
-    <img
-      className='recycle-picture'
-      style={{
-        width: '100%',
-        maxWidth: '360px',
-        height: 'auto',
-        objectFit: 'cover',
-        overflow: 'hidden',
-      }}
-      src={recycle.recycleimageUrl}
-      alt='Uploaded Image'
-    />
-  )}
-  <h2 style={{ fontFamily: 'cursive', fontWeight: 'bold', marginTop: '10px' }}>{recycle.name}</h2>
-  <button
-    onClick={addrecyclewishlist}
-    className='btn btn-primary'
-    style={{
-      padding: '5px 15px',
-      borderRadius: '10%',
-      marginTop: '10px',
-    }}
-  >
-    Add to Wishlist
-  </button>
-  <p>{errorMessage}</p>
-</div>
+            {recycle.recycleimageUrl && (
+              <Image
+                className='recycle-picture'
+                  width = {200}
+                  height = {200} 
+                  priority
+                src={recycle.recycleimageUrl}
+                alt='Uploaded Image'
+              />
+            )}
+            <h2 style={{ fontFamily: 'cursive', fontWeight: 'bold', marginTop: '10px' }}>{recycle.name}</h2>
+            <button
+              onClick={addrecyclewishlist}
+              className='btn btn-primary'
+              style={{
+                padding: '5px 15px',
+                borderRadius: '10%',
+                marginTop: '10px',
+              }}
+            >
+              Add to Wishlist
+            </button>
+            <p>{errorMessage}</p>
+          </div>
 
           <div
             className='col-sm'
@@ -147,43 +145,43 @@ const Itemprofile = () => {
               height: '90%',
               overflowY: 'auto',
             }}
-              
-          >
-              
 
-              <table  class='table table-bordered border-primary' style={{ width: '100%', marginTop: '20px', borderCollapse: 'collapse' }}>
-                <thead>
-                  <tr>
-                    <th style={{ padding: '8px', borderBottom: '1px solid black', textAlign: 'center'}}>Preparation Time</th>
-                    <th style={{ padding: '8px', borderBottom: '1px solid black', textAlign: 'center' }}>Category</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td style={{ padding: '8px', borderBottom: '1px solid black', textAlign: 'center' }}>{recycle.prepTime}</td>
-                    <td style={{ padding: '8px', borderBottom: '1px solid black', textAlign: 'center' }}>{recycle.recycletype}</td>
-                  </tr>
-                </tbody>
-              </table>
-              <h3 style={{ fontFamily: 'Cursive' }}>
+          >
+
+
+            <table class='table table-bordered border-primary' style={{ width: '100%', marginTop: '20px', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr>
+                  <th style={{ padding: '8px', borderBottom: '1px solid black', textAlign: 'center' }}>Preparation Time</th>
+                  <th style={{ padding: '8px', borderBottom: '1px solid black', textAlign: 'center' }}>Category</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style={{ padding: '8px', borderBottom: '1px solid black', textAlign: 'center' }}>{recycle.prepTime}</td>
+                  <td style={{ padding: '8px', borderBottom: '1px solid black', textAlign: 'center' }}>{recycle.recycletype}</td>
+                </tr>
+              </tbody>
+            </table>
+            <h3 style={{ fontFamily: 'Cursive' }}>
               <i className='fa fa-star' style={{ paddingRight: '10px' }}></i>
               Description:
             </h3>
-              <h5 style={{fontFamily: 'Inter, sans-serif' , whiteSpace: 'pre-line'}}>{recycle.description}</h5>
-              <br></br>
-              <h3 style={{ fontFamily: 'Cursive' }}>
+            <h5 style={{ fontFamily: 'Inter, sans-serif', whiteSpace: 'pre-line' }}>{recycle.description}</h5>
+            <br></br>
+            <h3 style={{ fontFamily: 'Cursive' }}>
               <i className='fa fa-star' style={{ paddingRight: '10px' }}></i>
               Instructions:
             </h3>
-              <h5 style={{fontFamily: 'Inter, sans-serif', whiteSpace: 'pre-line'}}>{recycle.instruction}</h5>
+            <h5 style={{ fontFamily: 'Inter, sans-serif', whiteSpace: 'pre-line' }}>{recycle.instruction}</h5>
 
 
 
           </div>
-          </div></div>
+        </div></div>
 
-     
-      
+
+
     </>
   );
 };

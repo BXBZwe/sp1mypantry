@@ -5,7 +5,7 @@ import { Container, Row, Col } from 'react-bootstrap';
 import { Card, Grid, Text } from "@nextui-org/react";
 import { Dropdown } from 'react-bootstrap';
 import 'font-awesome/css/font-awesome.min.css';
-import string_name from '../api/post/recipe'
+import Image from 'next/image';
 import { Navbar, Nav, Form, FormControl, Button } from 'react-bootstrap';
 const HomePage = () => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -194,11 +194,13 @@ const HomePage = () => {
         <div className="row vh-100">
           <Navbar bg="primary" expand="lg" variant="dark">
             <div className="container">
-              <Navbar.Brand href="home" style={{ fontFamily: 'cursive', fontSize: '30px', paddingRight: '260px' }}>MyPantry</Navbar.Brand>
+              <Navbar.Brand href="home" style={{ fontFamily: 'cursive', fontSize: '30px' }}>MyPantry</Navbar.Brand>
+              <span style={{paddingRight: '260px'}}></span>
+
 
               <Navbar.Toggle aria-controls="navbarSupportedContent" />
               <Navbar.Collapse id="navbarSupportedContent">
-                <Form inline style={{ fontFamily: 'cursive', fontSize: '30px', paddingRight: '240px' }}>
+                <Form style={{ fontFamily: 'cursive', fontSize: '30px', paddingRight: '240px' }}>
                   <FormControl
                     type="search"
                     placeholder="Search"
@@ -216,7 +218,7 @@ const HomePage = () => {
                   <Nav.Link href="../userpage/recyclehome">Recycle</Nav.Link>
 
 
-                  <Nav.Link href="../userpage/userprofileMR">
+                  <Nav.Link href="../userpage/userprofile">
                     <i className="fa fa-user"></i>
                   </Nav.Link>
                   <Nav.Link href="#">
@@ -225,7 +227,7 @@ const HomePage = () => {
                 </Nav>
                 <Dropdown>
                   <Dropdown.Toggle className="custom-dropdown-menu" id="notifications-dropdown" variant="transparent"
-                  style={{ border: 'none', color: 'inherit', fontSize: 'inherit',  color: 'white', paddingRight:'0px', paddingLeft:'0px', marginTop: '0px'}}>
+                    style={{ border: 'none', color: 'inherit', fontSize: 'inherit', color: 'white', paddingRight: '0px', paddingLeft: '0px', marginTop: '0px' }}>
                     <i className="fa fa-bell text-white"></i>
                     {unreadCount > 0 && <span className="badge">{unreadCount}</span>}
                   </Dropdown.Toggle>
@@ -251,69 +253,69 @@ const HomePage = () => {
           </Navbar>
 
           <div className="col-12 col-md-3 side-menu" style={{ paddingTop: '20px', backgroundColor: '#ffffff', overflow: 'hidden', height: '90%', overflowY: 'auto' }}>
-  <h3 className="custom-cursive-font" style={{ textAlign: 'center', fontWeight: 'bold' }}>Recipe Generator</h3>
-  <div className="side-menu">
-    <ul className="list-group">
-      {categoriesData.map((category) => (
-        <li
-          key={category.id}
-          className={`list-group-item ${openCategories.includes(category.id) ? 'active' : ''}`}
-          onClick={() => toggleCategory(category.id)}
-          style={{
-            cursor: 'pointer',
-            backgroundColor: openCategories.includes(category.id) ? '#ffffff' : 'white',
-            color: openCategories.includes(category.id) ? 'black' : 'black',
-            transition: 'background-color 0.5s, color 0.5s',
-            outline: 'none',
-          }}
-        >
-          {category.name}
-
-          {openCategories.includes(category.id) && (
-            <ul className="list-group subcategories" style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', listStyleType: 'none' }}>
-              {category.subcategories.map((subcategory) => (
-                <li key={subcategory} onClick={stopPropagation}>
-                  <button
-                    className={`btn btn-sm ${isSubcategoryChecked(category.id, subcategory) ? 'btn-success' : 'btn-light'}`}
-                    onClick={() => toggleSubcategory(category.id, subcategory)}
+            <h3 className="custom-cursive-font" style={{ textAlign: 'center', fontWeight: 'bold' }}>Recipe Generator</h3>
+            <div className="side-menu">
+              <ul className="list-group">
+                {categoriesData.map((category) => (
+                  <li
+                    key={category.id}
+                    className={`list-group-item ${openCategories.includes(category.id) ? 'active' : ''}`}
+                    onClick={() => toggleCategory(category.id)}
+                    style={{
+                      cursor: 'pointer',
+                      backgroundColor: openCategories.includes(category.id) ? '#ffffff' : 'white',
+                      color: openCategories.includes(category.id) ? 'black' : 'black',
+                      transition: 'background-color 0.5s, color 0.5s',
+                      outline: 'none',
+                    }}
                   >
-                    {subcategory}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </li>
-      ))}
-    </ul>
-  </div>
-</div>
-<div className="col-sm" style={{ padding: '20px', backgroundColor: '#eceeee', height: '90%', overflowY: 'auto' }}>
-  <div className="scrollable-content">
-    <Container fluid>
-      <Row xs={1} sm={2} md={3} lg={4} xl={5} xxl={6} gap={2}>
-        {filterPosts.map((post, index) => (
-          <Col key={index}>
-            <Link href={`/userpage/recipe/${post._id}`} style={{ textDecoration: 'none' }}>
-              <Card isPressable>
-                <Card.Body css={{ alignItems: 'center', width: '100%' }}>
-                  {post.recipeimageUrl && <img className="recipe-picture" style={{ width: '100%', height: '150px', objectFit: 'cover', overflow: 'hidden' }} src={post.recipeimageUrl} alt="Uploaded Image" />}
-                </Card.Body>
-                <Card.Footer css={{ justifyItems: "flex-start" }}>
-                  <Row wrap="wrap" justify="space-between" align="center">
-                    <div key={post._id}>
-                      <Text b>{post.name}</Text>
-                    </div>
-                  </Row>
-                </Card.Footer>
-              </Card>
-            </Link>
-          </Col>
-        ))}
-      </Row>
-    </Container>
-  </div>
-</div>
+                    {category.name}
+
+                    {openCategories.includes(category.id) && (
+                      <ul className="list-group subcategories" style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', listStyleType: 'none' }}>
+                        {category.subcategories.map((subcategory) => (
+                          <li key={subcategory} onClick={stopPropagation}>
+                            <button
+                              className={`btn btn-sm ${isSubcategoryChecked(category.id, subcategory) ? 'btn-success' : 'btn-light'}`}
+                              onClick={() => toggleSubcategory(category.id, subcategory)}
+                            >
+                              {subcategory}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          <div className="col-sm" style={{ padding: '20px', backgroundColor: '#eceeee', height: '90%', overflowY: 'auto' }}>
+            <div className="scrollable-content">
+              <Container fluid>
+                <Row xs={1} sm={2} md={3} lg={4} xl={5} xxl={6} gap={2}>
+                  {filterPosts.map((post, index) => (
+                    <Col key={index}>
+                      <Link href={`/userpage/recipe/${post._id}`} style={{ textDecoration: 'none' }}>
+                        <Card isPressable>
+                          <Card.Body css={{ alignItems: 'center', width: '100%' }}>
+                            {post.recipeimageUrl && <Image className="recipe-picture" width = {100} height = {150} priority src={post.recipeimageUrl} alt="Uploaded Image" />}
+                          </Card.Body>
+                          <Card.Footer css={{ justifyItems: "flex-start" }}>
+                            <Row wrap="wrap" justify="space-between" align="center">
+                              <div key={post._id}>
+                                <Text b>{post.name}</Text>
+                              </div>
+                            </Row>
+                          </Card.Footer>
+                        </Card>
+                      </Link>
+                    </Col>
+                  ))}
+                </Row>
+              </Container>
+            </div>
+          </div>
 
         </div>
       </div>
