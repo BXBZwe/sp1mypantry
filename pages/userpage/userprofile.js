@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Link from 'next/link';
-import { Modal, Row, Col } from 'react-bootstrap';
+import { Tab, Tabs, Modal, Row, Col } from 'react-bootstrap';
 import { Card, Grid, Text, Pagination } from "@nextui-org/react";
 import { useRouter } from 'next/router';
 import Uppy from '@uppy/core';
@@ -9,7 +9,11 @@ import XHRUpload from '@uppy/xhr-upload';
 import { Dropdown } from 'react-bootstrap';
 import 'font-awesome/css/font-awesome.min.css';
 import { Navbar, Nav, Form, FormControl, Button } from 'react-bootstrap';
-const UserprofileMR = () => {
+import Image from 'next/image';
+
+
+const Userprofile = () => {
+  const [currentTab, setCurrentTab] = useState("recipe-List");
   const [showForm, setShowForm] = useState(false);
   const [showRecipeForm, setShowRecipeForm] = useState(false);
   const [showRecycleForm, setShowRecycleForm] = useState(false);
@@ -33,7 +37,12 @@ const UserprofileMR = () => {
   const [recycleImageUrl, setRecycleImageUrl] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [wishlists, setWishlist] = useState([]);
+  const [wishlistrecycles, setWishlistRecycle] = useState([]);
 
+  const handleTabSelect = (selectedTab) => {
+    setCurrentTab(selectedTab);
+  }
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
@@ -66,7 +75,25 @@ const UserprofileMR = () => {
           }
         });
         const repostData = await responserecycle.json();
-        setRecycles(repostData)
+        setRecycles(repostData);
+
+        const responsewishlist = await fetch(`/api/wishlist/getwishlist`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const wishlistData = await responsewishlist.json();
+        console.log('Recipe Wishlist Data:', wishlistData);
+        setWishlist(wishlistData);
+
+        const responsewishlistrecycle = await fetch(`/api/wishlist/getwishlistrecycle`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const recyclewishlistData = await responsewishlistrecycle.json();
+        console.log('Recycle Wishlist Data:', recyclewishlistData);
+        setWishlistRecycle(recyclewishlistData);
 
       } catch (error) {
         console.error(error);
@@ -259,9 +286,6 @@ const UserprofileMR = () => {
     recycleimageUrl: '',
   });
 
-
-
-
   const handleFormClose = () => {
     setShowForm(false);
   };
@@ -346,6 +370,25 @@ const UserprofileMR = () => {
       console.error(`Failed to delete recipe with ID ${recipeId}`);
     }
   };
+  const handleDeleteRecycle = async (recycleId) => {
+    const token = localStorage.getItem('token');
+    const responsedreccycle = await fetch(`/api/post/deleteRecycle/${recycleId}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+      },
+    });
+
+    if (responsedreccycle.ok) {
+      // Filter out the deleted recipe
+      const updatedRecycles = recycles.filter(recycle => recycle._id !== recycleId);
+      // Update the state
+      setPosts(updatedRecycles);
+    } else {
+      // Handle the error
+      console.error(`Failed to delete recipe with ID ${recycleId}`);
+    }
+  };
   const handleUpdateRecipe = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
@@ -402,6 +445,20 @@ const UserprofileMR = () => {
       console.error('Error updating recycle post');
     }
   };
+
+
+  const handleEditRecycle = (recycle) => {
+    setRecycleData({
+      name: recycle.name,
+      description: recycle.description,
+      prepTime: recycle.prepTime,
+      recycletype: recycle.recycletype,
+      instruction: recycle.instruction,
+    });
+    setUpdateRecycle(recycle._id);
+    setShowRecycleForm(true);
+  };
+
 
   const handleSubmitRecipe = async (e) => {
     e.preventDefault();
@@ -520,8 +577,8 @@ const UserprofileMR = () => {
         <div className="row vh-100">
           <Navbar bg="primary" expand="lg" variant="dark">
             <div className="container">
-              <Navbar.Brand href="home" style={{ fontFamily: 'cursive', fontSize: '30px', paddingRight: '845px' }}>MyPantry</Navbar.Brand>
-
+              <Navbar.Brand href="home" style={{ fontFamily: 'cursive', fontSize: '30px' }}>MyPantry</Navbar.Brand>
+              <span style={{paddingRight: '845px'}}></span>
               <Navbar.Toggle aria-controls="navbarSupportedContent" />
               <Navbar.Collapse id="navbarSupportedContent">
 
@@ -531,7 +588,7 @@ const UserprofileMR = () => {
                   <Nav.Link href="../userpage/recyclehome">Recycle</Nav.Link>
 
 
-                  <Nav.Link href="../userpage/userprofileMR" style={{ fontWeight: 'bold', color: 'white' }}>
+                  <Nav.Link href="../userpage/userprofile" style={{ fontWeight: 'bold', color: 'white' }}>
                     <i className="fa fa-user"></i>
                   </Nav.Link>
                   <Nav.Link href="#">
@@ -568,80 +625,134 @@ const UserprofileMR = () => {
 
           <div className="col-12 col-md-3" style={{ paddingTop: '20px', backgroundColor: '#ffffff', overflowY: 'auto', textAlign: 'center', height: '90%' }}>
             {selectedFile && <p>{selectedFile.name}</p>}
-            {imageUrl && <img className="recipe-picture" style={{ width: '100%', maxWidth: '300px', height: 'auto', borderRadius: '50%', objectFit: 'cover' }} src={imageUrl} alt="Uploaded Image" />}
+            {imageUrl && <Image className="recipe-picture" style={{ borderRadius: '50%' }} width = {200}  height = {200} priority src={imageUrl} alt="Uploaded Image" />}
             <input type="file" onChange={handleFileChange} />
             <button onClick={handleUpload}>Upload</button>
             <div style={{ fontFamily: 'cursive', marginTop: '20px' }}>
               <h3 style={{ fontStyle: 'cursive', fontWeight: 'bold' }}>{name}</h3>
               <p>{email}<br />{phone}</p>
             </div>
-            <div style={{ marginTop: '50px' }}>
-              <Link href="/userpage/userprofileMR" passHref>
-                <button className="btn btn-primary" style={{ marginRight: '10px', fontWeight: 'bold' }}>My Recipe</button>
-              </Link>
-              <Link href="/userpage/userProfileWL">
-                <button className="btn btn-primary" style={{ marginRight: '10px' }}>Wishlist</button>
-              </Link>
-              <Link href="/userpage/userprofileRE">
-                <button className="btn btn-primary" style={{ marginRight: '10px' }}>My Recycle</button>
-              </Link>
+            <div style={{ marginTop: '50px', height: "90%"}}>
+              <Tabs defaultActiveKey="recipe-List" onSelect={handleTabSelect} >
+                <Tab eventKey="recipe-List" title="MyRecipe"></Tab>
+                <Tab eventKey="recycle-List" title="MyRecycle"></Tab>
+                <Tab eventKey="wishlist" title="MyWishList"></Tab>
+              </Tabs>
               <Button className="btn btn-primary" onClick={handleFormOpen}><i className="fa fa-plus"></i></Button>
             </div>
           </div>
+          <div style={{ flex: 1, overflow: 'auto', height: '90%' }}>
+            {currentTab === "recipe-List" &&
+              <div className="col-sm " style={{ paddingTop: '20px', backgroundColor: '#eceeee', overflow: 'hidden', height: '90%', overflowY: 'auto' }}>
+                <Grid.Container gap={2} justify="flex-start">
+                  {posts.map((post, index) => (
+                    <Grid xs={6} sm={2} md={3} lg={2.1} xl={5} xxl={5} gap={2} key={index}>
+                      <Card isPressable >
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                          <button
+                            style={{ width: '40px', backgroundColor: '#0b5ed7' }}
+                            onClick={() => {
+                              if (window.confirm('Are you sure you want to delete this recipe?')) {
+                                handleDeleteRecipe(post._id);
+                              }
+                            }}
+                          >
+                            <i className="fa fa-trash"></i>
+                          </button>
+                          <button
+                            style={{ width: '40px', backgroundColor: '#0b5ed7' }}
+                            onClick={() => handleEditRecipe(post)}
+                          >
+                            <i className="fa fa-edit"></i>
+                          </button>
+                        </div>
+                        <Link href={`/userpage/recipe/${post._id}`} style={{ textDecoration: 'none' }}>
+                          <Card.Body css={{ alignItems: 'center', width: '100%' }}>
+                            {post.recipeimageUrl && <Image className="recipe-picture" width = {150} height = {150} priority
+                              src={post.recipeimageUrl} alt="Uploaded Image" />}
 
+                          </Card.Body>
+                        </Link>
+                        <Link href={`/userpage/recipe/${post._id}`} style={{ textDecoration: 'none' }}>
+                          <Card.Footer css={{ justifyItems: "flex-start" }}>
+                            <Row wrap="wrap" justify="space-between" align="center">
+                              <div key={post._id}>
 
-          <div className="col-sm " style={{ paddingTop: '20px', backgroundColor: '#eceeee', overflow: 'hidden', height: '90%', overflowY: 'auto' }}>
-            <Grid.Container gap={2} justify="flex-start">
-              
-              {posts.map((post, index) => (
-                <Grid xs={6} sm={2} md={3} lg={2.1} xl={5} xxl={5} gap={2} key={index}>
+                                <Text b>{post.name}</Text>
 
+                              </div>
+                            </Row>
+                          </Card.Footer>
+                        </Link>
+                      </Card>
 
+                    </Grid>
+                  ))}
+                </Grid.Container>
+              </div>
+            }
 
-                  <Card isPressable >
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <button
-                        style={{ width: '40px', backgroundColor: '#0b5ed7' }}
-                        onClick={() => {
-                          if (window.confirm('Are you sure you want to delete this recipe?')) {
-                            handleDeleteRecipe(post._id);
-                          }
-                        }}
-                      >
-                        <i className="fa fa-trash"></i>
-                      </button>
-                      <button
-                        style={{ width: '40px', backgroundColor: '#0b5ed7' }}
-                        onClick={() => handleEditRecipe(post)}
-                      >
-                        <i className="fa fa-edit"></i>
-                      </button>
-                    </div>
-                    <Link href={`/userpage/recipe/${post._id}`} style={{ textDecoration: 'none' }}>
-                      <Card.Body css={{ alignItems: 'center', width: '100%' }}>
-                        {post.recipeimageUrl && <img className="recipe-picture" style={{ width: '150px', height: '150px', objectFit: 'cover', overflow: 'hidden' }}
-                          src={post.recipeimageUrl} alt="Uploaded Image" />}
+            {currentTab === "recycle-List" &&
+              <div className="col-sm " style={{ paddingTop: '20px', backgroundColor: '#eceeee', overflow: 'hidden', height: '90%', overflowY: 'auto' }}>
+                <Grid.Container gap={2} justify="flex-start">
+                  {recycles.map((recycle, index) => (
+                    <Grid xs={4.5} sm={3} md={3} lg={2.1} xl={5} xxl={6} gap={2} key={index}>
+                      <Card isPressable>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                          <button style={{ width: '40px', backgroundColor: '#0b5ed7' }} onClick={() => {
+                            if (window.confirm('Are you sure you want to delete this recipe?')) { handleDeleteRecycle(recycle._id) }
+                          }}><i className="fa fa-trash"></i></button>
+                          <button style={{ width: '40px', backgroundColor: '#0b5ed7' }} onClick={() => handleEditRecycle(recycle)}>
+                            <i className="fa fa-edit"></i></button></div>
+                        <Link href={`/userpage/recycle/${recycle._id}`} style={{ textDecoration: 'none' }}>
+                          <Card.Body css={{ alignItems: 'center', width: '100%' }}>
+                            {recycle.recycleimageUrl && <Image className="recycle-picture" width = {150} height = {150} priority
+                              src={recycle.recycleimageUrl} alt="Uploaded Image" />}
+                          </Card.Body>
+                        </Link>
+                        <Link href={`/userpage/recycle/${recycle._id}`} style={{ textDecoration: 'none' }}>
+                          <Card.Footer css={{ justifyItems: "flex-start" }}>
+                            <Row wrap="wrap" justify="space-between" align="center">
+                              <div key={recycle._id}>
+                                <Text b>{recycle.name}</Text>
+                              </div>
+                            </Row>
+                          </Card.Footer>
+                        </Link>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid.Container>
+              </div>
+            }
 
-                      </Card.Body>
-                    </Link>
-                    <Link href={`/userpage/recipe/${post._id}`} style={{ textDecoration: 'none' }}>
-                      <Card.Footer css={{ justifyItems: "flex-start" }}>
-                        <Row wrap="wrap" justify="space-between" align="center">
-                          <div key={post._id}>
+            {currentTab === "wishlist" &&
+              <div className="col-sm " style={{ paddingTop: '20px', backgroundColor: '#eceeee', overflow: 'hidden', height: '90%', overflowY: 'auto' }}>
+                <Grid.Container gap={2} justify="flex-start">
+                  {wishlists.map((post, index) => (
+                    <Grid xs={4.5} sm={4} md={3} lg={2.1} xl={5} xxl={6} gap={2} key={index}>
+                      <Card isPressable>
 
-                            <Text b>{post.name}</Text>
+                        <Card.Body css={{ alignItems: 'center', width: '100%' }}>
+                          {post.recipeimageUrl && <Image className="recipe-picture" width = {150} height = {150} priority
+                            src={post.recipeimageUrl} alt="Uploaded Image" />}
 
-                          </div>
-                        </Row>
-                      </Card.Footer>
-                    </Link>
-                  </Card>
-
-                </Grid>
-              ))}
-            </Grid.Container>
-
-
+                        </Card.Body>
+                        <Card.Footer css={{ justifyItems: "flex-start" }}>
+                          <Row wrap="wrap" justify="space-between" align="center">
+                            <div key={post._id}>
+                              <Link href={`/userpage/recipe/${post._id}`} style={{ textDecoration: 'none' }}>
+                                <Text b>{post.name}</Text>
+                              </Link>
+                            </div>
+                          </Row>
+                        </Card.Footer>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid.Container>
+              </div>
+            }
           </div>
           <Modal show={showForm} onHide={handleFormClose} centered>
             <Modal.Header closeButton>
@@ -802,7 +913,7 @@ const UserprofileMR = () => {
                   <Form.Label>Recipe Image</Form.Label>
                   <input type="file" onChange={recipehandleFileChange} />
                   <button style={{ margin: '10px' }} onClick={recipehandleupload}>Upload</button>{recipeselectedFile && <p>{recipeselectedFile.name}</p>}
-                  {recipeImageUrl && <img className="recycle-picture" style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', overflow: 'hidden' }}
+                  {recipeImageUrl && <Image className="recipe-picture" width = {100} height = {100} borderRadius = {50} 
                     src={recipeImageUrl} alt="Uploaded Image" />}
                 </Form.Group>
               </Form>
@@ -860,7 +971,7 @@ const UserprofileMR = () => {
                   <Form.Label>Recycle Image</Form.Label>
                   <input type="file" onChange={recyclehandleFileChange} />
                   <button style={{ margin: '5px' }} onClick={recyclehandleupload}>Upload</button>{recycleselectedFile && <p>{recycleselectedFile.name}</p>}
-                  {recycleImageUrl && <img className="recycle-picture" style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', overflow: 'hidden' }}
+                  {recycleImageUrl && <Image className="recycle-picture" width = {100} height = {100} borderRadius = {50} 
                     src={recycleImageUrl} alt="Uploaded Image" />}
                 </Form.Group>
               </Form>
@@ -874,16 +985,9 @@ const UserprofileMR = () => {
           </Modal>
         </div>
       </div>
-
-
-
-
-
-
-
     </>
   );
 };
 
-export default UserprofileMR;
+export default Userprofile;
 

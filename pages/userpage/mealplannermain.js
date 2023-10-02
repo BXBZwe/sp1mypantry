@@ -228,7 +228,8 @@ const MealPlanner = () => {
                 <div className="row vh-100">
                     <Navbar bg="primary" expand="lg" variant="dark">
                         <div className="container">
-                            <Navbar.Brand href="home" style={{ fontFamily: 'cursive', fontSize: '30px', paddingRight: '845px' }}>MyPantry</Navbar.Brand>
+                            <Navbar.Brand href="home" style={{ fontFamily: 'cursive', fontSize: '30px' }}>MyPantry</Navbar.Brand>
+                            <span style={{paddingRight: '845px'}}></span>
 
                             <Navbar.Toggle aria-controls="navbarSupportedContent" />
                             <Navbar.Collapse id="navbarSupportedContent">
@@ -239,7 +240,7 @@ const MealPlanner = () => {
                                     <Nav.Link href="../userpage/recyclehome">Recycle</Nav.Link>
 
 
-                                    <Nav.Link href="../userpage/userprofileMR">
+                                    <Nav.Link href="../userpage/userprofile">
                                         <i className="fa fa-user"></i>
                                     </Nav.Link>
                                     <Nav.Link href="#">

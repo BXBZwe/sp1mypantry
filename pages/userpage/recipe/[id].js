@@ -5,7 +5,9 @@ import { useRouter } from 'next/router';
 import { Dropdown, Modal } from 'react-bootstrap';
 import 'font-awesome/css/font-awesome.min.css';
 import { Navbar, Nav, Form, FormControl, Button } from 'react-bootstrap';
-const Itemprofile = ({ isOpen, closeModal, postId }) => {
+import Image from 'next/image';
+
+const Itemprofile = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
   const { id } = router.query;
@@ -150,8 +152,8 @@ const Itemprofile = ({ isOpen, closeModal, postId }) => {
         <div className='row vh-100'>
           <Navbar bg="primary" expand="lg" variant="dark">
             <div className="container">
-              <Navbar.Brand href="../home" style={{ fontFamily: 'cursive', fontSize: '30px', paddingRight: '845px' }}>MyPantry</Navbar.Brand>
-
+              <Navbar.Brand href="../home" style={{ fontFamily: 'cursive', fontSize: '30px' }}>MyPantry</Navbar.Brand>
+              <span style={{paddingRight: '845px'}}></span>
               <Navbar.Toggle aria-controls="navbarSupportedContent" />
               <Navbar.Collapse id="navbarSupportedContent">
 
@@ -161,7 +163,7 @@ const Itemprofile = ({ isOpen, closeModal, postId }) => {
                   <Nav.Link href="../recyclehome">Recycle</Nav.Link>
 
 
-                  <Nav.Link href="../userprofileMR">
+                  <Nav.Link href="../userprofile">
                     <i className="fa fa-user"></i>
                   </Nav.Link>
                   <Nav.Link href="#">
@@ -170,7 +172,7 @@ const Itemprofile = ({ isOpen, closeModal, postId }) => {
                 </Nav>
                 <Dropdown>
                   <Dropdown.Toggle className="custom-dropdown-menu"
-                    style={{ border: 'none', fontSize: 'inherit', paddingRight: '0px',  }}>
+                    style={{ border: 'none', fontSize: 'inherit', paddingRight: '0px', }}>
                     <i className="fa fa-bell " ></i>
                     {unreadCount > 0 && <span className="badge">{unreadCount}</span>}
                   </Dropdown.Toggle>
@@ -196,15 +198,11 @@ const Itemprofile = ({ isOpen, closeModal, postId }) => {
           </Navbar>
           <div className="col-12 col-md-4" style={{ paddingTop: '5px', backgroundColor: '#ffffff', overflowY: 'auto', textAlign: 'center', height: '90%' }}>
             {post.recipeimageUrl && (
-              <img
+              <Image
                 className='recipe-picture'
-                style={{
-                  width: '100%',
-                  maxWidth: '450px',
-                  height: 'auto',
-                  objectFit: 'cover',
-                  overflow: 'hidden',
-                }}
+                  width = {200}
+                  height = {200}
+                  priority
                 src={post.recipeimageUrl}
                 alt='Uploaded Image'
               />
@@ -316,48 +314,48 @@ const Itemprofile = ({ isOpen, closeModal, postId }) => {
           </div>
 
           <div className="col-sm" style={{ padding: '20px', backgroundColor: '#eceeee', height: '90%', overflowY: 'auto' }}>
-  <table className="table table-bordered border-primary">
-    <thead>
-      <tr>
-        <th className="text-center">Category</th>
-        <th className="text-center">Origin</th>
-        <th className="text-center">Taste</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td className="text-center">{post.mealtype}</td>
-        <td className="text-center">{post.origin}</td>
-        <td className="text-center">{post.taste}</td>
-      </tr>
-    </tbody>
-    <thead>
-      <tr>
-        <th className="text-center">Preparation Time</th>
-        <th className="text-center">Cooking Time</th>
-        <th className="text-center">Servings</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td className="text-center">{`${post.prepTime.hours} hours ${post.prepTime.minutes} minutes`}</td>
-        <td className="text-center">{`${post.cookTime.hours} hours ${post.cookTime.minutes} minutes`}</td>
-        <td className="text-center">{post.servings}</td>
-      </tr>
-    </tbody>
-  </table>
+            <table className="table table-bordered border-primary">
+              <thead>
+                <tr>
+                  <th className="text-center">Category</th>
+                  <th className="text-center">Origin</th>
+                  <th className="text-center">Taste</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="text-center">{post.mealtype}</td>
+                  <td className="text-center">{post.origin}</td>
+                  <td className="text-center">{post.taste}</td>
+                </tr>
+              </tbody>
+              <thead>
+                <tr>
+                  <th className="text-center">Preparation Time</th>
+                  <th className="text-center">Cooking Time</th>
+                  <th className="text-center">Servings</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="text-center">{`${post.prepTime.hours} hours ${post.prepTime.minutes} minutes`}</td>
+                  <td className="text-center">{`${post.cookTime.hours} hours ${post.cookTime.minutes} minutes`}</td>
+                  <td className="text-center">{post.servings}</td>
+                </tr>
+              </tbody>
+            </table>
 
-  <h3 style={{ fontFamily: 'cursive' }}>
-    <i className='fa fa-star' style={{ paddingRight: '10px' }}></i>
-    Description:
-  </h3>
-  <h5 style={{ fontFamily: 'cursive', whiteSpace: 'pre-line' }}>{post.description}</h5>
-  <br />
-  <h3 style={{ fontFamily: 'cursive' }}>
-    <i className='fa fa-star' style={{ paddingRight: '10px' }}></i>Instruction:
-  </h3>
-  <h5 style={{ fontFamily: 'Inter, sans-serif', whiteSpace: 'pre-line' }}>{post.instruction}</h5>
-</div>
+            <h3 style={{ fontFamily: 'cursive' }}>
+              <i className='fa fa-star' style={{ paddingRight: '10px' }}></i>
+              Description:
+            </h3>
+            <h5 style={{ fontFamily: 'cursive', whiteSpace: 'pre-line' }}>{post.description}</h5>
+            <br />
+            <h3 style={{ fontFamily: 'cursive' }}>
+              <i className='fa fa-star' style={{ paddingRight: '10px' }}></i>Instruction:
+            </h3>
+            <h5 style={{ fontFamily: 'Inter, sans-serif', whiteSpace: 'pre-line' }}>{post.instruction}</h5>
+          </div>
 
         </div>
       </div>
