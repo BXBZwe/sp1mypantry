@@ -47,6 +47,7 @@ const ReportDetailPage = ({ match }) => {
 
         // Assuming the server returns a message in { message: 'some message' }
         alert(result.message);
+        router.reload(); 
 
         // Navigate the user to another page or refresh the current page
         // For example, using Next.js router
