@@ -19,11 +19,6 @@ const HomePage = () => {
   const [openCategories, setOpenCategories] = useState([]);
   const [subcategoriesChecked, setSubcategoriesChecked] = useState({});
 
-
-
-
-
-
   useEffect(() => {
     const fetchAllPosts = async () => {
       const currentUserId = localStorage.getItem('userId');
@@ -84,11 +79,13 @@ const HomePage = () => {
     setSearchQuery(e.target.value);
   };
 
-  const handleSignOut = () => {
-    // You can implement your signout logic here.
-    // For this example, we'll simply set isAuthenticated to false.
-    setIsAuthenticated(false);
-  };
+  const signOut = () => {
+    // Remove the JWT token
+    localStorage.removeItem('token');
+    
+    // Redirect to login or another page
+    window.location.href = '/';
+}
   const categoriesData = [
     {
       id: 1,
@@ -221,7 +218,7 @@ const HomePage = () => {
                   <Nav.Link href="../userpage/userprofile">
                     <i className="fa fa-user"></i>
                   </Nav.Link>
-                  <Nav.Link href="#">
+                  <Nav.Link onClick={signOut}>
                     <i className="fa fa-sign-out"></i>
                   </Nav.Link>
                 </Nav>
