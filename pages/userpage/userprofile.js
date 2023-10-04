@@ -602,7 +602,7 @@ const Userprofile = () => {
                     <i className="fa fa-bell " ></i>
                     {unreadCount > 0 && <span className="badge">{unreadCount}</span>}
                   </Dropdown.Toggle>
-                  <Dropdown.Menu style={{ right: 'auto', left: 0 }}>
+                  <Dropdown.Menu style={{ left: 'auto', right: 20 }}>
                     {notifications && notifications.length > 0 ? (
                       notifications.map((notification, index) => (
                         <Dropdown.Item
@@ -625,28 +625,29 @@ const Userprofile = () => {
 
           <div className="col-12 col-md-3" style={{ paddingTop: '20px', backgroundColor: '#ffffff', overflowY: 'auto', textAlign: 'center', height: '90%' }}>
             {selectedFile && <p>{selectedFile.name}</p>}
-            {imageUrl && <Image className="recipe-picture" style={{ borderRadius: '50%' }} width = {200}  height = {200} priority src={imageUrl} alt="Uploaded Image" />}
+            {imageUrl && <Image className="recipe-picture" style={{ borderRadius: '50%' }} width = {210}  height = {200} priority src={imageUrl} alt="Uploaded Image" />}
             <input type="file" onChange={handleFileChange} />
             <button onClick={handleUpload}>Upload</button>
             <div style={{ fontFamily: 'cursive', marginTop: '20px' }}>
               <h3 style={{ fontStyle: 'cursive', fontWeight: 'bold' }}>{name}</h3>
               <p>{email}<br />{phone}</p>
             </div>
-            <div style={{ marginTop: '50px', height: "90%"}}>
+            <div style={{ marginTop: '50px'}}>
               <Tabs defaultActiveKey="recipe-List" onSelect={handleTabSelect} >
                 <Tab eventKey="recipe-List" title="MyRecipe"></Tab>
                 <Tab eventKey="recycle-List" title="MyRecycle"></Tab>
                 <Tab eventKey="wishlist" title="MyWishList"></Tab>
               </Tabs>
+              <br></br>
               <Button className="btn btn-primary" onClick={handleFormOpen}><i className="fa fa-plus"></i></Button>
             </div>
           </div>
-          <div style={{ flex: 1, overflow: 'auto', height: '90%' }}>
+          <div className="col-sm" style={{ padding: '20px', backgroundColor: '#eceeee', height: '90%', overflowY: 'auto' }}>
             {currentTab === "recipe-List" &&
               <div className="col-sm " style={{ paddingTop: '20px', backgroundColor: '#eceeee', overflow: 'hidden', height: '90%', overflowY: 'auto' }}>
                 <Grid.Container gap={2} justify="flex-start">
                   {posts.map((post, index) => (
-                    <Grid xs={6} sm={2} md={3} lg={2.1} xl={5} xxl={5} gap={2} key={index}>
+                    <Grid xs={6} sm={2} md={3} lg={2.5} xl={5} xxl={5} gap={2} key={index}>
                       <Card isPressable >
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                           <button
@@ -668,7 +669,7 @@ const Userprofile = () => {
                         </div>
                         <Link href={`/userpage/recipe/${post._id}`} style={{ textDecoration: 'none' }}>
                           <Card.Body css={{ alignItems: 'center', width: '100%' }}>
-                            {post.recipeimageUrl && <Image className="recipe-picture" width = {150} height = {150} priority
+                            {post.recipeimageUrl && <Image className="recipe-picture" width = {185} height = {150} priority
                               src={post.recipeimageUrl} alt="Uploaded Image" />}
 
                           </Card.Body>
@@ -696,7 +697,7 @@ const Userprofile = () => {
               <div className="col-sm " style={{ paddingTop: '20px', backgroundColor: '#eceeee', overflow: 'hidden', height: '90%', overflowY: 'auto' }}>
                 <Grid.Container gap={2} justify="flex-start">
                   {recycles.map((recycle, index) => (
-                    <Grid xs={4.5} sm={3} md={3} lg={2.1} xl={5} xxl={6} gap={2} key={index}>
+                    <Grid xs={4.5} sm={3} md={3} lg={2.5} xl={5} xxl={6} gap={2} key={index}>
                       <Card isPressable>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                           <button style={{ width: '40px', backgroundColor: '#0b5ed7' }} onClick={() => {
@@ -706,7 +707,7 @@ const Userprofile = () => {
                             <i className="fa fa-edit"></i></button></div>
                         <Link href={`/userpage/recycle/${recycle._id}`} style={{ textDecoration: 'none' }}>
                           <Card.Body css={{ alignItems: 'center', width: '100%' }}>
-                            {recycle.recycleimageUrl && <Image className="recycle-picture" width = {150} height = {150} priority
+                            {recycle.recycleimageUrl && <Image className="recycle-picture" width = {180} height = {150} priority
                               src={recycle.recycleimageUrl} alt="Uploaded Image" />}
                           </Card.Body>
                         </Link>
@@ -730,14 +731,15 @@ const Userprofile = () => {
               <div className="col-sm " style={{ paddingTop: '20px', backgroundColor: '#eceeee', overflow: 'hidden', height: '90%', overflowY: 'auto' }}>
                 <Grid.Container gap={2} justify="flex-start">
                   {wishlists.map((post, index) => (
-                    <Grid xs={4.5} sm={4} md={3} lg={2.1} xl={5} xxl={6} gap={2} key={index}>
+                    <Grid xs={4.5} sm={4} md={3} lg={2.5} xl={5} xxl={6} gap={2} key={index}>
                       <Card isPressable>
-
+                      <Link href={`/userpage/recipe/${post._id}`} style={{ textDecoration: 'none' }}>
                         <Card.Body css={{ alignItems: 'center', width: '100%' }}>
-                          {post.recipeimageUrl && <Image className="recipe-picture" width = {150} height = {150} priority
+                          {post.recipeimageUrl && <Image className="recipe-picture" width = {180} height = {150} priority
                             src={post.recipeimageUrl} alt="Uploaded Image" />}
 
                         </Card.Body>
+                      </Link>
                         <Card.Footer css={{ justifyItems: "flex-start" }}>
                           <Row wrap="wrap" justify="space-between" align="center">
                             <div key={post._id}>
@@ -793,34 +795,33 @@ const Userprofile = () => {
 
                 <Row >
                   <Col >
-                    <Form.Group style={{ width: '150px' }}>
-                      <Form.Label>Preparation Time:</Form.Label>
-                      <Form.Label>Hours</Form.Label>
+                    <Form.Group style={{ width: '130px' }}>
+                      <Form.Label>Prep Time: Hours</Form.Label>
+                      
                       <Form.Control type="number" name="prepTimeHours" value={recipeData.prepTime.hours} onChange={(e) => handleTimeChange('prepTime', 'hours', e.target.value)} />
                       <Form.Label>Minutes</Form.Label>
                       <Form.Control type="number" name="prepTimeMinutes" value={recipeData.prepTime.minutes} onChange={(e) => handleTimeChange('prepTime', 'minutes', e.target.value)} />
                     </Form.Group>
                   </Col>
+                  
                   <Col>
                     <Form.Group style={{ width: '130px' }} >
-                      <Form.Label>Cooking Time</Form.Label>
-                      <Form.Label>Hours</Form.Label>
+                      <Form.Label>Cook Time: Hours</Form.Label>
+              
                       <Form.Control type="number" name="cookTimeHours" value={recipeData.cookTime.hours} onChange={(e) => handleTimeChange('cookTime', 'hours', e.target.value)} />
                       <Form.Label>Minutes</Form.Label>
                       <Form.Control type="number" name="cookTimeMinutes" value={recipeData.cookTime.minutes} onChange={(e) => handleTimeChange('cookTime', 'minutes', e.target.value)} />
                     </Form.Group>
                   </Col>
-
                   <Col>
                     <Form.Group >
                       <Form.Label>Servings</Form.Label>
                       <Form.Control type="number" name="servings" id="servings" value={recipeData.servings} onChange={handleChange} />
                     </Form.Group>
-                  </Col>
-                  <Col>
-                    <Form.Group >
+                  
+                    <Form.Group  >
                       <Form.Label>Origin</Form.Label>
-                      <Form.Control as="select" name="origin" id="origin" value={recipeData.origin} onChange={handleChange}>
+                      <Form.Control as="select" name="origin" id="origin" value={recipeData.origin} onChange={handleChange} >
                         <option value="">Select Origin</option>
                         <option value="Thailand">Thailand</option>
                         <option value="Myanmar">Myanmar </option>
@@ -945,7 +946,7 @@ const Userprofile = () => {
 
                 <Col>
                   <Form.Group>
-                    <Form.Label>Prep Time</Form.Label>
+                    <Form.Label>Prep Time: Hour</Form.Label>
                     <Form.Control type="number" name="prepTime" id="prepTime" value={recycleData.prepTime} onChange={handleChangeRecycle} />
                   </Form.Group>
                 </Col>

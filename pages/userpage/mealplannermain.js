@@ -254,7 +254,7 @@ const MealPlanner = () => {
                                         <i className="fa fa-bell " ></i>
                                         {unreadCount > 0 && <span className="badge">{unreadCount}</span>}
                                     </Dropdown.Toggle>
-                                    <Dropdown.Menu style={{ right: 'auto', left: 0 }}>
+                                    <Dropdown.Menu style={{ left: 'auto', right: 20 }}>
                                         {notifications && notifications.length > 0 ? (
                                             notifications.map((notification, index) => (
                                                 <Dropdown.Item
