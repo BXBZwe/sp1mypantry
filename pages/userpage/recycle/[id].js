@@ -111,12 +111,12 @@ const Itemprofile = () => {
               </Navbar.Collapse>
             </div>
           </Navbar>
-          <div className='col-md-4 col-lg-3 col-xl-3 col-xxl-3' style={{ paddingTop: '20px', backgroundColor: '#ffffff', overflowY: 'auto', textAlign: 'center', height: '90%' }}>
+          <div className='col-md-4 col-lg-3 col-xl-3 col-xxl-3' style={{ width: '25%', paddingTop: '5px', backgroundColor: '#ffffff', overflowY: 'auto', textAlign: 'center', height: '90%' }}>
             {recycle.recycleimageUrl && (
               <Image
                 className='recycle-picture'
-                  width = {200}
-                  height = {200} 
+                width = {340}
+                height = {250} 
                   priority
                 src={recycle.recycleimageUrl}
                 alt='Uploaded Image'

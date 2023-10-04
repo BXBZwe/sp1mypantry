@@ -74,7 +74,7 @@ const HomePage = () => {
                     <i className="fa fa-bell " ></i>
                     {unreadCount > 0 && <span className="badge">{unreadCount}</span>}
                   </Dropdown.Toggle>
-                  <Dropdown.Menu style={{ right: 'auto', left: 0 }}>
+                  <Dropdown.Menu style={{ left: 'auto', right: 20 }}>
                     {notifications && notifications.length > 0 ? (
                       notifications.map((notification, index) => (
                         <Dropdown.Item
@@ -97,18 +97,32 @@ const HomePage = () => {
 
           <div className="col-12 col-md-3" style={{ paddingTop: '20px', backgroundColor: '#ffffff', overflow: 'hidden', height: '90%' }}>
             <h3 className="custom-cursive-font" style={{ textAlign: 'center', fontWeight: 'bold' }}>Recipe Generator</h3>
+            <div>
+              
+              <label>
+                <input type="checkbox" name="foodType" value="plant" /> Plant
+              </label>
+              <br />
+              <label>
+                <input type="checkbox" name="foodType" value="animal" /> Animal Food
+              </label>
+              <br />
+              <label>
+                <input type="checkbox" name="productType" value="faceWash" /> Face Wash
+              </label>
+            </div>
           </div>
           <div className="col-12 col-md-9" style={{ padding: '20px', backgroundColor: '#eceeee', height: '90%', overflowY: 'auto' }}>
             <Grid.Container gap={2} justify="flex-start">
               {filteredRecycles.map((recycle, index) => (
-                <Grid xs={1} sm={2} md={3} lg={2.1} xl={5} xxl={6} gap={2} key={index}>
+                <Grid xs={1} sm={2} md={3} lg={2.5} xl={5} xxl={6} gap={2} key={index}>
                   <Link href={`/userpage/recycle/${recycle._id}`} style={{ textDecoration: 'none' }}>
                     <Card isPressable>
                       <Card.Body css={{ alignItems: 'center', width: '100%' }}>
                         {recycle.recycleimageUrl && (
                           <Image
                             className="recycle-picture"
-                            width = {100} height = {150} priority
+                            width = {175} height = {150} priority
                             src={recycle.recycleimageUrl}
                             alt="Uploaded Image"
                           />

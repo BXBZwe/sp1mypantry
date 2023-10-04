@@ -196,15 +196,16 @@ const Itemprofile = () => {
               </Navbar.Collapse>
             </div>
           </Navbar>
-          <div className="col-12 col-md-4" style={{ paddingTop: '5px', backgroundColor: '#ffffff', overflowY: 'auto', textAlign: 'center', height: '90%' }}>
+          <div className="col-12 col-md-4" style={{ width: '25%', paddingTop: '5px', backgroundColor: '#ffffff', overflowY: 'auto', textAlign: 'center', height: '90%' }}>
             {post.recipeimageUrl && (
               <Image
                 className='recipe-picture'
-                  width = {200}
-                  height = {200}
+                  width = {340}
+                  height = {250}
                   priority
                 src={post.recipeimageUrl}
                 alt='Uploaded Image'
+                style={{marginBottom: '10px', marginTop: '10px'}}
               />
             )}
             <h2 style={{ fontFamily: 'cursive', fontWeight: 'bold' }}>{post.name}</h2>

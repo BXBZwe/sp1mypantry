@@ -242,7 +242,7 @@ const Admin = () => {
                 </li>
                 <Dropdown >
                   <Dropdown.Toggle style={{ border: 'none', color: 'inherit', fontSize: 'inherit', color: 'white', backgroundColor: '#d8456b', paddingRight: '0px', paddingLeft: '0px', marginTop: '0px' }}><i className="fa fa-bell text-white"></i> {unreadCount > 0 && <span className="badge">{unreadCount}</span>}</Dropdown.Toggle>
-                  <Dropdown.Menu >
+                  <Dropdown.Menu style={{ left: 'auto', right: 20 }}>
                     {notifications && notifications.length > 0 ? (notifications.map((notification, index) => (
                       <Dropdown.Item key={index} onClick={() => handleNotificationClick(notification._id)}
                         href={`/userpage/report/${notification.reportId}`}>
@@ -287,8 +287,7 @@ const Admin = () => {
                           <th className="text-center">Username</th>
                           <th className="text-center">Email</th>
                           <th className="text-center">Phone Number</th>
-                          <th></th>
-                          <th></th>
+                          
                         </tr>
                       </thead>
                       <tbody>
@@ -298,12 +297,7 @@ const Admin = () => {
                             <td className="text-center">{user.name}</td>
                             <td className="text-center">{user.email}</td>
                             <td className="text-center">{user.phone}</td>
-                            <td className="text-center">
-                              <Button variant="danger">Ban</Button>
-                            </td>
-                            <td className="text-center">
-                              <Button variant="secondary">Unban</Button>
-                            </td>
+                            
                           </tr>
                         ))}
                       </tbody>
@@ -343,7 +337,7 @@ const Admin = () => {
                             <td className="text-center">{post.origin}</td>
                             <td className="text-center">{post.userId}</td>
                             <td className="text-center">
-                              <Button variant="primary">Delete</Button>
+                              <Button variant="primary">Detail</Button>
                             </td>
                           </tr>
                         ))}
@@ -381,7 +375,7 @@ const Admin = () => {
                             <td className="text-center">{recycle.recycletype}</td>
                             <td className="text-center">{recycle.userId}</td>
                             <td className="text-center">
-                              <Button variant="primary">Delete</Button>
+                              <Button variant="primary">Detail</Button>
                             </td>
                           </tr>
                         ))}

@@ -231,7 +231,7 @@ const HomePage = () => {
                     <i className="fa fa-bell text-white"></i>
                     {unreadCount > 0 && <span className="badge">{unreadCount}</span>}
                   </Dropdown.Toggle>
-                  <Dropdown.Menu style={{ right: 'auto', left: 0 }}>
+                  <Dropdown.Menu style={{ left: 'auto', right: 20 }}>
                     {notifications && notifications.length > 0 ? (
                       notifications.map((notification, index) => (
                         <Dropdown.Item
@@ -293,13 +293,13 @@ const HomePage = () => {
           <div className="col-sm" style={{ padding: '20px', backgroundColor: '#eceeee', height: '90%', overflowY: 'auto' }}>
             <div className="scrollable-content">
               <Container fluid>
-                <Row xs={1} sm={2} md={3} lg={4} xl={5} xxl={6} gap={2}>
+                <Row xs={1} sm={2} md={3} lg={4} xl={5} xxl={5} gap={2}>
                   {filterPosts.map((post, index) => (
                     <Col key={index}>
                       <Link href={`/userpage/recipe/${post._id}`} style={{ textDecoration: 'none' }}>
                         <Card isPressable>
                           <Card.Body css={{ alignItems: 'center', width: '100%' }}>
-                            {post.recipeimageUrl && <Image className="recipe-picture" width = {100} height = {150} priority src={post.recipeimageUrl} alt="Uploaded Image" />}
+                            {post.recipeimageUrl && <Image className="recipe-picture" width = {175} height = {150} priority src={post.recipeimageUrl} alt="Uploaded Image" />}
                           </Card.Body>
                           <Card.Footer css={{ justifyItems: "flex-start" }}>
                             <Row wrap="wrap" justify="space-between" align="center">
