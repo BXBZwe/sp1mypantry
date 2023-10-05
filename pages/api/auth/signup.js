@@ -53,7 +53,7 @@ export default async function handler(req, res) {
       if (!user) {
         return res.status(400).json({ status: 'Unable to create user' });
       }
-      return res.redirect('/');
+      return res.status(200).json({ status: 'User created successfully' });
     } else if (req.method === 'GET') {
       user = await User.findOne({ _id: req.params.userId });
       if (!user) {
