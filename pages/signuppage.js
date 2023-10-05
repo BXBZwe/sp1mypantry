@@ -27,7 +27,6 @@ const Signup = () => {
       });
 
       if (response.ok) {
-        // Registration successful, redirect to home page
         router.push('/');
       } else {
         // Handle registration error
