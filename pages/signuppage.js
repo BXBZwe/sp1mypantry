@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+
 
 // Import an eye icon (you can use Font Awesome or any other icon library)
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
@@ -11,6 +13,8 @@ const Signup = () => {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false); // State for password visibility
+  const router = useRouter();
+
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -24,7 +28,7 @@ const Signup = () => {
 
       if (response.ok) {
         // Registration successful, redirect to home page
-        window.location.href = '/';
+        router.push('/');
       } else {
         // Handle registration error
         const { error } = await response.json();
