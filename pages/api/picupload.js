@@ -8,8 +8,10 @@ export const config = {
   },
 };
 
+const gcpCredentials = JSON.parse(process.env.GCP_SERVICE_ACCOUNT);
+
 const storage = new Storage({
-  keyFilename: process.env.google_storage,
+  credentials: gcpCredentials,
   projectId: 'bigdataanalytics-390212',
 });
 
