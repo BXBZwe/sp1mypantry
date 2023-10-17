@@ -156,11 +156,20 @@ const MealPlanner = () => {
                 </table>
 
                 <button onClick={saveMealPlans}>Save Meal Plans</button>
+                <button onClick={handleCancel} style={{paddingRight: '2px'}}>Cancel</button>
             </div>
         );
     };
 
+    const daysBetweenDates = generateDays(new Date(startDate), new Date(endDate));
 
+    const handleCancel = () => {
+        setIsCreating(false);
+        // You may want to reset the startDate, endDate, and mealPlans if necessary
+        // setStartDate(null);
+        // setEndDate(null);
+        // setMealPlans({});
+    };
     const displaySavedPlans = () => (
         <div>
             {savedMealPlans.map(plan => (
@@ -190,6 +199,7 @@ const MealPlanner = () => {
                         </tbody>
                     </table>
                     <button onClick={() => deleteMealPlan(plan._id)}>Delete</button>
+                    
                 </div>
             ))}
             <button onClick={() => setIsCreating(true)}>Create New Meal Plan</button>

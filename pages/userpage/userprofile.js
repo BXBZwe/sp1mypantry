@@ -701,7 +701,7 @@ const Userprofile = () => {
                         </div>
                         <Link href={`/userpage/recipe/${post._id}`} style={{ textDecoration: 'none' }}>
                           <Card.Body css={{ alignItems: 'center', width: '100%' }}>
-                            {post.recipeimageUrl && <Image className="recipe-picture" width={185} height={150} priority
+                            {post.recipeimageUrl && <Image className="recipe-picture" style={{width: '100%'}} width={185} height={150} priority
                               src={post.recipeimageUrl} alt="Uploaded Image" />}
 
                           </Card.Body>
@@ -741,7 +741,7 @@ const Userprofile = () => {
                             <i className="fa fa-edit"></i></button></div>
                         <Link href={`/userpage/recycle/${recycle._id}`} style={{ textDecoration: 'none' }}>
                           <Card.Body css={{ alignItems: 'center', width: '100%' }}>
-                            {recycle.recycleimageUrl && <Image className="recycle-picture" width={180} height={150} priority
+                            {recycle.recycleimageUrl && <Image className="recycle-picture" style={{width: '100%'}} width={180} height={150} priority
                               src={recycle.recycleimageUrl} alt="Uploaded Image" />}
                           </Card.Body>
                         </Link>
@@ -764,7 +764,7 @@ const Userprofile = () => {
             {currentTab === "wishlist" &&
               <div className="col-sm " style={{ paddingTop: '20px', backgroundColor: '#eceeee', overflow: 'hidden', height: '90%', overflowY: 'auto' }}>
                 <Grid.Container gap={2} justify="flex-start">
-                  {wishlists.map((post, index) => (
+                  {wishlists.map((post,recycle, index) => (
                     <Grid xs={4.5} sm={4} md={3} lg={2.5} xl={5} xxl={6} gap={2} key={index}>
                       <Card isPressable>
                         <button style={{ width: '40px', backgroundColor: '#0b5ed7' }} onClick={() => handleRemoverecipeFromWishlist(post._id)}>
@@ -772,7 +772,7 @@ const Userprofile = () => {
                         </button>
                         <Link href={`/userpage/recipe/${post._id}`} style={{ textDecoration: 'none' }}>
                           <Card.Body css={{ alignItems: 'center', width: '100%' }}>
-                            {post.recipeimageUrl && <Image className="recipe-picture" width={180} height={150} priority
+                            {post.recipeimageUrl && <Image className="recipe-picture" style={{width: '100%'}} width={180} height={150} priority
                               src={post.recipeimageUrl} alt="Uploaded Image" />}
                           </Card.Body>
                         </Link>
@@ -786,6 +786,7 @@ const Userprofile = () => {
                           </Row>
                         </Card.Footer>
                       </Card>
+                      
                     </Grid>
                   ))}
                   {wishlistrecycles.map((recycle, index) => (
