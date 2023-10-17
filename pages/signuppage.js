@@ -30,7 +30,6 @@ const Signup = () => {
       if (response.ok) {
         router.push('/');
       } else {
-        // Handle registration error
         const { error } = await response.json();
         console.log(error);
       }

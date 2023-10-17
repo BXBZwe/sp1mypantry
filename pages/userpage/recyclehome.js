@@ -60,10 +60,7 @@ const HomePage = () => {
   }, [searchQuery, recycles]);
 
   const signOut = () => {
-    // Remove the JWT token
     localStorage.removeItem('token');
-
-    // Redirect to login or another page
     window.location.href = '/';
   }
 

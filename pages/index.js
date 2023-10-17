@@ -29,7 +29,7 @@ const LoginPage = () => {
         if (data.isAdmin) {
           router.push('adminpage/adminhome');
         } else {
-          router.push('/userpage/home'); // Redirect to the home page on successful login
+          router.push('/userpage/home'); 
         }
       } else {
         const data = await response.json();
@@ -97,7 +97,7 @@ const LoginPage = () => {
               <label>Password</label>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <input
-                  type={showPassword ? 'text' : 'password'} // Toggle between text and password
+                  type={showPassword ? 'text' : 'password'} 
                   className="form-control"
                   placeholder="Password"
                   value={password}
@@ -108,11 +108,11 @@ const LoginPage = () => {
                   <button
                     type="button"
                     className="btn"
-                    onClick={() => setShowPassword(!showPassword)} // Toggle password visibility
+                    onClick={() => setShowPassword(!showPassword)} 
                     style={{
                       backgroundColor: 'white',
                       border: 'none',
-                      marginLeft: '-40px', // Adjust this value to control the distance between the input and the icon
+                      marginLeft: '-40px', 
                     }}
                   >
                     {showPassword ? <FaEyeSlash /> : <FaEye />}

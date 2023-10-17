@@ -73,9 +73,7 @@ const AdminUserprofile = () => {
     instance.on('complete', (result) => {
       console.log('Upload complete:', result);
       if (result.successful && result.successful.length > 0) {
-        //console.log("Response body from upload:", result.successful[0].response.body);
         const uploadedImageUrl = result.successful[0].response.body.uploadURL;
-        //console.log("Extracted URL:", uploadedImageUrl);
         setImageUrl(uploadedImageUrl);
         saveImageUrlToDB(uploadedImageUrl);
 
@@ -129,10 +127,7 @@ const AdminUserprofile = () => {
   }
 
   const signOut = () => {
-    // Remove the JWT token
     localStorage.removeItem('token');
-
-    // Redirect to login or another page
     window.location.href = '/';
   }
 

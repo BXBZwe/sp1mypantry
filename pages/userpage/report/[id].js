@@ -14,7 +14,7 @@ const ReportDetailPage = ({ match }) => {
 
   useEffect(() => {
     const fetchReport = async () => {
-      if (id) { // only fetch if id is available
+      if (id) { 
         try {
           const response = await fetch(`/api/report/report?reportId=${id}`);
           if (response.ok) {
@@ -75,7 +75,6 @@ const ReportDetailPage = ({ match }) => {
           {report && (
             <div>
               <h4>Report Details</h4>
-              {/* Omit the reportedBy field */}
               <p><strong>Reason:</strong> {report.reason}</p>
               <p><strong>Additional Details:</strong> {report.additionalDetails}</p>
               <p><strong>Admin Comment:</strong> {report.adminComment}</p>
@@ -90,9 +89,7 @@ const ReportDetailPage = ({ match }) => {
               <p><strong>taste:</strong> {report.receipeDetails.taste}</p>
               <p><strong>mealtype:</strong> {report.receipeDetails.mealtype}</p>
               <p><strong>instruction:</strong> {report.receipeDetails.instruction}</p>
-              {/* ... other recipe details fields ... */}
 
-              {/* Ingredients */}
               <p><strong>Ingredients:</strong></p>
               <ul>
                 {report.receipeDetails.ingredients.map((ingredient, index) => (
@@ -102,7 +99,6 @@ const ReportDetailPage = ({ match }) => {
                 ))}
               </ul>
 
-              {/* Image */}
               <p><strong>Recipe Image:</strong></p>
               {report.receipeDetails.recipeimageUrl && (
                 <Image className='recipe-picture'

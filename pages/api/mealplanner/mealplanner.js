@@ -17,7 +17,6 @@ export default async function handler(req, res) {
         const token = req.headers.authorization.split(' ')[1];
         const { userId } = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
-        // Checking if we're saving the whole week
         if (req.body.weekIdentifier) {
             const weekMealPlans = req.body.plans;
             const weekIdentifier = req.body.weekIdentifier;
@@ -25,17 +24,14 @@ export default async function handler(req, res) {
             let mealPlan = await MealPlan.findOne({ userId, weekIdentifier });
 
             if (mealPlan) {
-                // Update the existing meal plan
                 mealPlan.plans = weekMealPlans;
                 await mealPlan.save();
             } else {
-                // Create a new meal plan
                 mealPlan = await MealPlan.create({ userId, weekIdentifier, plans: weekMealPlans });
             }
             return res.status(201).json(mealPlan);
 
         } else {
-            // Ensure the required fields for single meal update are present
             if (!req.body.date || !req.body.mealType || !req.body.recipeId) {
                 return res.status(400).json({ error: "Required fields are missing." });
             }

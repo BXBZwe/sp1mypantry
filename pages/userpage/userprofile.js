@@ -119,9 +119,7 @@ const Userprofile = () => {
     instance.on('complete', (result) => {
       console.log('profile Picture Upload complete:', result);
       if (result.successful && result.successful.length > 0) {
-        //console.log("Response body from upload:", result.successful[0].response.body);
         const uploadedImageUrl = result.successful[0].response.body.uploadURL;
-        //console.log("Extracted URL:", uploadedImageUrl);
 
         setImageUrl(uploadedImageUrl);
         saveImageUrlToDB(uploadedImageUrl);
@@ -315,7 +313,6 @@ const Userprofile = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    // Prevent servings from going below 0
     if (name === 'servings') {
       if (value < 0) {
         return;
@@ -326,7 +323,6 @@ const Userprofile = () => {
       [name]: value,
     }));
   };
-  // Specialized handleChange for prepTime and cookTime
   const handleTimeChange = (timeType, unitType, value) => {
     if (value === "" || parseInt(value) < 0) return;
     setRecipeData((prevData) => ({
@@ -509,7 +505,7 @@ const Userprofile = () => {
 
         handleRecipeFormClose();
 
-        router.reload(); // reload to show new post    
+        router.reload();     
       } catch (error) {
         console.error(error);
       }
@@ -556,7 +552,7 @@ const Userprofile = () => {
 
         handleRecycleFormClose();
 
-        router.reload(); // reload to show new post
+        router.reload(); 
       } catch (error) {
         console.error(error);
       }
@@ -578,10 +574,7 @@ const Userprofile = () => {
   };
 
   const signOut = () => {
-    // Remove the JWT token
     localStorage.removeItem('token');
-
-    // Redirect to login or another page
     window.location.href = '/';
   }
 
@@ -726,9 +719,7 @@ const Userprofile = () => {
                           <Card.Footer css={{ justifyItems: "flex-start" }}>
                             <Row wrap="wrap" justify="space-between" align="center">
                               <div key={post._id}>
-
                                 <Text b>{post.name}</Text>
-
                               </div>
                             </Row>
                           </Card.Footer>

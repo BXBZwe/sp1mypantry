@@ -57,7 +57,7 @@ const Admin = () => {
     };
     const FetchAllReports = async () => {
       try {
-        const response = await fetch('/api/report/report');  // Assuming your API endpoint to fetch reports is '/api/reports'
+        const response = await fetch('/api/report/report'); 
         const data = await response.json();
         setReports(data);
         console.log("Fetched reports: ", data);
@@ -172,7 +172,6 @@ const Admin = () => {
       }
 
       alert('Report declined successfully!');
-      // TODO: update the UI, e.g., remove the report from the list, or update its status
     } catch (error) {
       console.error('Error declining report:', error);
     }
@@ -202,7 +201,7 @@ const Admin = () => {
       }
 
       alert('Admin comment submitted and report accepted successfully.');
-      setShowAdminCommentModal(false); // close the modal
+      setShowAdminCommentModal(false); 
     } catch (error) {
       console.error('Error submitting admin comment:', error);
     }
@@ -337,7 +336,8 @@ const Admin = () => {
                               <p><strong>Description:</strong> {recipemodalData.description}</p>
                               <p><strong>prepTime:</strong> {recipemodalData.prepTime.hours} hours {recipemodalData.prepTime.minutes} minutes</p>
                               <p><strong>servings:</strong> {recipemodalData.servings}</p>
-                              <p><strong>cookTime:</strong> {recipemodalData.cookTime.hours} hours {recipemodalData.cookTime.minutes} minutes</p>                              <p><strong>origin:</strong> {recipemodalData.origin}</p>
+                              <p><strong>cookTime:</strong> {recipemodalData.cookTime.hours} hours {recipemodalData.cookTime.minutes} minutes</p>                              
+                              <p><strong>origin:</strong> {recipemodalData.origin}</p>
                               <p><strong>taste:</strong> {recipemodalData.taste}</p>
                               <p><strong>mealtype:</strong> {recipemodalData.mealtype}</p>
                               <p style={{ whiteSpace: 'pre-line' }}><strong>instruction:</strong> {recipemodalData.instruction}</p>

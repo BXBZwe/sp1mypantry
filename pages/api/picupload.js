@@ -8,8 +8,10 @@ export const config = {
   },
 };
 
+const gcpCredentials = JSON.parse(process.env.GCP_SERVICE_ACCOUNT);
+
 const storage = new Storage({
-  keyFilename: process.env.google_storage,
+  credentials: gcpCredentials,
   projectId: 'bigdataanalytics-390212',
 });
 
@@ -18,7 +20,7 @@ const bucket = storage.bucket('bigdatacourzwe');
 const multerUpload = multer({
   storage: multer.memoryStorage(),
   limits: {
-      fileSize: 10 * 1024 * 1024, // Limit to 10MB
+      fileSize: 10 * 1024 * 1024, 
   },
 });
 
