@@ -32,7 +32,7 @@ const RecycleSchema = new Schema({
     prepTime: String,
     recycletype: {
         type: String,
-        enum: ['Thailand', 'Myanmar', 'China']
+        enum: ['Plant', 'AnimalFood', 'FaceWash']
     },
     instruction: String,
     recycleimageUrl: {

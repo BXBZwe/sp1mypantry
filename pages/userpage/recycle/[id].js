@@ -14,7 +14,23 @@ const Itemprofile = () => {
   const [recycle, setRecycle] = useState();
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [recycles, setRecycles] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredRecycles, setFilteredRecycles] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState([]); // New state for selected categories
+  const handleCheckboxChange = (event) => {
+    const category = event.target.value;
+    if (event.target.checked) {
+      // If the checkbox is checked, add the category to the selectedCategories array
+      setSelectedCategories([...selectedCategories, category]);
+    } else {
+      // If the checkbox is unchecked, remove the category from the selectedCategories array
+      setSelectedCategories(selectedCategories.filter((c) => c !== category));
+    }
+  };
   useEffect(() => {
+    
     const fetchPost = async () => {
       try {
         const response = await fetch(`/api/post/getrecycle?postId=${id}`);
@@ -33,7 +49,7 @@ const Itemprofile = () => {
   if (!recycle) {
     return <div>Loading...</div>;
   }
-
+  
   const addrecyclewishlist = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -59,7 +75,9 @@ const Itemprofile = () => {
       console.error('Error:', error);
       console.log('An error occurred while adding the post to the wishlist.');
     }
+    
   };
+  
   return (
     <>
       <div className='container-fluid'>

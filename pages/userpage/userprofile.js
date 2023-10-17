@@ -578,7 +578,7 @@ const Userprofile = () => {
           <Navbar bg="primary" expand="lg" variant="dark">
             <div className="container">
               <Navbar.Brand href="home" style={{ fontFamily: 'cursive', fontSize: '30px' }}>MyPantry</Navbar.Brand>
-              <span style={{paddingRight: '845px'}}></span>
+              <span style={{ paddingRight: '845px' }}></span>
               <Navbar.Toggle aria-controls="navbarSupportedContent" />
               <Navbar.Collapse id="navbarSupportedContent">
 
@@ -625,14 +625,14 @@ const Userprofile = () => {
 
           <div className="col-12 col-md-3" style={{ paddingTop: '20px', backgroundColor: '#ffffff', overflowY: 'auto', textAlign: 'center', height: '90%' }}>
             {selectedFile && <p>{selectedFile.name}</p>}
-            {imageUrl && <Image className="recipe-picture" style={{ borderRadius: '50%' }} width = {210}  height = {200} priority src={imageUrl} alt="Uploaded Image" />}
+            {imageUrl && <Image className="recipe-picture" style={{ borderRadius: '50%' }} width={210} height={200} priority src={imageUrl} alt="Uploaded Image" />}
             <input type="file" onChange={handleFileChange} />
             <button onClick={handleUpload}>Upload</button>
             <div style={{ fontFamily: 'cursive', marginTop: '20px' }}>
               <h3 style={{ fontStyle: 'cursive', fontWeight: 'bold' }}>{name}</h3>
               <p>{email}<br />{phone}</p>
             </div>
-            <div style={{ marginTop: '50px'}}>
+            <div style={{ marginTop: '50px' }}>
               <Tabs defaultActiveKey="recipe-List" onSelect={handleTabSelect} >
                 <Tab eventKey="recipe-List" title="MyRecipe"></Tab>
                 <Tab eventKey="recycle-List" title="MyRecycle"></Tab>
@@ -669,7 +669,7 @@ const Userprofile = () => {
                         </div>
                         <Link href={`/userpage/recipe/${post._id}`} style={{ textDecoration: 'none' }}>
                           <Card.Body css={{ alignItems: 'center', width: '100%' }}>
-                            {post.recipeimageUrl && <Image className="recipe-picture" width = {185} height = {150} priority
+                            {post.recipeimageUrl && <Image className="recipe-picture" style={{width: '100%'}} width={185} height={150} priority
                               src={post.recipeimageUrl} alt="Uploaded Image" />}
 
                           </Card.Body>
@@ -707,7 +707,7 @@ const Userprofile = () => {
                             <i className="fa fa-edit"></i></button></div>
                         <Link href={`/userpage/recycle/${recycle._id}`} style={{ textDecoration: 'none' }}>
                           <Card.Body css={{ alignItems: 'center', width: '100%' }}>
-                            {recycle.recycleimageUrl && <Image className="recycle-picture" width = {180} height = {150} priority
+                            {recycle.recycleimageUrl && <Image className="recycle-picture" style={{width: '100%'}} width={180} height={150} priority
                               src={recycle.recycleimageUrl} alt="Uploaded Image" />}
                           </Card.Body>
                         </Link>
@@ -730,16 +730,16 @@ const Userprofile = () => {
             {currentTab === "wishlist" &&
               <div className="col-sm " style={{ paddingTop: '20px', backgroundColor: '#eceeee', overflow: 'hidden', height: '90%', overflowY: 'auto' }}>
                 <Grid.Container gap={2} justify="flex-start">
-                  {wishlists.map((post, index) => (
+                  {wishlists.map((post,recycle, index) => (
                     <Grid xs={4.5} sm={4} md={3} lg={2.5} xl={5} xxl={6} gap={2} key={index}>
                       <Card isPressable>
-                      <Link href={`/userpage/recipe/${post._id}`} style={{ textDecoration: 'none' }}>
-                        <Card.Body css={{ alignItems: 'center', width: '100%' }}>
-                          {post.recipeimageUrl && <Image className="recipe-picture" width = {180} height = {150} priority
-                            src={post.recipeimageUrl} alt="Uploaded Image" />}
+                        <Link href={`/userpage/recipe/${post._id}`} style={{ textDecoration: 'none' }}>
+                          <Card.Body css={{ alignItems: 'center', width: '100%' }}>
+                            {post.recipeimageUrl && <Image className="recipe-picture" style={{width: '100%'}} width={180} height={150} priority
+                              src={post.recipeimageUrl} alt="Uploaded Image" />}
 
-                        </Card.Body>
-                      </Link>
+                          </Card.Body>
+                        </Link>
                         <Card.Footer css={{ justifyItems: "flex-start" }}>
                           <Row wrap="wrap" justify="space-between" align="center">
                             <div key={post._id}>
@@ -750,6 +750,7 @@ const Userprofile = () => {
                           </Row>
                         </Card.Footer>
                       </Card>
+                      
                     </Grid>
                   ))}
                 </Grid.Container>
@@ -797,17 +798,17 @@ const Userprofile = () => {
                   <Col >
                     <Form.Group style={{ width: '130px' }}>
                       <Form.Label>Prep Time: Hours</Form.Label>
-                      
+
                       <Form.Control type="number" name="prepTimeHours" value={recipeData.prepTime.hours} onChange={(e) => handleTimeChange('prepTime', 'hours', e.target.value)} />
                       <Form.Label>Minutes</Form.Label>
                       <Form.Control type="number" name="prepTimeMinutes" value={recipeData.prepTime.minutes} onChange={(e) => handleTimeChange('prepTime', 'minutes', e.target.value)} />
                     </Form.Group>
                   </Col>
-                  
+
                   <Col>
                     <Form.Group style={{ width: '130px' }} >
                       <Form.Label>Cook Time: Hours</Form.Label>
-              
+
                       <Form.Control type="number" name="cookTimeHours" value={recipeData.cookTime.hours} onChange={(e) => handleTimeChange('cookTime', 'hours', e.target.value)} />
                       <Form.Label>Minutes</Form.Label>
                       <Form.Control type="number" name="cookTimeMinutes" value={recipeData.cookTime.minutes} onChange={(e) => handleTimeChange('cookTime', 'minutes', e.target.value)} />
@@ -818,7 +819,7 @@ const Userprofile = () => {
                       <Form.Label>Servings</Form.Label>
                       <Form.Control type="number" name="servings" id="servings" value={recipeData.servings} onChange={handleChange} />
                     </Form.Group>
-                  
+
                     <Form.Group  >
                       <Form.Label>Origin</Form.Label>
                       <Form.Control as="select" name="origin" id="origin" value={recipeData.origin} onChange={handleChange} >
@@ -914,7 +915,7 @@ const Userprofile = () => {
                   <Form.Label>Recipe Image</Form.Label>
                   <input type="file" onChange={recipehandleFileChange} />
                   <button style={{ margin: '10px' }} onClick={recipehandleupload}>Upload</button>{recipeselectedFile && <p>{recipeselectedFile.name}</p>}
-                  {recipeImageUrl && <Image className="recipe-picture" width = {100} height = {100} borderRadius = {50} 
+                  {recipeImageUrl && <Image className="recipe-picture" width={100} height={100} borderRadius={50}
                     src={recipeImageUrl} alt="Uploaded Image" />}
                 </Form.Group>
               </Form>
@@ -957,9 +958,10 @@ const Userprofile = () => {
                   <Form.Label>Category</Form.Label>
                   <Form.Control as="select" name="recycletype" id="recycletype" value={recycleData.recycletype} onChange={handleChangeRecycle}>
                     <option value="">Select Category</option>
-                    <option value="Thailand">Plant</option>
-                    <option value="Myanmar">Animalfood</option>
-                    <option value="China">FaceWash</option>
+                    <option value="Plant">Plant</option>
+                    <option value="Animalfood">Animalfood</option>
+                    <option value="FaceWash">FaceWash</option>
+                    
                   </Form.Control>
                 </Form.Group>
 
@@ -972,7 +974,7 @@ const Userprofile = () => {
                   <Form.Label>Recycle Image</Form.Label>
                   <input type="file" onChange={recyclehandleFileChange} />
                   <button style={{ margin: '5px' }} onClick={recyclehandleupload}>Upload</button>{recycleselectedFile && <p>{recycleselectedFile.name}</p>}
-                  {recycleImageUrl && <Image className="recycle-picture" width = {100} height = {100} borderRadius = {50} 
+                  {recycleImageUrl && <Image className="recycle-picture" width={100} height={100} borderRadius={50}
                     src={recycleImageUrl} alt="Uploaded Image" />}
                 </Form.Group>
               </Form>
