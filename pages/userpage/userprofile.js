@@ -8,7 +8,7 @@ import Uppy from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { Dropdown } from 'react-bootstrap';
 import 'font-awesome/css/font-awesome.min.css';
-import { Navbar, Nav, Form, FormControl, Button } from 'react-bootstrap';
+import { Navbar, Nav, Form, Button } from 'react-bootstrap';
 import Image from 'next/image';
 
 
@@ -266,9 +266,9 @@ const Userprofile = () => {
   const [recipeData, setRecipeData] = useState({
     name: '',
     description: '',
-    prepTime: '',
+    prepTime: { hours: 0, minutes: 0 },
     servings: '',
-    cookTime: '',
+    cookTime: { hours: 0, minutes: 0 },
     origin: '',
     taste: '',
     category: '',
@@ -328,7 +328,7 @@ const Userprofile = () => {
   };
   // Specialized handleChange for prepTime and cookTime
   const handleTimeChange = (timeType, unitType, value) => {
-    if (value < 0) return;
+    if (value === "" || parseInt(value) < 0) return;
     setRecipeData((prevData) => ({
       ...prevData,
       [timeType]: {
@@ -356,17 +356,14 @@ const Userprofile = () => {
     const responsedrecipe = await fetch(`/api/post/deleteRecipe/${recipeId}`, {
       method: 'DELETE',
       headers: {
-        Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+        Authorization: `Bearer ${token}`,
       },
     });
 
     if (responsedrecipe.ok) {
-      // Filter out the deleted recipe
       const updatedRecipes = posts.filter(post => post._id !== recipeId);
-      // Update the state
       setPosts(updatedRecipes);
     } else {
-      // Handle the error
       console.error(`Failed to delete recipe with ID ${recipeId}`);
     }
   };
@@ -375,21 +372,22 @@ const Userprofile = () => {
     const responsedreccycle = await fetch(`/api/post/deleteRecycle/${recycleId}`, {
       method: 'DELETE',
       headers: {
-        Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+        Authorization: `Bearer ${token}`,
       },
     });
 
     if (responsedreccycle.ok) {
-      // Filter out the deleted recipe
       const updatedRecycles = recycles.filter(recycle => recycle._id !== recycleId);
-      // Update the state
       setPosts(updatedRecycles);
+      router.reload();
     } else {
-      // Handle the error
       console.error(`Failed to delete recipe with ID ${recycleId}`);
     }
   };
   const handleUpdateRecipe = async (e) => {
+    if (recipeImageUrl) {
+      recipeData.recipeimageUrl = recipeImageUrl;
+    }
     e.preventDefault();
     const token = localStorage.getItem('token');
     const responseurecipe = await fetch(`/api/post/updateRecipe/${updaterecipe}`, {
@@ -402,8 +400,8 @@ const Userprofile = () => {
     });
 
     if (responseurecipe.ok) {
-      setUpdateRecipe(null);  // Clear the currently editing ID
-      router.reload();  // Reload to show updated post
+      setUpdateRecipe(null);
+      router.reload();
     } else {
       console.error('Error updating recipe');
     }
@@ -419,6 +417,7 @@ const Userprofile = () => {
       origin: post.origin,
       taste: post.taste,
       category: post.category,
+      recipeimageUrl: post.recipeimageUrl,
       ingredients: post.ingredients,
       instruction: post.instruction,
     });
@@ -427,6 +426,9 @@ const Userprofile = () => {
   };
 
   const handleUpdateRecycle = async (e) => {
+    if (recycleImageUrl) {
+      recycleData.recycleimageUrl = recycleImageUrl;
+    }
     e.preventDefault();
     const token = localStorage.getItem('token');
     const responseurecycle = await fetch(`/api/post/updateRecycle/${updaterecycle}`, {
@@ -454,6 +456,7 @@ const Userprofile = () => {
       prepTime: recycle.prepTime,
       recycletype: recycle.recycletype,
       instruction: recycle.instruction,
+      recycleimageUrl: recycle.recycleimageUrl,
     });
     setUpdateRecycle(recycle._id);
     setShowRecycleForm(true);
@@ -566,19 +569,40 @@ const Userprofile = () => {
 
   const handleIngredientChange = (index, field, value) => {
     const newIngredients = [...ingredients];
-    newIngredients[index][field] = value;
+    if (field === 'quantity' && Number(value) < 0) {
+      newIngredients[index][field] = 0;
+    } else {
+      newIngredients[index][field] = value;
+    }
     setIngredients(newIngredients);
   };
 
   const signOut = () => {
     // Remove the JWT token
     localStorage.removeItem('token');
-    
+
     // Redirect to login or another page
     window.location.href = '/';
-}
+  }
 
-
+  const handleRemoverecipeFromWishlist = async (postId) => {
+    const token = localStorage.getItem('token');
+    const response = await fetch('/api/wishlist/removerecipewishlist', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`, 
+      },
+      body: JSON.stringify({ postId: postId }),
+    });
+  
+    if (response.ok) {
+      const updatedWishlist = wishlists.filter(post => post._id !== postId);
+      setWishlist(updatedWishlist);
+    } else {
+      const errorData = await response.json();
+      console.error(`Failed to remove post with ID ${postId} from wishlist`, errorData);
+    }
+  };
   return (
     <>
       <div className='container-fluid'>
@@ -709,7 +733,9 @@ const Userprofile = () => {
                       <Card isPressable>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                           <button style={{ width: '40px', backgroundColor: '#0b5ed7' }} onClick={() => {
-                            if (window.confirm('Are you sure you want to delete this recipe?')) { handleDeleteRecycle(recycle._id) }
+                            if (window.confirm('Are you sure you want to delete this recipe?')) {
+                              handleDeleteRecycle(recycle._id)
+                            }
                           }}><i className="fa fa-trash"></i></button>
                           <button style={{ width: '40px', backgroundColor: '#0b5ed7' }} onClick={() => handleEditRecycle(recycle)}>
                             <i className="fa fa-edit"></i></button></div>
@@ -741,11 +767,13 @@ const Userprofile = () => {
                   {wishlists.map((post,recycle, index) => (
                     <Grid xs={4.5} sm={4} md={3} lg={2.5} xl={5} xxl={6} gap={2} key={index}>
                       <Card isPressable>
+                        <button style={{ width: '40px', backgroundColor: '#0b5ed7' }} onClick={() => handleRemoverecipeFromWishlist(post._id)}>
+                          <i className="fa fa-trash"></i>
+                        </button>
                         <Link href={`/userpage/recipe/${post._id}`} style={{ textDecoration: 'none' }}>
                           <Card.Body css={{ alignItems: 'center', width: '100%' }}>
                             {post.recipeimageUrl && <Image className="recipe-picture" style={{width: '100%'}} width={180} height={150} priority
                               src={post.recipeimageUrl} alt="Uploaded Image" />}
-
                           </Card.Body>
                         </Link>
                         <Card.Footer css={{ justifyItems: "flex-start" }}>
@@ -759,6 +787,27 @@ const Userprofile = () => {
                         </Card.Footer>
                       </Card>
                       
+                    </Grid>
+                  ))}
+                  {wishlistrecycles.map((recycle, index) => (
+                    <Grid xs={4.5} sm={4} md={3} lg={2.5} xl={5} xxl={6} gap={2} key={index}>
+                      <Card isPressable>
+                        <Link href={`/userpage/recycle/${recycle._id}`} style={{ textDecoration: 'none' }}>
+                          <Card.Body css={{ alignItems: 'center', width: '100%' }}>
+                            {recycle.recycleimageUrl && <Image className="recycle-picture" width={180} height={150} priority
+                              src={recycle.recycleimageUrl} alt="Uploaded Image" />}
+                          </Card.Body>
+                        </Link>
+                        <Card.Footer css={{ justifyItems: "flex-start" }}>
+                          <Row wrap="wrap" justify="space-between" align="center">
+                            <div key={recycle._id}>
+                              <Link href={`/userpage/recycle/${recycle._id}`} style={{ textDecoration: 'none' }}>
+                                <Text b>{recycle.name}</Text>
+                              </Link>
+                            </div>
+                          </Row>
+                        </Card.Footer>
+                      </Card>
                     </Grid>
                   ))}
                 </Grid.Container>
@@ -969,7 +1018,11 @@ const Userprofile = () => {
                     <option value="Plant">Plant</option>
                     <option value="Animalfood">Animalfood</option>
                     <option value="FaceWash">FaceWash</option>
-                    
+                    <option value="Vegetable Stock">Vegetable Stock</option>
+                    <option value="Croutons">Croutons</option>
+                    <option value="Fruit Scrub">Fruit Scrub</option>
+                    <option value="Pesto">Pesto</option>
+                    <option value="Others">Others</option>
                   </Form.Control>
                 </Form.Group>
 
