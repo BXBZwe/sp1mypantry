@@ -1,1 +1,4 @@
-# sp1mypantry
+# Senior Project 1 - MyPantry
+## Ahmad Yasi Faizi (ID- 6238001)
+## Zwe Min Maw (ID - 6238135)
+This senior project proposes the development of a website for Assumption University students to share recipes and learn about cooking, portion sizes, recycling, and other food-related topics. The website will allow users to post, review, report, and add recipes to their wish list. It will also feature a powerful search engine and an attractive filtering system to help users find the recipes they are looking for. The admin will have authority over user actions on the platform. The goal of this project is to provide students with a comprehensive resource for learning about food and cooking. The website will be a valuable tool for students who are looking to learn new recipes, improve their cooking skills, or learn more about food sustainability. The website is expected to be a valuable resource for Assumption University students for many years to come. It will provide students with a platform to learn and grow, and it will help them to develop a lifelong love of food.

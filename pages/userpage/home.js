@@ -7,6 +7,7 @@ import { Dropdown } from 'react-bootstrap';
 import 'font-awesome/css/font-awesome.min.css';
 import Image from 'next/image';
 import { Navbar, Nav, Form, FormControl, Button } from 'react-bootstrap';
+import { useRouter } from 'next/router';
 const HomePage = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [posts, setPosts] = useState([]);
@@ -18,6 +19,7 @@ const HomePage = () => {
   const [selectedSubcategories, setSelectedSubcategories] = useState([]);
   const [openCategories, setOpenCategories] = useState([]);
   const [subcategoriesChecked, setSubcategoriesChecked] = useState({});
+  const router = useRouter();
 
   useEffect(() => {
     const fetchAllPosts = async () => {
@@ -53,30 +55,26 @@ const HomePage = () => {
     fetchNotifications();
   }, []);
 
-  // Filter posts based on searchQuery
   var filteredPosts = posts.filter((post) =>
     post.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  // Filter posts based on searchQuery and selected subcategories
-  var filterPosts = posts.filter((post) =>
+  const filterPosts = posts.filter((post) =>
     post.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-    Object.keys(subcategoriesChecked).every((categoryId) =>
-      Object.keys(subcategoriesChecked[categoryId]).some(
-        (subcategory) =>
-          subcategoriesChecked[categoryId][subcategory] &&
+      Object.keys(subcategoriesChecked).every((categoryId) =>
+      Object.keys(subcategoriesChecked[categoryId]).some((subCategory) =>
           post.ingredients.some((ingredient) =>
-            ingredient.categoryId === categoryId &&
-            ingredient.subcategory === subcategory &&
-            isSubcategoryChecked(categoryId, subcategory)
+          ingredient.name.toLowerCase() === subCategory
           )
-      )
-    )
-  );
+      ))
+  )
 
 
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
+  };
+  const clearSubcategories = () => {
+    setSubcategoriesChecked({}); // Clear the selected subcategories
   };
 
   const signOut = () => {
@@ -112,12 +110,17 @@ const HomePage = () => {
     {
       id: 5,
       name: 'Dairy & Eggs',
-      subcategories: ['butter', 'egg', 'milk', 'yougurt', 'sour cream', 'cream', 'condensed milk'],
+      subcategories: ['butter', 'eggs', 'milk', 'yougurt', 'sour cream', 'cream', 'condensed milk'],
     },
     {
       id: 6,
       name: 'Sugar & Sweeteners',
       subcategories: ['sugar', 'honey', 'syrup', 'chocolate', 'molasses'],
+    },
+    {
+      id: 7,
+      name: 'Grains & Cereals',
+      subcategories: ['Rice', 'Pasta', 'Oats', 'Quinoa', 'Bareley', 'Cornmeal'],
     },
     // Add more categories as needed
   ];
@@ -130,17 +133,37 @@ const HomePage = () => {
     }
   };
   const toggleSubcategory = (categoryId, subcategory) => {
-    setSubcategoriesChecked((prev) => ({
-      ...prev,
-      [categoryId]: {
-        ...(prev[categoryId] || {}),
-        [subcategory]: !prev[categoryId]?.[subcategory],
-      },
-    }));
+    setSubcategoriesChecked((prev) => {
+      const updatedState = {
+        ...prev,
+        [categoryId]: {
+          ...(prev[categoryId] || {}),
+          [subcategory]: !prev[categoryId]?.[subcategory],
+        },
+      };
+  
+      // Remove subcategories with 'false' value
+      for (let key in updatedState) {
+        for (let prop in updatedState[key]) {
+          if (updatedState[key][prop] === false) {
+            delete updatedState[key][prop];
+          }
+        }
+        
+        // Remove empty categories
+        if (Object.keys(updatedState[key]).length === 0) {
+          delete updatedState[key];
+        }
+      }
+      
+      return updatedState;
+    });
   };
+  
 
   const stopPropagation = (e) => {
     e.stopPropagation();
+    
   };
 
 
@@ -148,11 +171,12 @@ const HomePage = () => {
   //need to create an array of selected ingredients and filtered it against the filteredPosts array
   const isSubcategoryChecked = (categoryId, subcategory) => {
     const checkedSubCategories = subcategoriesChecked[categoryId]?.[subcategory] || false;
-    console.log(subcategory)
+    //console.log(subcategory)
     //setSelectedSubcategories([...selectedSubcategories, subcategory])
     //console.log(filteredPosts.filter(((post) => post.ingredients.filter((ingredient) => selectedSubcategories.filter((selectedSubCategory) => ingredient.name == selectedSubCategory)))))
-
+    
     return checkedSubCategories
+    
   };
 
   const handleNotificationClick = async (notificationId) => {
@@ -284,7 +308,11 @@ const HomePage = () => {
                     )}
                   </li>
                 ))}
+                <button style={{ textAlign: 'center', fontWeight: 'bold', backgroundColor: '#0d6efd', marginTop: '20px' }} className="btn btn-light" onClick={clearSubcategories}>
+                  Clear
+                </button>
               </ul>
+              
             </div>
           </div>
           <div className="col-sm" style={{ padding: '20px', backgroundColor: '#eceeee', height: '90%', overflowY: 'auto' }}>
@@ -296,7 +324,7 @@ const HomePage = () => {
                       <Link href={`/userpage/recipe/${post._id}`} style={{ textDecoration: 'none' }}>
                         <Card isPressable>
                           <Card.Body css={{ alignItems: 'center', width: '100%' }}>
-                            {post.recipeimageUrl && <Image className="recipe-picture" width = {175} height = {150} priority src={post.recipeimageUrl} alt="Uploaded Image" />}
+                            {post.recipeimageUrl && <Image className="recipe-picture"style={{width: '100%'}} width = {175} height = {150} priority src={post.recipeimageUrl} alt="Uploaded Image" />}
                           </Card.Body>
                           <Card.Footer css={{ justifyItems: "flex-start" }}>
                             <Row wrap="wrap" justify="space-between" align="center">

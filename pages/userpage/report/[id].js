@@ -7,6 +7,10 @@ const ReportDetailPage = ({ match }) => {
   const [report, setReport] = useState(null);
   const router = useRouter();
   const { id } = router.query;
+  const [recipeData, setRecipeData] = useState({});
+  const [updateRecipe, setUpdateRecipe] = useState(null);
+  const [showRecipeForm, setShowRecipeForm] = useState(false);
+
 
   useEffect(() => {
     const fetchReport = async () => {
@@ -41,28 +45,18 @@ const ReportDetailPage = ({ match }) => {
         },
         body: JSON.stringify({ postId, reportId, adminId })
       });
-
       if (response.ok) {
         const result = await response.json();
-
-        // Assuming the server returns a message in { message: 'some message' }
         alert(result.message);
-        router.reload(); 
-
-        // Navigate the user to another page or refresh the current page
-        // For example, using Next.js router
-        // router.push('/some-page');
-
+        router.reload('/home'); 
       } else {
         const result = await response.json();
         alert(`Error: ${result.error || 'Something went wrong'}`);
       }
-
     } catch (error) {
       console.error("There was an error deleting the post:", error);
       alert('There was an error deleting the post.');
     }
-
   };
 
   return (
@@ -117,19 +111,12 @@ const ReportDetailPage = ({ match }) => {
                   alt='Recipe' />
               )}
               <br></br>
-              {/* Edit and Delete buttons */}
-              <button style={{
-                backgroundColor: '#0b5ed7',
-                padding: '5px',
-                borderRadius: '10%',
-                margin: '10px'
-              }}>Edit Post</button>
-              <button onClick={deletePost} style={{
-                backgroundColor: 'red',
-                padding: '5px',
-                borderRadius: '10%',
-
-              }}>Delete Post</button>
+              <button  style={{ backgroundColor: '#0b5ed7', padding: '5px', borderRadius: '10%', margin: '10px'}}>
+                Edit Post
+                </button> 
+              <button onClick={deletePost} style={{ backgroundColor: 'red', padding: '5px', borderRadius: '10%',}}>
+                Delete Post
+                </button>
             </div>
           )}
         </div></div></div>

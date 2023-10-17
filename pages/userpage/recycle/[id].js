@@ -14,7 +14,23 @@ const Itemprofile = () => {
   const [recycle, setRecycle] = useState();
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [recycles, setRecycles] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredRecycles, setFilteredRecycles] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState([]); // New state for selected categories
+  const handleCheckboxChange = (event) => {
+    const category = event.target.value;
+    if (event.target.checked) {
+      // If the checkbox is checked, add the category to the selectedCategories array
+      setSelectedCategories([...selectedCategories, category]);
+    } else {
+      // If the checkbox is unchecked, remove the category from the selectedCategories array
+      setSelectedCategories(selectedCategories.filter((c) => c !== category));
+    }
+  };
   useEffect(() => {
+    
     const fetchPost = async () => {
       try {
         const response = await fetch(`/api/post/getrecycle?postId=${id}`);
@@ -33,7 +49,7 @@ const Itemprofile = () => {
   if (!recycle) {
     return <div>Loading...</div>;
   }
-
+  
   const addrecyclewishlist = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -51,6 +67,7 @@ const Itemprofile = () => {
         setErrorMessage(errorMessage);
       }
       else {
+        alert('The post has been added to wishlist.');
         setErrorMessage('');
       }
 
@@ -59,7 +76,9 @@ const Itemprofile = () => {
       console.error('Error:', error);
       console.log('An error occurred while adding the post to the wishlist.');
     }
+    
   };
+  
   const signOut = () => {
     // Remove the JWT token
     localStorage.removeItem('token');
@@ -67,6 +86,8 @@ const Itemprofile = () => {
     // Redirect to login or another page
     window.location.href = '/';
 }
+
+const userId = localStorage.getItem('userId');
 
   return (
     <>
@@ -131,17 +152,9 @@ const Itemprofile = () => {
               />
             )}
             <h2 style={{ fontFamily: 'cursive', fontWeight: 'bold', marginTop: '10px' }}>{recycle.name}</h2>
-            <button
-              onClick={addrecyclewishlist}
-              className='btn btn-primary'
-              style={{
-                padding: '5px 15px',
-                borderRadius: '10%',
-                marginTop: '10px',
-              }}
-            >
+            {recycle.userId !== userId && <button onClick={addrecyclewishlist} style={{ backgroundColor: '#0b5ed7', padding: '5px 10px', borderRadius: '10%', marginBottom: '5px'}}>
               Add to Wishlist
-            </button>
+            </button>}
             <p>{errorMessage}</p>
           </div>
 

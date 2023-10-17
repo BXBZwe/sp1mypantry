@@ -156,11 +156,20 @@ const MealPlanner = () => {
                 </table>
 
                 <button onClick={saveMealPlans}>Save Meal Plans</button>
+                <button onClick={handleCancel} style={{ paddingRight: '2px' }}>Cancel</button>
             </div>
         );
     };
 
+    const daysBetweenDates = generateDays(new Date(startDate), new Date(endDate));
 
+    const handleCancel = () => {
+        setIsCreating(false);
+        // You may want to reset the startDate, endDate, and mealPlans if necessary
+        // setStartDate(null);
+        // setEndDate(null);
+        // setMealPlans({});
+    };
     const displaySavedPlans = () => (
         <div>
             {savedMealPlans.map(plan => (
@@ -190,6 +199,7 @@ const MealPlanner = () => {
                         </tbody>
                     </table>
                     <button onClick={() => deleteMealPlan(plan._id)}>Delete</button>
+
                 </div>
             ))}
             <button onClick={() => setIsCreating(true)}>Create New Meal Plan</button>
@@ -223,7 +233,7 @@ const MealPlanner = () => {
     const signOut = () => {
         // Remove the JWT token
         localStorage.removeItem('token');
-        
+
         // Redirect to login or another page
         window.location.href = '/';
     }
@@ -235,14 +245,12 @@ const MealPlanner = () => {
                     <Navbar bg="primary" expand="lg" variant="dark">
                         <div className="container">
                             <Navbar.Brand href="home" style={{ fontFamily: 'cursive', fontSize: '30px' }}>MyPantry</Navbar.Brand>
-                            <span style={{paddingRight: '845px'}}></span>
-
+                            <span style={{ paddingRight: '845px' }}></span>
                             <Navbar.Toggle aria-controls="navbarSupportedContent" />
                             <Navbar.Collapse id="navbarSupportedContent">
-
                                 <Nav className="navbar-nav ml-auto">
-                                    <Nav.Link href="home" >Recipe</Nav.Link>
-                                    <Nav.Link href="../userpage/mealplannermain" style={{ fontWeight: 'bold', color: 'white' }}>Planner</Nav.Link>
+                                    <Nav.Link href="../userpage/home">Recipe</Nav.Link>
+                                    <Nav.Link href="home" style={{ fontWeight: 'bold', color: 'white' }}>Planner</Nav.Link>
                                     <Nav.Link href="../userpage/recyclehome">Recycle</Nav.Link>
 
 
@@ -254,10 +262,9 @@ const MealPlanner = () => {
                                     </Nav.Link>
                                 </Nav>
                                 <Dropdown>
-                                    <Dropdown.Toggle className="custom-dropdown-menu"
+                                    <Dropdown.Toggle className="custom-dropdown-menu" id="notifications-dropdown" variant="transparent"
                                         style={{ border: 'none', color: 'inherit', fontSize: 'inherit', color: 'white', paddingRight: '0px', paddingLeft: '0px', marginTop: '0px' }}>
-
-                                        <i className="fa fa-bell " ></i>
+                                        <i className="fa fa-bell text-white"></i>
                                         {unreadCount > 0 && <span className="badge">{unreadCount}</span>}
                                     </Dropdown.Toggle>
                                     <Dropdown.Menu style={{ left: 'auto', right: 20 }}>

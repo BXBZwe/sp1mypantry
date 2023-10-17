@@ -98,6 +98,7 @@ const Itemprofile = () => {
         const errorMessage = await response.text();
         setErrorMessage(errorMessage);
       } else {
+        alert('The post has been added to wishlist.');
         setErrorMessage('');
       }
 
@@ -144,10 +145,12 @@ const Itemprofile = () => {
   const signOut = () => {
     // Remove the JWT token
     localStorage.removeItem('token');
-    
+
     // Redirect to login or another page
     window.location.href = '/';
-}
+  }
+
+  const userId = localStorage.getItem('userId');
 
   return (
     <>
@@ -156,7 +159,7 @@ const Itemprofile = () => {
           <Navbar bg="primary" expand="lg" variant="dark">
             <div className="container">
               <Navbar.Brand href="../home" style={{ fontFamily: 'cursive', fontSize: '30px' }}>MyPantry</Navbar.Brand>
-              <span style={{paddingRight: '845px'}}></span>
+              <span style={{ paddingRight: '845px' }}></span>
               <Navbar.Toggle aria-controls="navbarSupportedContent" />
               <Navbar.Collapse id="navbarSupportedContent">
 
@@ -203,37 +206,22 @@ const Itemprofile = () => {
             {post.recipeimageUrl && (
               <Image
                 className='recipe-picture'
-                  width = {340}
-                  height = {250}
-                  priority
+                width={340}
+                height={250}
+                priority
                 src={post.recipeimageUrl}
                 alt='Uploaded Image'
-                style={{marginBottom: '10px', marginTop: '10px'}}
+                style={{ marginBottom: '10px', marginTop: '10px' }}
               />
             )}
             <h2 style={{ fontFamily: 'cursive', fontWeight: 'bold' }}>{post.name}</h2>
-            <button
-              onClick={addrecipewishlist}
-              style={{
-                backgroundColor: '#0b5ed7',
-                padding: '5px 10px',
-                borderRadius: '10%',
-                marginBottom: '5px',
-              }}
-            >
+            {post.userId !== userId && <button onClick={addrecipewishlist} style={{ backgroundColor: '#0b5ed7', padding: '5px 10px', borderRadius: '10%', marginBottom: '5px'}}>
               Add to Wishlist
-            </button>
+            </button>}
             <br />
-            <button
-              onClick={() => setShowReportModal(true)}
-              style={{
-                backgroundColor: '#d8456b',
-                padding: '5px 40px',
-                borderRadius: '10%',
-              }}
-            >
+            { post.userId !== userId && <button onClick={() => setShowReportModal(true)} style={{ backgroundColor: '#d8456b', padding: '5px 40px', borderRadius: '10%'}}>
               Report
-            </button>
+            </button>}
 
             <Modal show={showReportModal} onHide={() => setShowReportModal(false)}>
               <Modal.Header closeButton>
@@ -243,6 +231,7 @@ const Itemprofile = () => {
                 <div>
                   <label style={{ margin: '5px' }}>Reason:</label>
                   <select value={reason} onChange={(e) => setReason(e.target.value)}>
+                  <option value="">Select Reason</option>
                     <option value="Inappropriate Content">Inappropriate Content</option>
                     <option value="Misinformation">Misinformation</option>
                     <option value="Spam">Spam</option>
