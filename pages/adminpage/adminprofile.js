@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Link from 'next/link';
 import Uppy from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import Image from 'next/image';
+import { Navbar, Dropdown } from 'react-bootstrap';
+
 
 
 const AdminUserprofile = () => {
@@ -13,6 +14,10 @@ const AdminUserprofile = () => {
   const [uppy, setUppy] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+
   useEffect(() => {
     const Fetchadminprofile = async () => {
       try {
@@ -36,6 +41,20 @@ const AdminUserprofile = () => {
         console.log(error)
       }
     };
+    const fetchNotifications = async () => {
+      const currentUserId = localStorage.getItem('userId');
+      try {
+        const response = await fetch(`/api/notification/notification?userId=${currentUserId}`);
+        const data = await response.json();
+        setNotifications(data);
+        console.log("notifications data :", data)
+        setUnreadCount(data.length);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchNotifications();
+
     Fetchadminprofile();
     const instance = new Uppy({
       autoProceed: false,
@@ -68,6 +87,7 @@ const AdminUserprofile = () => {
     return () => {
       instance.close();
     };
+    
   }, [imageUrl]);
 
   const saveImageUrlToDB = async (uploadedImageUrl) => {
@@ -111,76 +131,72 @@ const AdminUserprofile = () => {
   const signOut = () => {
     // Remove the JWT token
     localStorage.removeItem('token');
-    
+
     // Redirect to login or another page
     window.location.href = '/';
-}
+  }
 
+  const handleNotificationClick = async (notificationId) => {
+    try {
+      const response = await fetch('/api/notification/notification', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          notificationId,
+          status: 'read',
+        }),
+      });
 
+      const data = await response.json();
+      if (data.error) {
+        throw new Error(data.error);
+      }
 
+    } catch (error) {
+      console.error('Error updating notification status:', error);
+    }
+  };
   return (
     <>
-
       <div className="container-fluid">
         <div className="row">
-          <nav
-            style={{ backgroundColor: '#d8456b' }}
-            className="navbar navbar-expand-lg navbar-dark"
-          >
+          <Navbar expand="lg" style={{ backgroundColor: '#d8456b'}}>
             <div className="container">
-              <a className="navbar-brand custom-cursive-font" href="adminhome">
-                <h3>MyPantry - Admin</h3>
-              </a>
-              <button
-                className="navbar-toggler"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent"
-              >
-                <span className="navbar-toggler-icon"></span>
-              </button>
-              <div
-                className="collapse navbar-collapse"
-                id="navbarSupportedContent"
-              >
-                <span className="navbar-nav mx-auto"></span>
-                <ul className="navbar-nav ml-auto">
-                  <li className="nav-item">
-                    <a
-                      className="nav-link active"
-                      style={{ color: 'white' }}
-                      aria-current="page"
-                      href="adminhome"
-                    >
-                      Home
-                    </a>
+              <Navbar.Brand href="home" style={{ fontFamily: 'cursive', fontSize: '30px', paddingRight: '845px' }}>MyPantry</Navbar.Brand>
+              <Navbar.Toggle aria-controls="navbarSupportedContent" />
+              <Navbar.Collapse id="navbarSupportedContent">
+                <ul className="navbar-nav ml-auto" >
+                  <li className="nav-item" >
+                    <a className="nav-link active" style={{ fontWeight: 'bold', color: 'white' }} aria-current="page" href="adminhome">Home</a>
                   </li>
                   <li className="nav-item">
-                    <a
-                      className="nav-link"
-                      aria-current="page"
-                      href="adminprofile"
-                      style={{ fontWeight: 'bold', color: 'white' }}
-                    >
-                      Profile
-                    </a>
+                    <a className="nav-link " aria-current="page" href="adminprofile" style={{ color: 'white' }}>Profile</a>
                   </li>
+                  <Dropdown >
+                    <Dropdown.Toggle style={{ border: 'none', color: 'inherit', fontSize: 'inherit', color: 'white', backgroundColor: '#d8456b', paddingRight: '0px', paddingLeft: '0px', marginTop: '0px' }}><i className="fa fa-bell text-white"></i> {unreadCount > 0 && <span className="badge">{unreadCount}</span>}</Dropdown.Toggle>
+                    <Dropdown.Menu style={{ left: 'auto', right: 20 }}>
+                      {notifications && notifications.length > 0 ? (notifications.map((notification, index) => (
+                        <Dropdown.Item key={index} onClick={() => handleNotificationClick(notification._id)}
+                          href={`/userpage/report/${notification.reportId}`}>
+                          {notification.message}
+                        </Dropdown.Item>
+                      ))
+                      ) : (
+                        <Dropdown.Item>No new notifications</Dropdown.Item>
+                      )}
+                    </Dropdown.Menu>
+                  </Dropdown>
                 </ul>
-              </div>
+              </Navbar.Collapse>
             </div>
-          </nav>
+          </Navbar>
           <div
-            className="col-sm"
-            style={{
-              backgroundColor: '#ffffff',
-              overflow: 'hidden',
-              textAlign: 'center',
-            }}
-          >
+            className="col-sm" style={{ backgroundColor: '#ffffff', overflow: 'hidden', textAlign: 'center' }}>
             {imageUrl && (
               <Image
-                className="profile-picture" style={{ borderRadius: '50%' }} width = {200} height={200} priority src={imageUrl} alt="Uploaded Image"/>
+                className="profile-picture" style={{ borderRadius: '50%' }} width={200} height={200} priority src={imageUrl} alt="Uploaded Image" />
             )}
 
             <br />

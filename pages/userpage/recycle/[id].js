@@ -51,6 +51,7 @@ const Itemprofile = () => {
         setErrorMessage(errorMessage);
       }
       else {
+        alert('The post has been added to wishlist.');
         setErrorMessage('');
       }
 
@@ -67,6 +68,8 @@ const Itemprofile = () => {
     // Redirect to login or another page
     window.location.href = '/';
 }
+
+const userId = localStorage.getItem('userId');
 
   return (
     <>
@@ -131,17 +134,9 @@ const Itemprofile = () => {
               />
             )}
             <h2 style={{ fontFamily: 'cursive', fontWeight: 'bold', marginTop: '10px' }}>{recycle.name}</h2>
-            <button
-              onClick={addrecyclewishlist}
-              className='btn btn-primary'
-              style={{
-                padding: '5px 15px',
-                borderRadius: '10%',
-                marginTop: '10px',
-              }}
-            >
+            {recycle.userId !== userId && <button onClick={addrecyclewishlist} style={{ backgroundColor: '#0b5ed7', padding: '5px 10px', borderRadius: '10%', marginBottom: '5px'}}>
               Add to Wishlist
-            </button>
+            </button>}
             <p>{errorMessage}</p>
           </div>
 

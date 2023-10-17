@@ -53,11 +53,9 @@ const HomePage = () => {
     fetchNotifications();
   }, []);
 
-  // Filter posts based on searchQuery
   var filteredPosts = posts.filter((post) =>
     post.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  // Filter posts based on searchQuery and selected subcategories
   var filterPosts = posts.filter((post) =>
     post.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
     Object.keys(subcategoriesChecked).every((categoryId) =>
