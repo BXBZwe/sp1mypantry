@@ -18,14 +18,12 @@ const Itemprofile = () => {
   const [recycles, setRecycles] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredRecycles, setFilteredRecycles] = useState([]);
-  const [selectedCategories, setSelectedCategories] = useState([]); // New state for selected categories
+  const [selectedCategories, setSelectedCategories] = useState([]); 
   const handleCheckboxChange = (event) => {
     const category = event.target.value;
     if (event.target.checked) {
-      // If the checkbox is checked, add the category to the selectedCategories array
       setSelectedCategories([...selectedCategories, category]);
     } else {
-      // If the checkbox is unchecked, remove the category from the selectedCategories array
       setSelectedCategories(selectedCategories.filter((c) => c !== category));
     }
   };
@@ -58,9 +56,9 @@ const Itemprofile = () => {
       const response = await fetch('/api/wishlist/addrecyclewishlist', {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+          Authorization: `Bearer ${token}`, 
         },
-        body: JSON.stringify({ userId: userId, recycleId: id }), // replace user.id and post.id with actual values
+        body: JSON.stringify({ userId: userId, recycleId: id }), 
       });
       if (!response.ok) {
         const errorMessage = await response.text();
@@ -80,10 +78,7 @@ const Itemprofile = () => {
   };
   
   const signOut = () => {
-    // Remove the JWT token
     localStorage.removeItem('token');
-    
-    // Redirect to login or another page
     window.location.href = '/';
 }
 
@@ -166,10 +161,7 @@ const userId = localStorage.getItem('userId');
               height: '90%',
               overflowY: 'auto',
             }}
-
           >
-
-
             <table class='table table-bordered border-primary' style={{ width: '100%', marginTop: '20px', borderCollapse: 'collapse' }}>
               <thead>
                 <tr>
@@ -195,14 +187,8 @@ const userId = localStorage.getItem('userId');
               Instructions:
             </h3>
             <h5 style={{ fontFamily: 'Inter, sans-serif', whiteSpace: 'pre-line' }}>{recycle.instruction}</h5>
-
-
-
           </div>
         </div></div>
-
-
-
     </>
   );
 };

@@ -74,14 +74,11 @@ const HomePage = () => {
     setSearchQuery(e.target.value);
   };
   const clearSubcategories = () => {
-    setSubcategoriesChecked({}); // Clear the selected subcategories
+    setSubcategoriesChecked({}); 
   };
 
   const signOut = () => {
-    // Remove the JWT token
     localStorage.removeItem('token');
-    
-    // Redirect to login or another page
     window.location.href = '/';
 }
   const categoriesData = [
@@ -122,7 +119,6 @@ const HomePage = () => {
       name: 'Grains & Cereals',
       subcategories: ['Rice', 'Pasta', 'Oats', 'Quinoa', 'Bareley', 'Cornmeal'],
     },
-    // Add more categories as needed
   ];
 
   const toggleCategory = (categoryId) => {
@@ -142,7 +138,6 @@ const HomePage = () => {
         },
       };
   
-      // Remove subcategories with 'false' value
       for (let key in updatedState) {
         for (let prop in updatedState[key]) {
           if (updatedState[key][prop] === false) {
@@ -150,7 +145,6 @@ const HomePage = () => {
           }
         }
         
-        // Remove empty categories
         if (Object.keys(updatedState[key]).length === 0) {
           delete updatedState[key];
         }
@@ -165,18 +159,9 @@ const HomePage = () => {
     e.stopPropagation();
     
   };
-
-
-  //return the selected ingredients as true, others as false in an array
-  //need to create an array of selected ingredients and filtered it against the filteredPosts array
   const isSubcategoryChecked = (categoryId, subcategory) => {
-    const checkedSubCategories = subcategoriesChecked[categoryId]?.[subcategory] || false;
-    //console.log(subcategory)
-    //setSelectedSubcategories([...selectedSubcategories, subcategory])
-    //console.log(filteredPosts.filter(((post) => post.ingredients.filter((ingredient) => selectedSubcategories.filter((selectedSubCategory) => ingredient.name == selectedSubCategory)))))
-    
+    const checkedSubCategories = subcategoriesChecked[categoryId]?.[subcategory] || false;    
     return checkedSubCategories
-    
   };
 
   const handleNotificationClick = async (notificationId) => {

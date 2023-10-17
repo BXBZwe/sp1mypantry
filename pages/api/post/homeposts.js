@@ -7,7 +7,7 @@ export default async function handler(req, res) {
 
   if (req.method === 'GET') {
 
-    const docs = await Post.find(); // find all posts
+    const docs = await Post.find();
     res.status(200).json(docs);
   }
   else{

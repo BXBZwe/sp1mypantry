@@ -32,7 +32,6 @@ const MealPlanner = () => {
 
     const fetchmealplans = async () => {
         const token = localStorage.getItem('token');
-        // Assuming you have an API endpoint to get the user's wishlist recipes
         fetch('/api/wishlist/getwishlist', {
             method: 'GET',
             headers: {
@@ -46,7 +45,6 @@ const MealPlanner = () => {
                 console.log("Wishlist Data:", data)
             });
 
-        // Fetch user's meal plans
         fetch('/api/mealplanner/mealplanner', {
             method: 'GET',
             headers: {
@@ -64,7 +62,6 @@ const MealPlanner = () => {
         fetchmealplans();
     }, []);
 
-    // Function to generate an array of days between two dates
     const generateDays = (start, end) => {
         let days = [];
         for (let dt = new Date(start); dt <= end; dt.setDate(dt.getDate() + 1)) {
@@ -88,15 +85,13 @@ const MealPlanner = () => {
     const saveMealPlans = async () => {
         const token = localStorage.getItem('token');
 
-        // Generating a week identifier (you can adjust this as per your needs)
-        const weekIdentifier = new Date(startDate).toISOString().split('T')[0];// Taking YYYY-MM-DD format
+        const weekIdentifier = new Date(startDate).toISOString().split('T')[0];
 
         const weekMealPlans = {
             weekIdentifier: weekIdentifier,
             plans: mealPlans
         };
 
-        // Call API to persist the entire weekMealPlans
         fetch('/api/mealplanner/mealplanner', {
             method: 'POST',
             headers: {
@@ -108,7 +103,7 @@ const MealPlanner = () => {
             .then(response => {
                 if (response.ok) {
                     console.log("Meal plans saved successfully");
-                    setIsCreating(false);  // Close the creation form
+                    setIsCreating(false); 
                     return fetchmealplans();
                 } else {
                     console.error("Error saving meal plans:", response.statusText);
@@ -165,10 +160,6 @@ const MealPlanner = () => {
 
     const handleCancel = () => {
         setIsCreating(false);
-        // You may want to reset the startDate, endDate, and mealPlans if necessary
-        // setStartDate(null);
-        // setEndDate(null);
-        // setMealPlans({});
     };
     const displaySavedPlans = () => (
         <div>
@@ -220,7 +211,7 @@ const MealPlanner = () => {
             .then(response => {
                 if (response.ok) {
                     console.log("Meal plan deleted successfully");
-                    fetchmealplans(); // refresh the list after deletion
+                    fetchmealplans(); 
                 } else {
                     console.error("Error deleting meal plan:", response.statusText);
                 }
@@ -231,10 +222,7 @@ const MealPlanner = () => {
     }
 
     const signOut = () => {
-        // Remove the JWT token
         localStorage.removeItem('token');
-
-        // Redirect to login or another page
         window.location.href = '/';
     }
 
@@ -283,7 +271,6 @@ const MealPlanner = () => {
                                         )}
                                     </Dropdown.Menu>
                                 </Dropdown>
-
                             </Navbar.Collapse>
                         </div>
                     </Navbar>
@@ -293,11 +280,7 @@ const MealPlanner = () => {
                             <h2>Saved Meal Plans</h2>
                         </div>
                     </div>
-
                 </div></div>
-
-
-
         </>
     );
 }

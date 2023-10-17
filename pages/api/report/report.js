@@ -46,14 +46,12 @@ export default async function handler(req, res) {
             const reportId = req.query.reportId;
 
             if (reportId) {
-                // Fetch a single report by ID, excluding the reportedBy field
                 const report = await Report.findById(reportId).select('-reportedBy').lean().exec();
 
                 if (!report) {
                     return res.status(404).json({ error: "Report not found" });
                 }
 
-                // Fetch the associated post details based on postType
                 if (report.postType === 'recipe') {
                     report.postDetails = await Post.findById(report.postId).lean().exec();
                 } else if (report.postType === 'recycle') {
@@ -62,7 +60,6 @@ export default async function handler(req, res) {
 
                 return res.status(200).json(report);
             } else {
-                // Fetch all reports
                 const reports = await Report.find({}).lean().exec();
                 
                 for (let report of reports) {

@@ -1,6 +1,3 @@
-//import dbConnect from "@/lib/dbConnect"
-//import Recycle from "@/models/Recycle"
-
 import { connect, model, models, Schema } from "mongoose";
 import jwt from 'jsonwebtoken';
 const connectionString = process.env.MONGODB_URI_TM
@@ -15,7 +12,6 @@ export default async function handler(req, res) {
         const docs = await Recycle.find({ userId }); 
         res.status(200).json(docs)
     } else if (req.method === 'POST') {
-        // console.log(typeof(req.body))
         const token = req.headers.authorization.split(' ')[1];
         const { userId } = jwt.verify(token, process.env.JWT_SECRET_KEY);
         const doc = await Recycle.create({...req.body, userId});

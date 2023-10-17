@@ -75,7 +75,7 @@ const Itemprofile = () => {
 
   const handleScaleIngredients = () => {
     setScaledIngredients(scaledIngredients(post.ingredients, scaledServings, post.servings));
-    setScaledIngredientsVisible(true); // Show scaled ingredients
+    setScaledIngredientsVisible(true); 
   };
 
   if (!post) {
@@ -90,9 +90,9 @@ const Itemprofile = () => {
       const response = await fetch('/api/wishlist/addrecipewishlist', {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+          Authorization: `Bearer ${token}`, 
         },
-        body: JSON.stringify({ userId: userId, postId: id }), // replace user.id and post.id with actual values
+        body: JSON.stringify({ userId: userId, postId: id }), 
       });
       if (!response.ok) {
         const errorMessage = await response.text();
@@ -137,16 +137,12 @@ const Itemprofile = () => {
       setReason('');
       setDetails('');
       alert('Report submitted successfully!');
-      // Optionally, show a message to the user that the report has been submitted successfully
     } catch (error) {
       console.error('Error reporting:', error);
     }
   };
   const signOut = () => {
-    // Remove the JWT token
     localStorage.removeItem('token');
-
-    // Redirect to login or another page
     window.location.href = '/';
   }
 
@@ -235,7 +231,6 @@ const Itemprofile = () => {
                     <option value="Inappropriate Content">Inappropriate Content</option>
                     <option value="Misinformation">Misinformation</option>
                     <option value="Spam">Spam</option>
-                    {/* Add other options if needed */}
                   </select>
                 </div>
                 <div>
@@ -283,7 +278,6 @@ const Itemprofile = () => {
               Scale Ingredients
             </button>
 
-            {/* Display scaled ingredients under the button */}
             {scaledIngredientsVisible && (
               <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px' }}>
                 <thead>

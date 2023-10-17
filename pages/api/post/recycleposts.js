@@ -7,7 +7,7 @@ export default async function handler(req, res) {
 
   if (req.method === 'GET') {
 
-    const docs = await Recycle.find(); // find all recycle posts
+    const docs = await Recycle.find(); 
     res.status(200).json(docs);
   }
   else{
