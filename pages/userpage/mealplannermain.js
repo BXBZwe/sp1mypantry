@@ -230,7 +230,13 @@ const MealPlanner = () => {
             });
     }
 
-
+    const signOut = () => {
+        // Remove the JWT token
+        localStorage.removeItem('token');
+        
+        // Redirect to login or another page
+        window.location.href = '/';
+    }
 
     return (
         <>
@@ -253,7 +259,7 @@ const MealPlanner = () => {
                                     <Nav.Link href="../userpage/userprofile">
                                         <i className="fa fa-user"></i>
                                     </Nav.Link>
-                                    <Nav.Link href="#">
+                                    <Nav.Link onClick={signOut}>
                                         <i className="fa fa-sign-out"></i>
                                     </Nav.Link>
                                 </Nav>

@@ -20,6 +20,7 @@ const HomePage = () => {
   const [openCategories, setOpenCategories] = useState([]);
   const [subcategoriesChecked, setSubcategoriesChecked] = useState({});
   const router = useRouter();
+
   useEffect(() => {
     const fetchAllPosts = async () => {
       const currentUserId = localStorage.getItem('userId');
@@ -95,6 +96,7 @@ const HomePage = () => {
   const clearSubcategories = () => {
     setSubcategoriesChecked({}); // Clear the selected subcategories
   };
+
   const signOut = () => {
     // Remove the JWT token
     localStorage.removeItem('token');
