@@ -62,73 +62,38 @@ const HomePage = () => {
   const signOut = () => {
     // Remove the JWT token
     localStorage.removeItem('token');
-    
+
     // Redirect to login or another page
     window.location.href = '/';
-}
+  }
 
 
   return (
     <>
       <div className='container-fluid'>
         <div className="row vh-100">
-          <Navbar bg="primary" expand="lg" variant="dark">
+        <Navbar bg="primary" expand="lg" variant="dark">
             <div className="container">
               <Navbar.Brand href="home" style={{ fontFamily: 'cursive', fontSize: '30px' }}>MyPantry</Navbar.Brand>
-              <Form inline className="mx-auto">
-                <FormControl
-                  type="search"
-                  placeholder="Search"
-                  className="mr-sm-2"
-                  aria-label="Search"
-                  style={{ width: '350px' }}
-                  value={searchQuery}
-                  onChange={handleSearchQueryChange}
-                />
-                
-              </Form>
-              <Nav className="navbar-nav ml-auto">
-                <Nav.Link href="home">Recipe</Nav.Link>
-                <Nav.Link href="../userpage/mealplannermain">Planner</Nav.Link>
-                <Nav.Link href="../userpage/recyclehome" style={{ fontWeight: 'bold', color: 'white' }}>Recycle</Nav.Link>
-                <Nav.Link href="../userpage/userprofile">
-                  <i className="fa fa-user"></i>
-                </Nav.Link>
-                <Nav.Link href="#">
-                  <i className="fa fa-sign-out"></i>
-                </Nav.Link>
-              </Nav>
-              <Dropdown>
-                <Dropdown.Toggle className="custom-dropdown-menu"
-                  style={{ border: 'none', color: 'inherit', fontSize: 'inherit', color: 'white', paddingRight: '0px', paddingLeft: '0px', marginTop: '0px' }}>
-                  <i className="fa fa-bell"></i>
-                  {unreadCount > 0 && <span className="badge">{unreadCount}</span>}
-                </Dropdown.Toggle>
-                <Dropdown.Menu style={{ left: 'auto', right: 20 }}>
-                  {notifications && notifications.length > 0 ? (
-                    notifications.map((notification, index) => (
-                      <Dropdown.Item
-                        key={index}
-                        onClick={() => handleNotificationClick(notification._id)}
-                        href={`/userpage/report/${notification.reportId}`}
-                      >
-                        {notification.message}
-                      </Dropdown.Item>
-                    ))
-                  ) : (
-                    <Dropdown.Item>No new notifications</Dropdown.Item>
-                  )}
-                </Dropdown.Menu>
-              </Dropdown>
-              <span style={{paddingRight: '845px'}}></span>
-
+              <span style={{paddingRight: '260px'}}></span>
               <Navbar.Toggle aria-controls="navbarSupportedContent" />
               <Navbar.Collapse id="navbarSupportedContent">
+                <Form style={{ fontFamily: 'cursive', fontSize: '30px', paddingRight: '240px' }}>
+                  <FormControl
+                    type="search"
+                    placeholder="Search"
+                    className="mr-sm-2"
+                    aria-label="Search"
+                    style={{ width: '350px' }}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
 
+                </Form>
                 <Nav className="navbar-nav ml-auto">
-                  <Nav.Link href="home" >Recipe</Nav.Link>
-                  <Nav.Link href="../userpage/mealplannermain" >Planner</Nav.Link>
-                  <Nav.Link href="../userpage/recyclehome" style={{ fontWeight: 'bold', color: 'white' }}>Recycle</Nav.Link>
+                  <Nav.Link href="../userpage/home">Recipe</Nav.Link>
+                  <Nav.Link href="../userpage/mealplannermain">Planner</Nav.Link>
+                  <Nav.Link href="home" style={{ fontWeight: 'bold', color: 'white' }}>Recycle</Nav.Link>
 
 
                   <Nav.Link href="../userpage/userprofile">
@@ -139,10 +104,9 @@ const HomePage = () => {
                   </Nav.Link>
                 </Nav>
                 <Dropdown>
-                  <Dropdown.Toggle className="custom-dropdown-menu"
+                  <Dropdown.Toggle className="custom-dropdown-menu" id="notifications-dropdown" variant="transparent"
                     style={{ border: 'none', color: 'inherit', fontSize: 'inherit', color: 'white', paddingRight: '0px', paddingLeft: '0px', marginTop: '0px' }}>
-
-                    <i className="fa fa-bell " ></i>
+                    <i className="fa fa-bell text-white"></i>
                     {unreadCount > 0 && <span className="badge">{unreadCount}</span>}
                   </Dropdown.Toggle>
                   <Dropdown.Menu style={{ left: 'auto', right: 20 }}>

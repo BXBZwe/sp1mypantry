@@ -24,6 +24,7 @@ const Admin = () => {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedReportId, setSelectedReportId] = useState(null);
 
 
   useEffect(() => {
@@ -85,6 +86,7 @@ const Admin = () => {
   }, []);
 
   const handleShowDetails = (report) => {
+    setSelectedReportId(report._id);
     setModalData(report);
     setShowModal(true);
   };

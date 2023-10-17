@@ -219,16 +219,9 @@ const Itemprofile = () => {
               Add to Wishlist
             </button>}
             <br />
-            <button
-              onClick={() => setShowReportModal(true)}
-              style={{
-                backgroundColor: '#d8456b',
-                padding: '5px 40px',
-                borderRadius: '10%',
-              }}
-            >
+            { post.userId !== userId && <button onClick={() => setShowReportModal(true)} style={{ backgroundColor: '#d8456b', padding: '5px 40px', borderRadius: '10%'}}>
               Report
-            </button>
+            </button>}
 
             <Modal show={showReportModal} onHide={() => setShowReportModal(false)}>
               <Modal.Header closeButton>

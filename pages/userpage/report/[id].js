@@ -48,7 +48,7 @@ const ReportDetailPage = ({ match }) => {
       if (response.ok) {
         const result = await response.json();
         alert(result.message);
-        router.reload(); 
+        router.reload('/home'); 
       } else {
         const result = await response.json();
         alert(`Error: ${result.error || 'Something went wrong'}`);
@@ -111,9 +111,9 @@ const ReportDetailPage = ({ match }) => {
                   alt='Recipe' />
               )}
               <br></br>
-              <button onClick={handleEditRecipe} style={{ backgroundColor: '#0b5ed7', padding: '5px', borderRadius: '10%', margin: '10px'}}>
+              <button  style={{ backgroundColor: '#0b5ed7', padding: '5px', borderRadius: '10%', margin: '10px'}}>
                 Edit Post
-                </button>
+                </button> 
               <button onClick={deletePost} style={{ backgroundColor: 'red', padding: '5px', borderRadius: '10%',}}>
                 Delete Post
                 </button>

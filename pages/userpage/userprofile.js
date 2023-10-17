@@ -8,7 +8,7 @@ import Uppy from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { Dropdown } from 'react-bootstrap';
 import 'font-awesome/css/font-awesome.min.css';
-import { Navbar, Nav, Form, Button } from 'react-bootstrap';
+import { Navbar, Nav, Form, Button, FormControl } from 'react-bootstrap';
 import Image from 'next/image';
 
 
@@ -585,42 +585,40 @@ const Userprofile = () => {
     window.location.href = '/';
   }
 
-  const handleRemoverecipeFromWishlist = async (postId) => {
+  const handleRemoverecipeFromWishlist = async (recipeId) => {
     const token = localStorage.getItem('token');
-    const response = await fetch('/api/wishlist/removerecipewishlist', {
-      method: 'POST',
+    const wishlistrecipe = await fetch(`/api/wishlist/removerecipewishlist/${recipeId}`, {
+      method: 'DELETE',
       headers: {
-        Authorization: `Bearer ${token}`, 
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ postId: postId }),
     });
-  
-    if (response.ok) {
-      const updatedWishlist = wishlists.filter(post => post._id !== postId);
-      setWishlist(updatedWishlist);
+
+    if (wishlistrecipe.ok) {
+      const updatedwishlistRecipes = posts.filter(post => post._id !== recipeId);
+      setPosts(updatedwishlistRecipes);
+      router.reload();
     } else {
-      const errorData = await response.json();
-      console.error(`Failed to remove post with ID ${postId} from wishlist`, errorData);
+      console.error(`Failed to delete recipe with ID ${recipeId}`);
     }
   };
   return (
     <>
       <div className='container-fluid'>
         <div className="row vh-100">
-          <Navbar bg="primary" expand="lg" variant="dark">
+        <Navbar bg="primary" expand="lg" variant="dark">
             <div className="container">
               <Navbar.Brand href="home" style={{ fontFamily: 'cursive', fontSize: '30px' }}>MyPantry</Navbar.Brand>
-              <span style={{ paddingRight: '845px' }}></span>
+              <span style={{paddingRight: '845px'}}></span>
               <Navbar.Toggle aria-controls="navbarSupportedContent" />
               <Navbar.Collapse id="navbarSupportedContent">
-
                 <Nav className="navbar-nav ml-auto">
-                  <Nav.Link href="home" >Recipe</Nav.Link>
-                  <Nav.Link href="../userpage/mealplannermain" >Planner</Nav.Link>
+                  <Nav.Link href="../userpage/home">Recipe</Nav.Link>
+                  <Nav.Link href="../userpage/mealplannermain">Planner</Nav.Link>
                   <Nav.Link href="../userpage/recyclehome">Recycle</Nav.Link>
 
 
-                  <Nav.Link href="../userpage/userprofile" style={{ fontWeight: 'bold', color: 'white' }}>
+                  <Nav.Link href="home" style={{ fontWeight: 'bold', color: 'white' }}>
                     <i className="fa fa-user"></i>
                   </Nav.Link>
                   <Nav.Link onClick={signOut}>
@@ -628,10 +626,9 @@ const Userprofile = () => {
                   </Nav.Link>
                 </Nav>
                 <Dropdown>
-                  <Dropdown.Toggle className="custom-dropdown-menu"
-                    style={{ border: 'none', fontSize: 'inherit', paddingRight: '0px', paddingLeft: '0px', marginTop: '0px' }}>
-
-                    <i className="fa fa-bell " ></i>
+                  <Dropdown.Toggle className="custom-dropdown-menu" id="notifications-dropdown" variant="transparent"
+                    style={{ border: 'none', color: 'inherit', fontSize: 'inherit', color: 'white', paddingRight: '0px', paddingLeft: '0px', marginTop: '0px' }}>
+                    <i className="fa fa-bell text-white"></i>
                     {unreadCount > 0 && <span className="badge">{unreadCount}</span>}
                   </Dropdown.Toggle>
                   <Dropdown.Menu style={{ left: 'auto', right: 20 }}>
